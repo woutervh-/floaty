@@ -6,6 +6,7 @@
 }
 
 .floaty-row {
+    width: 100%;
     display: flex;
     flex-direction: row;
 }
@@ -20,4 +21,38 @@
     bottom: 0;
     width: 1em;
     cursor: e-resize;
+}
+
+.floaty-stack {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.floaty-stack-header {
+    flex-basis: 1em;
+    display: block;
+}
+
+.floaty-stack-header-tabs {
+    display: block;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.floaty-stack-header-tabs-item {
+    display: block;
+    float: left;
+    cursor: pointer;
+}
+
+.floaty-stack-header-tabs-item-active {
+    color: white;
+    background-color: black;
+}
+
+.floaty-stack-item {
+    flex-grow: 1;
+    display: block;
 }

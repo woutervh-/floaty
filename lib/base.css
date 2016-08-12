@@ -11,7 +11,7 @@
 }
 
 .floaty-row-item {
-    flex-grow: 1;
+    width: 0;
 }
 
 .floaty-row-separator {

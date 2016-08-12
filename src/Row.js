@@ -10,72 +10,68 @@ export default class Row extends React.Component {
     };
 
     state = {
-        offsets: []
+        growValues: []
     };
 
     componentWillMount() {
-        this.resizeOffsets(this.props.children.length - 1);
+        this.resizeRowValues(React.Children.count(this.props.children));
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.children.length != this.state.offsets.length) {
-            this.resizeOffsets(nextProps.children.length - 1);
+        if (React.Children.count(nextProps.children) != this.state.growValues.length) {
+            this.resizeRowValues(React.Children.count(nextProps.children));
         }
     }
 
-    componentDidMount() {
-        this.ensureOffsets();
-    }
-
-    componentDidUpdate() {
-        this.ensureOffsets();
-    }
-
-    resizeOffsets(length) {
-        const offsets = [];
+    resizeRowValues(length) {
+        const growValues = [];
         for (let i = 0; i < length; i++) {
-            offsets.push(i < this.state.offsets.length ? this.state.offsets[i] : 0);
+            growValues.push(i < this.state.growValues.length ? this.state.growValues[i] : 1);
         }
-        this.setState({offsets});
+        this.setState({growValues});
     }
 
-    ensureOffsets() {
-        const offsets = [...this.state.offsets];
-        for (let i = 0; i < this.state.offsets.length; i++) {
-            const rowItem = ReactDOM.findDOMNode(this.refs['row-item-' + i]);
-            const style = window.getComputedStyle(rowItem);
-            const regExp = /^(\d+(\.\d+)?)px$/;
-            const flexBasis = parseFloat(style.getPropertyValue('flex-basis').match(regExp)[1]);
-            const width = parseFloat(style.getPropertyValue('width').match(regExp)[1]);
-            if (width != flexBasis) {
-                offsets[i] += width - flexBasis;
-            }
-        }
-        if (!shallowEqual(this.state.offsets, offsets)) {
-            this.setState({offsets});
-        }
-    }
-
-    renderRowItems(rows) {
+    renderRowItems(children) {
         const result = [];
+        const rows = React.Children.toArray(children);
         for (let i = 0; i < rows.length; i++) {
             if (i > 0) {
-                result.push(<RowSeparator onPositionChange={this.handlePositionChange.bind(this, i - 1)}/>);
+                result.push(<RowSeparator getBounds={this.getBoundsForSeparator.bind(this, i - 1)} onPositionChange={this.handlePositionChange.bind(this, i - 1)}/>);
             }
             const rowItem = rows[i];
-            const offset = i == rows.length - 1 ? 0 : this.state.offsets[i];
-            const style = 'style' in rowItem.props && rowItem.props.style || {};
-            const basis = 'style' in rowItem.props && 'flexBasis' in rowItem.props.style && rowItem.props.style.flexBasis || '0px';
-            const element = React.cloneElement(rowItem, {ref: 'row-item-' + i, style: {...style, flexBasis: `calc(${basis} + ${offset}px)`}});
+            const growValue = this.state.growValues[i];
+            const style = 'props' in rowItem && 'style' in rowItem.props && rowItem.props.style || {};
+            const element = React.cloneElement(rowItem, {ref: 'row-item-' + i, style: {...style, flexGrow: growValue}});
             result.push(element);
         }
         return result;
     }
 
+    getWidthForRowItemIndex(index) {
+        return this.getWidthForRowItem(ReactDOM.findDOMNode(this.refs['row-item-' + index]));
+    }
+
+    getWidthForRowItem(rowItem) {
+        const regExp = /^(\d+(\.\d+)?)px$/;
+        return parseFloat(window.getComputedStyle(rowItem).getPropertyValue('width').match(regExp)[1]);
+    }
+
+    getBoundsForSeparator(index) {
+        const widthA = this.getWidthForRowItemIndex(index);
+        const widthB = this.getWidthForRowItemIndex(index + 1);
+        return {min: -widthA, max: widthB};
+    }
+
     handlePositionChange(index, offset) {
-        const offsets = [...this.state.offsets];
-        offsets[index] += offset;
-        this.setState({offsets});
+        const widthA = this.getWidthForRowItemIndex(index);
+        const widthB = this.getWidthForRowItemIndex(index + 1);
+        const widthSum = widthA + widthB;
+        const growValuesSum = this.state.growValues[index] + this.state.growValues[index + 1];
+        const fraction = (widthA + offset) / widthSum;
+        const growValues = [...this.state.growValues];
+        growValues[index] = fraction * growValuesSum;
+        growValues[index + 1] = (1 - fraction) * growValuesSum;
+        this.setState({growValues});
     }
 
     render() {

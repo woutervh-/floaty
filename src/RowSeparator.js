@@ -9,6 +9,7 @@ export default class RowSeparator extends React.Component {
     };
 
     static propTypes = {
+        getBounds: React.PropTypes.func.isRequired,
         onPositionChange: React.PropTypes.func.isRequired
     };
 
@@ -31,13 +32,18 @@ export default class RowSeparator extends React.Component {
         this.draggable.emit('destroy');
     }
 
+    clampOffset(offset) {
+        const {min, max} = this.props.getBounds();
+        return Math.min(max, Math.max(min, offset));
+    }
+
     handleDragStart() {
         const {theme} = this.context;
         document.body.classList.add(theme['floaty-unselectable']);
     }
 
     handleDrag(event) {
-        this.setState({offset: event.x});
+        this.setState({offset: this.clampOffset(event.x)});
     }
 
     handleDragStop() {

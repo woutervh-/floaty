@@ -4,6 +4,19 @@ export default function Draggable(element) {
     const emitter = new EventEmitter();
     let dragging = false;
     let start = {x: 0, y: 0};
+    let current = {x: 0, y: 0};
+
+    function getPosition(event) {
+        if ('touches' in event) {
+            if (event.touches.length >= 1) {
+                return {x: event.touches[0].pageX, y: event.touches[0].pageY};
+            } else {
+                return current;
+            }
+        } else {
+            return {x: event.pageX, y: event.pageY};
+        }
+    }
 
     function handleUp(event) {
         if (dragging) {
@@ -13,14 +26,14 @@ export default function Draggable(element) {
             document.removeEventListener('mouseup', handleUp);
             document.removeEventListener('touchend', handleUp);
 
-            const current = {x: event.pageX, y: event.pageY};
+            current = getPosition(event);
             emitter.emit('dragstop', {x: current.x - start.x, y: current.y - start.y});
         }
     }
 
     function handleMove(event) {
         if (dragging) {
-            const current = {x: event.pageX, y: event.pageY};
+            current = getPosition(event);
             emitter.emit('drag', {x: current.x - start.x, y: current.y - start.y});
         }
     }
@@ -33,7 +46,7 @@ export default function Draggable(element) {
             document.addEventListener('mouseup', handleUp);
             document.addEventListener('touchend', handleUp);
 
-            start = {x: event.pageX, y: event.pageY};
+            current = start = getPosition(event);
             emitter.emit('dragstart');
         }
     }

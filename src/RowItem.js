@@ -1,10 +1,16 @@
 import React from 'react';
+import classNames from 'classnames';
 
 export default class RowItem extends React.Component {
-    render() {
-        const {children, ...other} = this.props;
+    static contextTypes = {
+        theme: React.PropTypes.object.isRequired
+    };
 
-        return <div {...other}>
+    render() {
+        const {theme} = this.context;
+        const {children, className, ...other} = this.props;
+
+        return <div className={classNames(theme['floaty-row-item'], className)} {...other}>
             {children}
         </div>;
     }

@@ -1,5 +1,9 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import classNames from 'classnames';
+import Draggable from './Draggable';
+
+const noop = () => undefined;
 
 export default class Stack extends React.Component {
     static contextTypes = {
@@ -10,6 +14,20 @@ export default class Stack extends React.Component {
         active: 0
     };
 
+    draggables = [];
+
+    componentDidMount() {
+        this.makeDraggables();
+    }
+
+    componentDidUpdate() {
+        this.unmakeDraggables(this.makeDraggables.bind(this));
+    }
+
+    componentWillUnmount() {
+        this.unmakeDraggables();
+    }
+
     handleTabClick(index) {
         this.setState({active: index});
     }
@@ -17,6 +35,45 @@ export default class Stack extends React.Component {
     renderActiveChild() {
         const {children} = this.props;
         return React.Children.toArray(children)[this.state.active];
+    }
+
+    unmakeDraggables(callback = noop) {
+        if (this.draggables.length == 0) {
+            setImmediate(callback);
+        } else {
+            let destroyedCount = 0;
+            this.draggables.forEach(draggable => draggable.on('destroyed', () => {
+                if (++destroyedCount == this.draggables.length) {
+                    this.draggables = [];
+                    setImmediate(callback);
+                }
+            }));
+            this.draggables.forEach(draggable => draggable.emit('destroy'));
+        }
+    }
+
+    makeDraggables() {
+        for (let i = 0; i < React.Children.count(this.props.children); i++) {
+            const draggable = Draggable(ReactDOM.findDOMNode(this.refs['tab-' + i]));
+            draggable.on('dragstart', this.handleDragStart.bind(this, i));
+            draggable.on('drag', this.handleDrag.bind(this, i));
+            draggable.on('dragstop', this.handleDragStop.bind(this, i));
+            this.draggables.push(draggable);
+        }
+    }
+
+    handleDragStart(index) {
+        // todo: send stuff to event bus
+        // MAKE SURE STATE/PROPS DON'T CHANGE HERE, IT WILL REBUILD THE DRAGGABLES
+        // OR: KEEP DRAGGABLES ALIVE WHILE STATE/PROPS CHANGE
+    }
+
+    handleDrag(index, event) {
+        // todo: send stuff to event bus
+    }
+
+    handleDragEnd(index, event) {
+        // todo: send stuff to event bus
     }
 
     render() {
@@ -27,7 +84,7 @@ export default class Stack extends React.Component {
             <div className={theme['floaty-stack-header']}>
                 <ul className={theme['floaty-stack-header-tabs']}>
                     {React.Children.map(this.props.children, (child, index) =>
-                        <li className={classNames(theme['floaty-stack-header-tabs-item'], {[theme['floaty-stack-header-tabs-item-active']]: index == this.state.active})} onClick={this.handleTabClick.bind(this, index)}>
+                        <li ref={'tab-' + index} className={classNames(theme['floaty-stack-header-tabs-item'], {[theme['floaty-stack-header-tabs-item-active']]: index == this.state.active})} onClick={this.handleTabClick.bind(this, index)}>
                             {child.props.title}
                         </li>
                     )}

@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import Draggable from './Draggable';
+import DomUtil from './DomUtil';
 
 const noop = () => undefined;
 
@@ -72,8 +73,17 @@ export default class Stack extends React.Component {
         // todo: send stuff to event bus
     }
 
-    handleDragEnd(index, event) {
+    handleDragStop(index, event) {
         // todo: send stuff to event bus
+    }
+
+    getDropArea(mouseX, mouseY) {
+        let area = undefined;
+        const {x, y, width, height} = DomUtil.elementOffset(this.refs['header']);
+        if (x <= mouseX && mouseX <= x + width && y <= mouseY && mouseY <= y + height) {
+            area = {x, y, width, height};
+        }
+        return area;
     }
 
     render() {
@@ -81,7 +91,7 @@ export default class Stack extends React.Component {
         const {children, className, ...other} = this.props;
 
         return <div className={classNames(theme['floaty-stack'], className)} {...other}>
-            <div className={theme['floaty-stack-header']}>
+            <div ref="header" className={theme['floaty-stack-header']}>
                 <ul className={theme['floaty-stack-header-tabs']}>
                     {React.Children.map(this.props.children, (child, index) =>
                         <li ref={'tab-' + index} className={classNames(theme['floaty-stack-header-tabs-item'], {[theme['floaty-stack-header-tabs-item-active']]: index == this.state.active})} onClick={this.handleTabClick.bind(this, index)}>

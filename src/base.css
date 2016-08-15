@@ -55,5 +55,5 @@
 
 .floaty-stack-item {
     flex-grow: 1;
-    display: block;
+    display: flex;
 }

@@ -17,6 +17,10 @@
     "ncp": "^2.0.0",
     "rimraf": "^2.5.4"
   },
+  "peerDependencies": {
+    "react-redux": "^4.4.5",
+    "redux": "^3.5.2"
+  },
   "dependencies": {
     "classnames": "^2.2.5",
     "eventemitter3": "^1.2.0",

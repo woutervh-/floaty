@@ -1,7 +1,9 @@
+import ContextProvider from './ContextProvider';
+import Floaty from './Floaty';
+import LayoutManager from './LayoutManager';
 import Row from './Row';
 import RowItem from './RowItem';
 import Stack from './Stack';
 import StackItem from './StackItem';
-import ContextProvider from './ContextProvider';
 
-export {Row, RowItem, Stack, StackItem, ContextProvider};
+export {ContextProvider, Floaty, LayoutManager, Row, RowItem, Stack, StackItem};

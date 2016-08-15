@@ -16,6 +16,7 @@
 }
 
 .floaty-row-separator {
+    background-color: black;
     position: relative;
     top: 0;
     bottom: 0;
@@ -54,5 +55,5 @@
 
 .floaty-stack-item {
     flex-grow: 1;
-    display: block;
+    display: flex;
 }

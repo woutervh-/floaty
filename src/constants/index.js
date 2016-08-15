@@ -1,0 +1,2 @@
+export const RESIZE_GROW_VALUES = 'RESIZE_GROW_VALUES';
+export const SET_LAYOUT = 'SET_LAYOUT';

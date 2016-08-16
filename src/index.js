@@ -1,9 +1,4 @@
-import ContextProvider from './ContextProvider';
-import Floaty from './Floaty';
-import LayoutManager from './LayoutManager';
-import Row from './Row';
-import RowItem from './RowItem';
-import Stack from './Stack';
-import StackItem from './StackItem';
+import FloatyManager from './FloatyManager';
+import FloatyReducer from './reducers';
 
-export {ContextProvider, Floaty, LayoutManager, Row, RowItem, Stack, StackItem};
+export {FloatyManager, FloatyReducer};

@@ -6,10 +6,6 @@ export default class StackItem extends React.Component {
         theme: React.PropTypes.object.isRequired
     };
 
-    static propTypes = {
-        title: React.PropTypes.any.isRequired
-    };
-
     render() {
         const {theme} = this.context;
         const {children, className, ...other} = this.props;

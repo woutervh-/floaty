@@ -1,2 +1,8 @@
-export const RESIZE_GROW_VALUES = 'RESIZE_GROW_VALUES';
-export const SET_LAYOUT = 'SET_LAYOUT';
+export const SET_PROP = 'SET_PROP';
+export const UPDATE_GENERIC = 'UPDATE_GENERIC';
+export const UPDATE_GROW_VALUES = 'UPDATE_GROW_VALUES';
+export const UPDATE_ROW = 'UPDATE_ROW';
+export const UPDATE_ROW_ITEM = 'UPDATE_ROW_ITEM';
+export const UPDATE_STACK = 'UPDATE_STACK';
+export const UPDATE_STACK_ITEM = 'UPDATE_STACK_ITEM';
+export const UPDATE_ACTIVE_TAB = 'UPDATE_ACTIVE_TAB';

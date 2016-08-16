@@ -1,10 +1,15 @@
 import EventEmitter from 'eventemitter3';
 
-export default function Draggable(element) {
+export default function Draggable(element, threshold = 0) {
     const emitter = new EventEmitter();
+    let down = false;
     let dragging = false;
     let start = {x: 0, y: 0};
     let current = {x: 0, y: 0};
+
+    function distance(a, b) {
+        return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+    }
 
     function getPosition(event) {
         if ('touches' in event) {
@@ -19,35 +24,49 @@ export default function Draggable(element) {
     }
 
     function handleUp(event) {
-        if (dragging) {
-            dragging = false;
+        if (down) {
+            down = false;
             document.removeEventListener('mousemove', handleMove);
             document.removeEventListener('touchmove', handleMove);
             document.removeEventListener('mouseup', handleUp);
             document.removeEventListener('touchend', handleUp);
 
-            current = getPosition(event);
-            emitter.emit('dragstop', {x: current.x - start.x, y: current.y - start.y});
+            if (dragging) {
+                dragging = false;
+                current = getPosition(event);
+                emitter.emit('dragstop', {x: current.x - start.x, y: current.y - start.y, originalEvent: event});
+            }
         }
     }
 
     function handleMove(event) {
-        if (dragging) {
+        if (down) {
             current = getPosition(event);
-            emitter.emit('drag', {x: current.x - start.x, y: current.y - start.y});
+
+            if (!dragging) {
+                if (distance(start, current) >= threshold) {
+                    dragging = true;
+                    emitter.emit('dragstart', {originalEvent: event});
+                }
+            } else {
+                emitter.emit('drag', {x: current.x - start.x, y: current.y - start.y, originalEvent: event});
+            }
         }
     }
 
     function handleDown(event) {
-        if (!dragging) {
-            dragging = true;
+        if (!down && !dragging) {
+            down = true;
             document.addEventListener('mousemove', handleMove);
             document.addEventListener('touchmove', handleMove);
             document.addEventListener('mouseup', handleUp);
             document.addEventListener('touchend', handleUp);
-
             current = start = getPosition(event);
-            emitter.emit('dragstart');
+
+            if (threshold <= 0) {
+                dragging = true;
+                emitter.emit('dragstart', {originalEvent: event});
+            }
         }
     }
 
@@ -57,8 +76,8 @@ export default function Draggable(element) {
     emitter.on('destroy', () => {
         element.removeEventListener('mousedown', handleDown);
         element.removeEventListener('touchstart', handleDown);
-        if (dragging) {
-            dragging = false;
+        if (down) {
+            down = false;
             document.removeEventListener('mousemove', handleMove);
             document.removeEventListener('touchmove', handleMove);
             document.removeEventListener('mouseup', handleUp);

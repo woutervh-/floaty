@@ -2,114 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import Draggable from './Draggable';
-import DomUtil from './DomUtil';
-import {updateActiveTab} from './actions';
+import {removeTab, updateActiveTab} from './actions';
 
-// const noop = () => undefined;
-//
-// export default class Stack extends React.Component {
-//     static contextTypes = {
-//         theme: React.PropTypes.object.isRequired
-//     };
-//
-//     state = {
-//         active: 0
-//     };
-//
-//     draggables = [];
-//
-//     componentDidMount() {
-//         this.makeDraggables();
-//     }
-//
-//     componentDidUpdate() {
-//         this.unmakeDraggables(this.makeDraggables.bind(this));
-//     }
-//
-//     componentWillUnmount() {
-//         this.unmakeDraggables();
-//     }
-//
-//     handleTabClick(index) {
-//         this.setState({active: index});
-//     }
-//
-//     renderActiveChild() {
-//         const {children} = this.props;
-//         return React.Children.toArray(children)[this.state.active];
-//     }
-//
-//     unmakeDraggables(callback = noop) {
-//         if (this.draggables.length == 0) {
-//             setImmediate(callback);
-//         } else {
-//             let destroyedCount = 0;
-//             this.draggables.forEach(draggable => draggable.on('destroyed', () => {
-//                 if (++destroyedCount == this.draggables.length) {
-//                     this.draggables = [];
-//                     setImmediate(callback);
-//                 }
-//             }));
-//             this.draggables.forEach(draggable => draggable.emit('destroy'));
-//         }
-//     }
-//
-//     makeDraggables() {
-//         for (let i = 0; i < React.Children.count(this.props.children); i++) {
-//             const draggable = Draggable(ReactDOM.findDOMNode(this.refs['tab-' + i]));
-//             draggable.on('dragstart', this.handleDragStart.bind(this, i));
-//             draggable.on('drag', this.handleDrag.bind(this, i));
-//             draggable.on('dragstop', this.handleDragStop.bind(this, i));
-//             this.draggables.push(draggable);
-//         }
-//     }
-//
-//     handleDragStart(index) {
-//         // todo: send stuff to event bus
-//         // MAKE SURE STATE/PROPS DON'T CHANGE HERE, IT WILL REBUILD THE DRAGGABLES
-//         // OR: KEEP DRAGGABLES ALIVE WHILE STATE/PROPS CHANGE
-//     }
-//
-//     handleDrag(index, event) {
-//         // todo: send stuff to event bus
-//     }
-//
-//     handleDragStop(index, event) {
-//         // todo: send stuff to event bus
-//     }
-//
-//     getDropArea(mouseX, mouseY) {
-//         let area = undefined;
-//         const {x, y, width, height} = DomUtil.elementOffset(this.refs['header']);
-//         if (x <= mouseX && mouseX <= x + width && y <= mouseY && mouseY <= y + height) {
-//             area = {x, y, width, height};
-//         }
-//         return area;
-//     }
-//
-//     render() {
-//         const {theme} = this.context;
-//         const {children, className, ...other} = this.props;
-//
-//         return <div className={classNames(theme['floaty-stack'], className)} {...other}>
-//             <div ref="header" className={theme['floaty-stack-header']}>
-//                 <ul className={theme['floaty-stack-header-tabs']}>
-//                     {React.Children.map(this.props.children, (child, index) =>
-//                         <li ref={'tab-' + index} className={classNames(theme['floaty-stack-header-tabs-item'], {[theme['floaty-stack-header-tabs-item-active']]: index == this.state.active})} onClick={this.handleTabClick.bind(this, index)}>
-//                             {child.props.title}
-//                         </li>
-//                     )}
-//                 </ul>
-//             </div>
-//             {this.renderActiveChild()}
-//         </div>;
-//     }
-// };
+const noOp = () => undefined;
 
 export default class Stack extends React.Component {
     static propTypes = {
         active: React.PropTypes.number.isRequired,
-        dispatcher: React.PropTypes.func.isRequired,
+        dispatch: React.PropTypes.func.isRequired,
+        float: React.PropTypes.func.isRequired,
         names: React.PropTypes.arrayOf(React.PropTypes.string).isRequired
     };
 
@@ -117,8 +18,54 @@ export default class Stack extends React.Component {
         theme: React.PropTypes.object.isRequired
     };
 
+    draggables = [];
+
+    componentDidMount() {
+        this.makeDraggables();
+    }
+
+    componentDidUpdate() {
+        this.unmakeDraggables(this.makeDraggables.bind(this));
+    }
+
+    componentWillUnmount() {
+        this.unmakeDraggables();
+    }
+
+    makeDraggables() {
+        for (let i = 0; i < React.Children.count(this.props.children); i++) {
+            const draggable = Draggable(ReactDOM.findDOMNode(this.refs['tab-' + i]), 5);
+            draggable.on('dragstart', this.handleDragStart.bind(this, i));
+            this.draggables.push(draggable);
+        }
+    }
+
+    unmakeDraggables(callback = noOp) {
+        if (this.draggables.length == 0) {
+            setImmediate(callback);
+        } else {
+            let destroyedCount = 0;
+            this.draggables.forEach(draggable => draggable.on('destroyed', () => {
+                if (++destroyedCount == this.draggables.length) {
+                    this.draggables = [];
+                    setImmediate(callback);
+                }
+            }));
+            this.draggables.forEach(draggable => draggable.emit('destroy'));
+        }
+    }
+
+    handleDragStart(index, event) {
+        // Remove draggable from this, and give control of it to 'above'
+        const draggable = this.draggables.splice(index, 1)[0];
+        this.props.float(index, event, draggable);
+
+        // Remove item from the stack
+        this.props.dispatch(removeTab(index));
+    }
+
     handleTabClick(index) {
-        this.props.dispatcher(updateActiveTab(index));
+        this.props.dispatch(updateActiveTab(index));
     }
 
     renderActiveChild() {
@@ -127,7 +74,7 @@ export default class Stack extends React.Component {
     }
 
     render() {
-        const {active, children, className, dispatcher, names, ...other} = this.props;
+        const {active, children, className, dispatch, float, names, ...other} = this.props;
         const {theme} = this.context;
 
         return <div className={classNames(theme['floaty-stack'], className)} {...other}>

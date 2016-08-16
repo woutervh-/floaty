@@ -1,4 +1,4 @@
-import {UPDATE_ACTIVE_TAB, UPDATE_GENERIC, UPDATE_GROW_VALUES, UPDATE_ROW, UPDATE_ROW_ITEM, UPDATE_STACK, UPDATE_STACK_ITEM} from '../constants';
+import {REMOVE_TAB, UPDATE_ACTIVE_TAB, UPDATE_GENERIC, UPDATE_GROW_VALUES, UPDATE_ROW, UPDATE_ROW_ITEM, UPDATE_STACK, UPDATE_STACK_ITEM} from '../constants';
 
 export function updateGrowValues(growValues) {
     return {
@@ -32,6 +32,13 @@ export function updateGeneric(update) {
 export function updateActiveTab(index) {
     return {
         type: UPDATE_ACTIVE_TAB,
+        index
+    };
+}
+
+export function removeTab(index) {
+    return {
+        type: REMOVE_TAB,
         index
     };
 }

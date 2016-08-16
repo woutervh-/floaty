@@ -1,4 +1,4 @@
-import {SET_PROP, UPDATE_GENERIC, UPDATE_GROW_VALUES, UPDATE_ROW, UPDATE_ROW_ITEM, UPDATE_STACK, UPDATE_STACK_ITEM, UPDATE_ACTIVE_TAB} from '../constants';
+import {REMOVE_TAB, SET_PROP, UPDATE_GENERIC, UPDATE_GROW_VALUES, UPDATE_ROW, UPDATE_ROW_ITEM, UPDATE_STACK, UPDATE_STACK_ITEM, UPDATE_ACTIVE_TAB} from '../constants';
 
 function row(state, action) {
     switch (action.type) {
@@ -26,10 +26,18 @@ function stack(state, action) {
     switch (action.type) {
         case UPDATE_ACTIVE_TAB:
             return {...state, active: action.index};
-        case UPDATE_STACK_ITEM:
+        case UPDATE_STACK_ITEM: {
             const items = [...state.items];
             items[action.index] = stackItem(items[action.index], action.update);
             return {...state, items};
+        }
+        case REMOVE_TAB: {
+            const items = [...state.items];
+            items.splice(action.index, 1);
+            const names = [...state.names];
+            names.splice(action.index, 1);
+            return {...state, items, names};
+        }
         default:
             return state;
     }
@@ -39,20 +47,6 @@ function stackItem(state, action) {
     switch (action.type) {
         case UPDATE_GENERIC:
             return generic(state, action.update);
-        default:
-            return state;
-    }
-}
-
-function propRef(state, action) {
-    switch (action.type) {
-        default:
-            return state;
-    }
-}
-
-function childRef(state, action) {
-    switch (action.type) {
         default:
             return state;
     }

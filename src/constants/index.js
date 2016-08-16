@@ -6,3 +6,4 @@ export const UPDATE_ROW_ITEM = 'UPDATE_ROW_ITEM';
 export const UPDATE_STACK = 'UPDATE_STACK';
 export const UPDATE_STACK_ITEM = 'UPDATE_STACK_ITEM';
 export const UPDATE_ACTIVE_TAB = 'UPDATE_ACTIVE_TAB';
+export const REMOVE_TAB = 'REMOVE_TAB';

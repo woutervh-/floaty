@@ -1,4 +1,4 @@
-import {REMOVE_TAB, SET_PROP, UPDATE_GENERIC, UPDATE_GROW_VALUES, UPDATE_ROW, UPDATE_ROW_ITEM, UPDATE_STACK, UPDATE_STACK_ITEM, UPDATE_ACTIVE_TAB} from '../constants';
+import {SET_LAYOUT, INSERT_TAB, REMOVE_TAB, SET_PROP, UPDATE_GENERIC, UPDATE_GROW_VALUES, UPDATE_ROW, UPDATE_ROW_ITEM, UPDATE_STACK, UPDATE_STACK_ITEM, UPDATE_ACTIVE_TAB} from '../constants';
 
 function row(state, action) {
     switch (action.type) {
@@ -26,16 +26,32 @@ function stack(state, action) {
     switch (action.type) {
         case UPDATE_ACTIVE_TAB:
             return {...state, active: action.index};
-        case UPDATE_STACK_ITEM: {
+        case UPDATE_STACK_ITEM:
+        {
             const items = [...state.items];
             items[action.index] = stackItem(items[action.index], action.update);
             return {...state, items};
         }
-        case REMOVE_TAB: {
+        case REMOVE_TAB:
+        {
             const items = [...state.items];
             items.splice(action.index, 1);
             const names = [...state.names];
             names.splice(action.index, 1);
+            if ('active' in state) {
+                // Ensure active index is in range
+                const active = Math.min(items.length - 1, state.active);
+                return {...state, active, items, names};
+            } else {
+                return {...state, items, names};
+            }
+        }
+        case INSERT_TAB:
+        {
+            const items = [...state.items];
+            items.splice(action.index, 0, action.item);
+            const names = [...state.names];
+            names.splice(action.index, 0, action.name)
             return {...state, items, names};
         }
         default:
@@ -67,6 +83,8 @@ function generic(state, action) {
             return row(state, action.update);
         case UPDATE_STACK:
             return stack(state, action.update);
+        case SET_LAYOUT:
+            return action.layout;
         default:
             return component(state, action);
     }

@@ -1,7 +1,8 @@
 import React from 'react';
+import GenericContent from './GenericContent';
 import classNames from 'classnames';
 
-export default class StackItem extends React.Component {
+export default class StackItem extends GenericContent {
     static contextTypes = {
         theme: React.PropTypes.object.isRequired
     };
@@ -10,8 +11,8 @@ export default class StackItem extends React.Component {
         const {theme} = this.context;
         const {children, className, ...other} = this.props;
 
-        return <div className={classNames(theme['floaty-stack-item'], className)} {...other}>
-            {children}
+        return <div ref="container" className={classNames(theme['floaty-stack-item'], className)} {...other}>
+            {this.transformChildren()}
         </div>;
     }
 };

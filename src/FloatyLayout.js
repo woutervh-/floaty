@@ -1,10 +1,13 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import Row from './Row';
 import RowItem from './RowItem';
 import Stack from './Stack';
 import StackFloating from './StackFloating';
 import StackItem from './StackItem';
-import {updateGeneric, updateRow, updateRowItem, updateStack, updateStackItem} from './actions';
+import {setLayout, insertTab, removeTab, updateActiveTab, updateGeneric, updateRow, updateRowItem, updateStack, updateStackItem} from './actions';
+import DomUtil from './DomUtil';
+import * as LayoutUtil from './LayoutUtil';
 
 const noOp = () => undefined;
 
@@ -23,11 +26,26 @@ export default class FloatyLayout extends React.Component {
         floating: null,
         floatingName: '',
         x: 0,
-        y: 0
+        y: 0,
+        targetIndicator: {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0
+        }
     };
 
     componentWillMount() {
-        this.unsubscribe = this.props.store.subscribe(() => this.forceUpdate());
+        const {store} = this.props;
+        this.unsubscribe = store.subscribe(() => {
+            const layout = store.getState();
+            if (LayoutUtil.isLayoutMinimal(layout)) {
+                this.forceUpdate();
+            } else {
+                const minimalLayout = LayoutUtil.minimizeLayout(layout);
+                store.dispatch(setLayout(minimalLayout));
+            }
+        });
     }
 
     componentWillUnmount() {
@@ -38,33 +56,46 @@ export default class FloatyLayout extends React.Component {
         return {theme: this.props.theme};
     }
 
-    dragStart(stackObject, index, event, draggable) {
+    dragStart(stackObject, index, event, dispatch, draggable) {
         // This will take control of a draggable
-        // Stack item will be removed from stack by stack itself
 
         document.body.classList.add(this.props.theme['floaty-unselectable']);
+
+        // Start floating the item
         this.setState({floating: stackObject.items[index], floatingName: stackObject.names[index], x: event.originalEvent.pageX, y: event.originalEvent.pageY});
-        // TODO: assimilate useless components
+        // Remove item from the stack
+        dispatch(removeTab(index));
+
         draggable.on('drag', event => {
-            this.setState({x: event.originalEvent.pageX, y: event.originalEvent.pageY});
+            const resolution = this.refs['root'].resolveDropArea({x: event.originalEvent.pageX, y: event.originalEvent.pageY});
+            const {x, y, width, height} = resolution;
+            this.setState({x: event.originalEvent.pageX, y: event.originalEvent.pageY, targetIndicator: {x, y, width, height}});
         });
-        draggable.on('dragstop', () => {
+        draggable.on('dragstop', event => {
             document.body.classList.remove(this.props.theme['floaty-unselectable']);
-            // this.resolveDrop();
-            // if drop couldn't be resolved => undo delete (add stack item back to stack)
-            // if drop was resolved => this.store.dispatch();
-            // TODO: assimilate useless components
+            // todo: invoke action is resolution was successful
+            // const drop = this.resolveDrop({x: event.originalEvent.pageX, y: event.originalEvent.pageY});
+            const resolution = this.refs['root'].resolveDropArea({x: event.originalEvent.pageX, y: event.originalEvent.pageY});
+            const drop = false;
+            console.log(resolution);
+            if (!drop) {
+                // If drop couldn't be resolved => undo delete (add stack item back to stack)
+                // dispatch(insertTab(index, this.state.floating, this.state.floatingName));
+                // dispatch(updateActiveTab(index));
+            } else {
+                // If drop was resolved => this.store.dispatch();
+            }
             this.setState({floating: null, floatingName: ''});
             draggable.emit('destroy');
         });
     }
 
-    renderGeneric(dispatch, genericObject) {
+    renderGeneric(dispatch, refAccumulator, genericObject) {
         switch (genericObject.type) {
             case 'row':
-                return this.renderRow(update => dispatch(updateRow(update)), genericObject);
+                return this.renderRow(update => dispatch(updateRow(update)), refAccumulator, genericObject);
             case 'stack':
-                return this.renderStack(update => dispatch(updateStack(update)), genericObject);
+                return this.renderStack(update => dispatch(updateStack(update)), refAccumulator, genericObject);
             case 'prop-ref':
                 return this.props.refs[genericObject.name];
             case 'child-ref':
@@ -75,24 +106,24 @@ export default class FloatyLayout extends React.Component {
         }
     }
 
-    renderRow(dispatch, rowObject) {
+    renderRow(dispatch, refAccumulator, rowObject) {
         const props = {
             dispatch,
             growValues: rowObject.growValues || [],
             ...rowObject.props
         };
-        return <Row {...props}>
-            {rowObject.items.map((rowItemObject, index) => this.renderRowItem(update => dispatch(updateRowItem(index, update)), rowItemObject, index))}
+        return <Row ref={refAccumulator.join('-')} {...props}>
+            {rowObject.items.map((rowItemObject, index) => this.renderRowItem(update => dispatch(updateRowItem(index, update)), [...refAccumulator, 'row-item-' + index], rowItemObject, index))}
         </Row>;
     }
 
-    renderRowItem(dispatch, rowItemObject, index) {
+    renderRowItem(dispatch, refAccumulator, rowItemObject, index) {
         return <RowItem key={index}>
-            {this.renderGeneric(update => dispatch(updateGeneric(update)), rowItemObject)}
+            {this.renderGeneric(update => dispatch(updateGeneric(update)), refAccumulator, rowItemObject)}
         </RowItem>;
     }
 
-    renderStack(dispatch, stackObject) {
+    renderStack(dispatch, refAccumulator, stackObject) {
         const props = {
             dispatch,
             active: stackObject.active || 0,
@@ -100,14 +131,14 @@ export default class FloatyLayout extends React.Component {
             float: this.dragStart.bind(this, stackObject),
             ...stackObject.props
         };
-        return <Stack {...props}>
-            {stackObject.items.map((stackItemObject, index) => this.renderStackItem(update => dispatch(updateStackItem(index, update)), stackItemObject, index))}
+        return <Stack ref={refAccumulator.join('-')} {...props}>
+            {stackObject.items.map((stackItemObject, index) => this.renderStackItem(update => dispatch(updateStackItem(index, update)), [...refAccumulator, 'stack-item-' + index], stackItemObject, index))}
         </Stack>;
     }
 
-    renderStackItem(dispatch, stackItemObject, index) {
+    renderStackItem(dispatch, refAccumulator, stackItemObject, index) {
         return <StackItem key={index}>
-            {this.renderGeneric(update => dispatch(updateGeneric(update)), stackItemObject)}
+            {this.renderGeneric(update => dispatch(updateGeneric(update)), refAccumulator, stackItemObject)}
         </StackItem>;
     }
 
@@ -115,20 +146,54 @@ export default class FloatyLayout extends React.Component {
         const {floating: stackItemObject, floatingName: name} = this.state;
         return <StackFloating name={name} style={{position: 'fixed', top: this.state.y, left: this.state.x, width: '20vw', height: '20vw'}}>
             <StackItem>
-                {this.renderGeneric(noOp, stackItemObject)}
+                {this.renderGeneric(noOp, ['floating'], stackItemObject)}
             </StackItem>
         </StackFloating>;
     }
 
     renderDropArea() {
         // requires sub-component to be something like:
-        // getDropArea(x, y) => (x, y, width, height, action)
+        // getDropArea(x, y) => (x, y, width, height, dispatch, resolved)
+
+        // const {x, y, width, height} = DomUtil.elementOffset(this.getRef('container'));
+        const {x, y, width, height} = this.state.targetIndicator;
+        return <div style={{position: 'fixed', top: y, left: x, width, height, backgroundColor: 'rgba(0, 0, 0, 0.25)'}}/>;
+    }
+
+    resolveGeneric(position, refAccumulator, genericObject) {
+        switch (genericObject.type) {
+            case 'row':
+                return this.resolveRow(position, refAccumulator, genericObject);
+            case 'stack':
+                return this.resolveStack(position, refAccumulator, genericObject);
+            case 'prop-ref':
+            case 'child-ref':
+            case 'component':
+            default:
+                const element = ReactDOM.findDOMNode(this.getRef(refAccumulator.join('-')));
+                const {x, y, width, height} = DomUtil.elementOffset(element);
+                if (x <= position.x && position.x <= x + width && y <= position.y && position.y <= y + height) {
+                    return refAccumulator;
+                }
+        }
+    }
+
+    resolveRow(position, refAccumulator, rowObject) {
+        return rowObject.items.map((rowItemObject, index) => this.resolveGeneric(position, [...refAccumulator, 'rowItem' + index], rowItemObject)).find(Boolean);
+    }
+
+    resolveStack(position, refAccumulator, stackObject) {
+        return stackObject.items.map((stackItemObject, index) => this.resolveGeneric(position, [...refAccumulator, 'stackItem' + index, stackItemObject])).find(Boolean);
+    }
+
+    resolveDrop(position) {
+        return this.resolveGeneric(position, ['root'], this.props.store.getState());
     }
 
     render() {
         const {refs, store, theme, ...other} = this.props;
-        return <div {...other}>
-            {this.renderGeneric(store.dispatch, store.getState())}
+        return <div ref={'container'} {...other}>
+            {this.renderGeneric(store.dispatch, ['root'], store.getState())}
             {this.state.floating && this.renderFloatingStack()}
             {this.state.floating && this.renderDropArea()}
         </div>;

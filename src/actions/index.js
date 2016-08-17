@@ -1,4 +1,4 @@
-import {REMOVE_TAB, UPDATE_ACTIVE_TAB, UPDATE_GENERIC, UPDATE_GROW_VALUES, UPDATE_ROW, UPDATE_ROW_ITEM, UPDATE_STACK, UPDATE_STACK_ITEM} from '../constants';
+import {SET_LAYOUT, NO_OPERATION, INSERT_TAB, REMOVE_TAB, UPDATE_ACTIVE_TAB, UPDATE_GENERIC, UPDATE_GROW_VALUES, UPDATE_ROW, UPDATE_ROW_ITEM, UPDATE_STACK, UPDATE_STACK_ITEM} from '../constants';
 
 export function updateGrowValues(growValues) {
     return {
@@ -43,6 +43,15 @@ export function removeTab(index) {
     };
 }
 
+export function insertTab(index, item, name) {
+    return {
+        type: INSERT_TAB,
+        index,
+        item,
+        name
+    };
+}
+
 export function updateStack(update) {
     return {
         type: UPDATE_STACK,
@@ -57,3 +66,15 @@ export function updateStackItem(index, update) {
         update
     };
 }
+
+export function noOperation() {
+    return {type: NO_OPERATION};
+}
+
+export function setLayout(layout) {
+    return {
+        type: SET_LAYOUT,
+        layout
+    };
+}
+

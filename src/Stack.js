@@ -2,7 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import Draggable from './Draggable';
-import {removeTab, updateActiveTab} from './actions';
+import DomUtil from './DomUtil';
+import {noOperation, updateActiveTab} from './actions';
 
 const noOp = () => undefined;
 
@@ -18,6 +19,8 @@ export default class Stack extends React.Component {
         theme: React.PropTypes.object.isRequired
     };
 
+    unmakeDraggablesImmediate = null;
+
     draggables = [];
 
     componentDidMount() {
@@ -30,25 +33,36 @@ export default class Stack extends React.Component {
 
     componentWillUnmount() {
         this.unmakeDraggables();
+        clearImmediate(this.unmakeDraggablesImmediate);
     }
 
     makeDraggables() {
-        for (let i = 0; i < React.Children.count(this.props.children); i++) {
-            const draggable = Draggable(ReactDOM.findDOMNode(this.refs['tab-' + i]), 5);
-            draggable.on('dragstart', this.handleDragStart.bind(this, i));
-            this.draggables.push(draggable);
+        try {
+            for (let i = 0; i < React.Children.count(this.props.children); i++) {
+                const draggable = Draggable(ReactDOM.findDOMNode(this.refs['tab-' + i]), 5);
+                draggable.on('dragstart', this.handleDragStart.bind(this, i));
+                this.draggables.push(draggable);
+            }
+        } catch (e) {
+            console.log(e);
+            console.log(this.refs);
+            console.log(this.props.children);
         }
     }
 
     unmakeDraggables(callback = noOp) {
+        if (!!this.unmakeDraggablesImmediate) {
+            clearImmediate(this.unmakeDraggablesImmediate);
+        }
+
         if (this.draggables.length == 0) {
-            setImmediate(callback);
+            this.unmakeDraggablesImmediate = setImmediate(callback);
         } else {
             let destroyedCount = 0;
             this.draggables.forEach(draggable => draggable.on('destroyed', () => {
                 if (++destroyedCount == this.draggables.length) {
                     this.draggables = [];
-                    setImmediate(callback);
+                    this.unmakeDraggablesImmediate = setImmediate(callback);
                 }
             }));
             this.draggables.forEach(draggable => draggable.emit('destroy'));
@@ -58,10 +72,7 @@ export default class Stack extends React.Component {
     handleDragStart(index, event) {
         // Remove draggable from this, and give control of it to 'above'
         const draggable = this.draggables.splice(index, 1)[0];
-        this.props.float(index, event, draggable);
-
-        // Remove item from the stack
-        this.props.dispatch(removeTab(index));
+        this.props.float(index, event, this.props.dispatch, draggable);
     }
 
     handleTabClick(index) {
@@ -70,7 +81,24 @@ export default class Stack extends React.Component {
 
     renderActiveChild() {
         const {active, children} = this.props;
-        return React.Children.toArray(children)[active];
+        return React.cloneElement(React.Children.toArray(children)[active], {ref: 'stack-item-' + active});
+    }
+
+    resolveDropArea(position) {
+        const headerElement = ReactDOM.findDOMNode(this.refs['header']);
+        const box = DomUtil.elementOffset(headerElement);
+        if (DomUtil.isWithinBox(position, box)) {
+            return {...box, action: noOperation, resolved: true};
+        } else {
+            const {active} = this.props;
+            const activeChildElement = ReactDOM.findDOMNode(this.refs['stack-item-' + active]);
+            const childBox = DomUtil.elementOffset(activeChildElement);
+            if (DomUtil.isWithinBox(position, childBox)) {
+                return this.refs['stack-item-' + active].resolveDropArea(position);
+            } else {
+                return {x: 0, y: 0, width: 0, height: 0, action: noOperation, resolved: false};
+            }
+        }
     }
 
     render() {

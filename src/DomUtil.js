@@ -8,5 +8,9 @@ export default {
             parent = parent.offsetParent;
         }
         return elementOffset;
+    },
+
+    isWithinBox(point, box) {
+        return box.x <= point.x && point.x <= box.x + box.width && box.y <= point.y && point.y <= box.y + box.height;
     }
 };

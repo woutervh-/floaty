@@ -2,7 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import RowSeparator from './RowSeparator';
-import {updateGrowValues} from './actions';
+import DomUtil from './DomUtil';
+import {noOperation, updateGrowValues} from './actions';
 
 export default class Row extends React.Component {
     static propTypes = {
@@ -73,6 +74,17 @@ export default class Row extends React.Component {
         growValues[index] = fraction * growValuesSum;
         growValues[index + 1] = (1 - fraction) * growValuesSum;
         this.props.dispatch(updateGrowValues(growValues));
+    }
+
+    resolveDropArea(position) {
+        for (let i = 0; i < React.Children.count(this.props.children); i++) {
+            const element = ReactDOM.findDOMNode(this.refs['row-item-' + i]);
+            const box = DomUtil.elementOffset(element);
+            if (DomUtil.isWithinBox(position, box)) {
+                return this.refs['row-item-' + i].resolveDropArea(position);
+            }
+        }
+        return {x: 0, y: 0, width: 0, height: 0, action: noOperation, resolved: false};
     }
 
     render() {

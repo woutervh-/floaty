@@ -5,6 +5,27 @@
     -ms-user-select: none;
 }
 
+.floaty-column {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.floaty-column-item {
+    display: block;
+    height: 0; /* height is controlled by flex-grow */
+}
+
+.floaty-column-separator {
+    background-color: black;
+    position: relative;
+    left: 0;
+    right: 0;
+    height: 1em;
+    cursor: row-resize;
+}
+
 .floaty-row {
     width: 100%;
     height: 100%;
@@ -23,7 +44,7 @@
     top: 0;
     bottom: 0;
     width: 1em;
-    cursor: e-resize;
+    cursor: col-resize;
 }
 
 .floaty-stack {

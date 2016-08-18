@@ -5,11 +5,11 @@ import Draggable from './Draggable';
 import DomUtil from './DomUtil';
 import shallowEqual from 'shallowequal';
 import {noOperation, updateActiveTab, insertTab} from './actions';
-import GenericContent from './GenericContent';
+import SplittablePanel from './SplittablePanel';
 
 const noOp = () => undefined;
 
-export default class Stack extends GenericContent {
+export default class Stack extends SplittablePanel {
     static propTypes = {
         active: React.PropTypes.number.isRequired,
         dispatch: React.PropTypes.func.isRequired,
@@ -43,16 +43,10 @@ export default class Stack extends GenericContent {
     }
 
     makeDraggables() {
-        try {
-            for (let i = 0; i < React.Children.count(this.props.children); i++) {
-                const draggable = Draggable(ReactDOM.findDOMNode(this.refs['tab-' + i]), 5);
-                draggable.on('dragstart', this.handleDragStart.bind(this, i));
-                this.draggables.push(draggable);
-            }
-        } catch (e) {
-            console.log(e);
-            console.log(this.refs);
-            console.log(this.props.children);
+        for (let i = 0; i < React.Children.count(this.props.children); i++) {
+            const draggable = Draggable(ReactDOM.findDOMNode(this.refs['tab-' + i]), 5);
+            draggable.on('dragstart', this.handleDragStart.bind(this, i));
+            this.draggables.push(draggable);
         }
     }
 

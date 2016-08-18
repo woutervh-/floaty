@@ -1,5 +1,32 @@
-import {TRANSFORM_INTO_ROW, INSERT_TAB, REMOVE_TAB, SET_PROP, UPDATE_GENERIC, UPDATE_GROW_VALUES, UPDATE_ROW, UPDATE_ROW_ITEM, UPDATE_STACK, UPDATE_STACK_ITEM, UPDATE_ACTIVE_TAB} from '../constants';
-import {minimizeRow, minimizeStack, transformToRow} from './LayoutUtil';
+import {
+    INSERT_TAB,
+    REMOVE_TAB,
+    TRANSFORM_INTO_COLUMN,
+    TRANSFORM_INTO_ROW,
+    UPDATE_ACTIVE_TAB,
+    UPDATE_COLUMN,
+    UPDATE_COLUMN_ITEM,
+    UPDATE_GENERIC,
+    UPDATE_GROW_VALUES,
+    UPDATE_ROW,
+    UPDATE_ROW_ITEM,
+    UPDATE_STACK,
+    UPDATE_STACK_ITEM
+} from '../constants';
+import {minimizeColumn, minimizeRow, minimizeStack, transformToColumn, transformToRow} from './LayoutUtil';
+
+function column(state, action) {
+    switch (action.type) {
+        case UPDATE_GROW_VALUES:
+            return {...state, growValues: action.growValues};
+        case UPDATE_COLUMN_ITEM:
+            const items = [...state.items];
+            items[action.index] = columnItem(items[action.index], action.update);
+            return {...state, items};
+        default:
+            return state;
+    }
+}
 
 function row(state, action) {
     switch (action.type) {
@@ -9,6 +36,15 @@ function row(state, action) {
             const items = [...state.items];
             items[action.index] = rowItem(items[action.index], action.update);
             return {...state, items};
+        default:
+            return state;
+    }
+}
+
+function columnItem(state, action) {
+    switch (action.type) {
+        case UPDATE_GENERIC:
+            return generic(state, action.update);
         default:
             return state;
     }
@@ -54,6 +90,8 @@ function stack(state, action) {
         }
         case TRANSFORM_INTO_ROW:
             return transformToRow(state, action.items, action.newItemsBefore);
+        case TRANSFORM_INTO_COLUMN:
+            return transformToColumn(state, action.items, action.newItemsBefore);
         default:
             return state;
     }
@@ -77,10 +115,12 @@ function component(state, action) {
 
 function generic(state, action) {
     switch (action.type) {
+        case TRANSFORM_INTO_COLUMN:
+            return transformToColumn(state, action.items, action.newItemsBefore);
         case TRANSFORM_INTO_ROW:
             return transformToRow(state, action.items, action.newItemsBefore);
-        case SET_PROP:
-            return {...state, props: {...state.props, [action.key]: action.value}};
+        case UPDATE_COLUMN:
+            return minimizeColumn(column(state, action.update));
         case UPDATE_ROW:
             return minimizeRow(row(state, action.update));
         case UPDATE_STACK:

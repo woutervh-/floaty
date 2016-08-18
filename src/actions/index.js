@@ -1,4 +1,19 @@
-import {TRANSFORM_INTO_ROW, NO_OPERATION, INSERT_TAB, REMOVE_TAB, UPDATE_ACTIVE_TAB, UPDATE_GENERIC, UPDATE_GROW_VALUES, UPDATE_ROW, UPDATE_ROW_ITEM, UPDATE_STACK, UPDATE_STACK_ITEM} from '../constants';
+import {
+    INSERT_TAB,
+    NO_OPERATION,
+    REMOVE_TAB,
+    TRANSFORM_INTO_COLUMN,
+    TRANSFORM_INTO_ROW,
+    UPDATE_ACTIVE_TAB,
+    UPDATE_COLUMN,
+    UPDATE_COLUMN_ITEM,
+    UPDATE_GENERIC,
+    UPDATE_GROW_VALUES,
+    UPDATE_ROW,
+    UPDATE_ROW_ITEM,
+    UPDATE_STACK,
+    UPDATE_STACK_ITEM
+} from '../constants';
 
 export function updateGrowValues(growValues) {
     return {
@@ -17,6 +32,21 @@ export function updateRow(update) {
 export function updateRowItem(index, update) {
     return {
         type: UPDATE_ROW_ITEM,
+        index,
+        update
+    };
+}
+
+export function updateColumn(update) {
+    return {
+        type: UPDATE_COLUMN,
+        update
+    };
+}
+
+export function updateColumnItem(index, update) {
+    return {
+        type: UPDATE_COLUMN_ITEM,
         index,
         update
     };
@@ -74,6 +104,14 @@ export function noOperation() {
 export function transformIntoRow(items, newItemsBefore) {
     return {
         type: TRANSFORM_INTO_ROW,
+        items,
+        newItemsBefore
+    };
+}
+
+export function transformIntoColumn(items, newItemsBefore) {
+    return {
+        type: TRANSFORM_INTO_COLUMN,
         items,
         newItemsBefore
     };

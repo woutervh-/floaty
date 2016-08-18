@@ -3,7 +3,7 @@ import SplittablePanel from './SplittablePanel';
 import classNames from 'classnames';
 import shallowEqual from 'shallowequal';
 
-export default class RowItem extends SplittablePanel {
+export default class ColumnItem extends SplittablePanel {
     static propTypes = {
         dispatch: React.PropTypes.func.isRequired
     };
@@ -19,12 +19,12 @@ export default class RowItem extends SplittablePanel {
     dispatch(action) {
         this.props.dispatch(action);
     }
-    
+
     render() {
         const {theme} = this.context;
         const {children, className, dispatch, ...other} = this.props;
 
-        return <div ref="container" className={classNames(theme['floaty-row-item'], className)} {...other}>
+        return <div ref="container" className={classNames(theme['floaty-column-item'], className)} {...other}>
             {this.transformChildren()}
         </div>;
     }

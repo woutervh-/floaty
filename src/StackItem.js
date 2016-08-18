@@ -1,10 +1,10 @@
 import React from 'react';
-import GenericContent from './GenericContent';
+import SplittablePanel from './SplittablePanel';
 import classNames from 'classnames';
 import shallowEqual from 'shallowequal';
 import {updateGeneric} from './actions';
 
-export default class StackItem extends GenericContent {
+export default class StackItem extends SplittablePanel {
     static propTypes = {
         dispatch: React.PropTypes.func.isRequired
     };

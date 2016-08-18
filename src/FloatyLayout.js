@@ -1,18 +1,18 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import Column from './Column';
+import ColumnItem from './ColumnItem';
 import Row from './Row';
 import RowItem from './RowItem';
 import Stack from './Stack';
 import StackFloating from './StackFloating';
 import StackItem from './StackItem';
-import {setLayout, insertTab, removeTab, updateActiveTab, updateGeneric, updateRow, updateRowItem, updateStack, updateStackItem} from './actions';
-import DomUtil from './DomUtil';
-import GenericContent from './GenericContent';
+import {removeTab, updateGeneric, updateRow, updateRowItem, updateColumn, updateColumnItem, updateStack, updateStackItem} from './actions';
+import SplittablePanel from './SplittablePanel';
 import shallowEqual from 'shallowequal';
 
 const noOp = () => undefined;
 
-export default class FloatyLayout extends GenericContent {
+export default class FloatyLayout extends SplittablePanel {
     static propTypes = {
         refs: React.PropTypes.object,
         store: React.PropTypes.any.isRequired,
@@ -53,6 +53,8 @@ export default class FloatyLayout extends GenericContent {
     getChildContext() {
         return {theme: this.props.theme};
     }
+
+    // todo: implement dispatch() from SplittablePanel
 
     resolveDropArea(position) {
         if ('root' in this.refs) {
@@ -95,6 +97,8 @@ export default class FloatyLayout extends GenericContent {
 
     renderGeneric(dispatch, refAccumulator, genericObject) {
         switch (genericObject.type) {
+            case 'column':
+                return this.renderColumn(update => dispatch(updateColumn(update)), refAccumulator, genericObject);
             case 'row':
                 return this.renderRow(update => dispatch(updateRow(update)), refAccumulator, genericObject);
             case 'stack':
@@ -107,6 +111,23 @@ export default class FloatyLayout extends GenericContent {
             default:
                 return genericObject.content;
         }
+    }
+
+    renderColumn(dispatch, refAccumulator, columnObject) {
+        const props = {
+            dispatch,
+            growValues: columnObject.growValues || Array(columnObject.items.length).fill(1),
+            ...columnObject.props
+        };
+        return <Column ref={refAccumulator.join('-')} {...props}>
+            {columnObject.items.map((columnItemObject, index) => this.renderColumnItem(update => dispatch(updateColumnItem(index, update)), [...refAccumulator, 'column-item-' + index], columnItemObject, index))}
+        </Column>;
+    }
+
+    renderColumnItem(dispatch, refAccumulator, columnItemObject, index) {
+        return <ColumnItem dispatch={dispatch} key={index}>
+            {this.renderGeneric(update => dispatch(updateGeneric(update)), refAccumulator, columnItemObject)}
+        </ColumnItem>;
     }
 
     renderRow(dispatch, refAccumulator, rowObject) {

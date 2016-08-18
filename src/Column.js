@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
-import RowSeparator from './RowSeparator';
+import ColumnSeparator from './ColumnSeparator';
 import DomUtil from './DomUtil';
 import shallowEqual from 'shallowequal';
 import {noOperation, updateGrowValues} from './actions';
 
-export default class Row extends React.Component {
+export default class Column extends React.Component {
     static propTypes = {
         dispatch: React.PropTypes.func.isRequired,
         growValues: React.PropTypes.array.isRequired
@@ -20,45 +20,45 @@ export default class Row extends React.Component {
         return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContent);
     }
 
-    getWidthForRowItemIndex(index) {
-        return this.getWidthForRowItem(ReactDOM.findDOMNode(this.refs['row-item-' + index]));
+    getHeightForColumnItemIndex(index) {
+        return this.getHeightForColumnItem(ReactDOM.findDOMNode(this.refs['column-item-' + index]));
     }
 
-    getWidthForRowItem(rowItem) {
+    getHeightForColumnItem(columnItem) {
         const regExp = /^(\d+(\.\d+)?)px$/;
-        return parseFloat(window.getComputedStyle(rowItem).getPropertyValue('width').match(regExp)[1]);
+        return parseFloat(window.getComputedStyle(columnItem).getPropertyValue('height').match(regExp)[1]);
     }
 
     getBoundsForSeparator(index) {
-        const widthA = this.getWidthForRowItemIndex(index);
-        const widthB = this.getWidthForRowItemIndex(index + 1);
-        return {min: -widthA, max: widthB};
+        const heightA = this.getHeightForColumnItemIndex(index);
+        const heightB = this.getHeightForColumnItemIndex(index + 1);
+        return {min: -heightA, max: heightB};
     }
 
-    renderRowItems(children) {
+    renderColumnItems(children) {
         const {growValues} = this.props;
         const result = [];
-        const rows = React.Children.toArray(children);
+        const columns = React.Children.toArray(children);
         let growValuesSum = 0;
-        for (let i = 0; i < rows.length; i++) {
+        for (let i = 0; i < columns.length; i++) {
             growValuesSum += growValues[i];
         }
-        for (let i = 0; i < rows.length; i++) {
+        for (let i = 0; i < columns.length; i++) {
             if (i > 0) {
-                result.push(<RowSeparator getBounds={this.getBoundsForSeparator.bind(this, i - 1)} onPositionChange={this.handlePositionChange.bind(this, i - 1)}/>);
+                result.push(<ColumnSeparator getBounds={this.getBoundsForSeparator.bind(this, i - 1)} onPositionChange={this.handlePositionChange.bind(this, i - 1)}/>);
             }
-            const rowItem = rows[i];
+            const columnItem = columns[i];
             const growValue = growValues[i] / growValuesSum;
-            const style = 'props' in rowItem && 'style' in rowItem.props && rowItem.props.style || {};
-            const element = React.cloneElement(rowItem, {ref: 'row-item-' + i, style: {...style, flexGrow: growValue}});
+            const style = 'props' in columnItem && 'style' in columnItem.props && columnItem.props.style || {};
+            const element = React.cloneElement(columnItem, {ref: 'column-item-' + i, style: {...style, flexGrow: growValue}});
             result.push(element);
         }
         return result;
     }
 
     handlePositionChange(index, offset) {
-        const widthA = this.getWidthForRowItemIndex(index);
-        const widthB = this.getWidthForRowItemIndex(index + 1);
+        const widthA = this.getHeightForColumnItemIndex(index);
+        const widthB = this.getHeightForColumnItemIndex(index + 1);
         const widthSum = widthA + widthB;
         const growValuesSum = this.props.growValues[index] + this.props.growValues[index + 1];
         const fraction = (widthA + offset) / widthSum;
@@ -70,10 +70,10 @@ export default class Row extends React.Component {
 
     resolveDropArea(position) {
         for (let i = 0; i < React.Children.count(this.props.children); i++) {
-            const element = ReactDOM.findDOMNode(this.refs['row-item-' + i]);
+            const element = ReactDOM.findDOMNode(this.refs['column-item-' + i]);
             const box = DomUtil.elementOffset(element);
             if (DomUtil.isWithinBox(position, box)) {
-                return this.refs['row-item-' + i].resolveDropArea(position);
+                return this.refs['column-item-' + i].resolveDropArea(position);
             }
         }
         return {x: 0, y: 0, width: 0, height: 0, dispatch: noOperation, resolved: false};
@@ -83,8 +83,8 @@ export default class Row extends React.Component {
         const {children, className, dispatch, growValues, ...other} = this.props;
         const {theme} = this.context;
 
-        return <div className={classNames(theme['floaty-row'], className)} {...other}>
-            {this.renderRowItems(children).map((item, index) => React.cloneElement(item, {key: index}))}
+        return <div className={classNames(theme['floaty-column'], className)} {...other}>
+            {this.renderColumnItems(children).map((item, index) => React.cloneElement(item, {key: index}))}
         </div>;
     }
 };

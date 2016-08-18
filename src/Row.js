@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import RowSeparator from './RowSeparator';
 import DomUtil from './DomUtil';
+import shallowEqual from 'shallowequal';
 import {noOperation, updateGrowValues} from './actions';
 
 export default class Row extends React.Component {
@@ -15,22 +16,8 @@ export default class Row extends React.Component {
         theme: React.PropTypes.object.isRequired
     };
 
-    componentWillMount() {
-        this.resizeRowValues(React.Children.count(this.props.children));
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (React.Children.count(nextProps.children) != this.props.growValues.length) {
-            this.resizeRowValues(React.Children.count(nextProps.children));
-        }
-    }
-
-    resizeRowValues(length) {
-        const growValues = [];
-        for (let i = 0; i < length; i++) {
-            growValues.push(i < this.props.growValues.length ? this.props.growValues[i] : 1);
-        }
-        this.props.dispatch(updateGrowValues(growValues));
+    shouldComponentUpdate(nextProps, nextState, nextContent) {
+        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContent);
     }
 
     getWidthForRowItemIndex(index) {
@@ -84,7 +71,7 @@ export default class Row extends React.Component {
                 return this.refs['row-item-' + i].resolveDropArea(position);
             }
         }
-        return {x: 0, y: 0, width: 0, height: 0, action: noOperation, resolved: false};
+        return {x: 0, y: 0, width: 0, height: 0, dispatch: noOperation, resolved: false};
     }
 
     render() {

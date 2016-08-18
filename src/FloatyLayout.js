@@ -7,11 +7,12 @@ import StackFloating from './StackFloating';
 import StackItem from './StackItem';
 import {setLayout, insertTab, removeTab, updateActiveTab, updateGeneric, updateRow, updateRowItem, updateStack, updateStackItem} from './actions';
 import DomUtil from './DomUtil';
-import * as LayoutUtil from './LayoutUtil';
+import GenericContent from './GenericContent';
+import shallowEqual from 'shallowequal';
 
 const noOp = () => undefined;
 
-export default class FloatyLayout extends React.Component {
+export default class FloatyLayout extends GenericContent {
     static propTypes = {
         refs: React.PropTypes.object,
         store: React.PropTypes.any.isRequired,
@@ -21,6 +22,10 @@ export default class FloatyLayout extends React.Component {
     static childContextTypes = {
         theme: React.PropTypes.object.isRequired
     };
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.state, nextState);
+    }
 
     state = {
         floating: null,
@@ -32,20 +37,13 @@ export default class FloatyLayout extends React.Component {
             y: 0,
             width: 0,
             height: 0
-        }
+        },
+        showTargetIndicator: false
     };
 
     componentWillMount() {
         const {store} = this.props;
-        this.unsubscribe = store.subscribe(() => {
-            const layout = store.getState();
-            if (LayoutUtil.isLayoutMinimal(layout)) {
-                this.forceUpdate();
-            } else {
-                const minimalLayout = LayoutUtil.minimizeLayout(layout);
-                store.dispatch(setLayout(minimalLayout));
-            }
-        });
+        this.unsubscribe = store.subscribe(() => this.forceUpdate());
     }
 
     componentWillUnmount() {
@@ -56,10 +54,18 @@ export default class FloatyLayout extends React.Component {
         return {theme: this.props.theme};
     }
 
+    resolveDropArea(position) {
+        if ('root' in this.refs) {
+            return this.refs['root'].resolveDropArea(position);
+        } else {
+            return this.split(position);
+        }
+    }
+
     dragStart(stackObject, index, event, dispatch, draggable) {
         // This will take control of a draggable
-
-        document.body.classList.add(this.props.theme['floaty-unselectable']);
+        const {theme} = this.props;
+        document.body.classList.add(theme['floaty-unselectable']);
 
         // Start floating the item
         this.setState({floating: stackObject.items[index], floatingName: stackObject.names[index], x: event.originalEvent.pageX, y: event.originalEvent.pageY});
@@ -67,23 +73,20 @@ export default class FloatyLayout extends React.Component {
         dispatch(removeTab(index));
 
         draggable.on('drag', event => {
-            const resolution = this.refs['root'].resolveDropArea({x: event.originalEvent.pageX, y: event.originalEvent.pageY});
-            const {x, y, width, height} = resolution;
-            this.setState({x: event.originalEvent.pageX, y: event.originalEvent.pageY, targetIndicator: {x, y, width, height}});
+            const resolution = this.resolveDropArea({x: event.originalEvent.pageX, y: event.originalEvent.pageY});
+            const {x, y, width, height, resolved} = resolution;
+            if (resolved) {
+                this.setState({x: event.originalEvent.pageX, y: event.originalEvent.pageY, targetIndicator: {x, y, width, height}, showTargetIndicator: true});
+            } else {
+                this.setState({x: event.originalEvent.pageX, y: event.originalEvent.pageY, showTargetIndicator: false});
+            }
         });
         draggable.on('dragstop', event => {
-            document.body.classList.remove(this.props.theme['floaty-unselectable']);
-            // todo: invoke action is resolution was successful
-            // const drop = this.resolveDrop({x: event.originalEvent.pageX, y: event.originalEvent.pageY});
-            const resolution = this.refs['root'].resolveDropArea({x: event.originalEvent.pageX, y: event.originalEvent.pageY});
-            const drop = false;
-            console.log(resolution);
-            if (!drop) {
-                // If drop couldn't be resolved => undo delete (add stack item back to stack)
-                // dispatch(insertTab(index, this.state.floating, this.state.floatingName));
-                // dispatch(updateActiveTab(index));
-            } else {
-                // If drop was resolved => this.store.dispatch();
+            document.body.classList.remove(theme['floaty-unselectable']);
+            const resolution = this.resolveDropArea({x: event.originalEvent.pageX, y: event.originalEvent.pageY});
+            if (resolution.resolved) {
+                const {store} = this.props;
+                resolution.dispatch(this.state.floating, this.state.floatingName);
             }
             this.setState({floating: null, floatingName: ''});
             draggable.emit('destroy');
@@ -109,7 +112,7 @@ export default class FloatyLayout extends React.Component {
     renderRow(dispatch, refAccumulator, rowObject) {
         const props = {
             dispatch,
-            growValues: rowObject.growValues || [],
+            growValues: rowObject.growValues || Array(rowObject.items.length).fill(1),
             ...rowObject.props
         };
         return <Row ref={refAccumulator.join('-')} {...props}>
@@ -118,7 +121,7 @@ export default class FloatyLayout extends React.Component {
     }
 
     renderRowItem(dispatch, refAccumulator, rowItemObject, index) {
-        return <RowItem key={index}>
+        return <RowItem dispatch={dispatch} key={index}>
             {this.renderGeneric(update => dispatch(updateGeneric(update)), refAccumulator, rowItemObject)}
         </RowItem>;
     }
@@ -137,57 +140,27 @@ export default class FloatyLayout extends React.Component {
     }
 
     renderStackItem(dispatch, refAccumulator, stackItemObject, index) {
-        return <StackItem key={index}>
+        return <StackItem dispatch={dispatch} key={index}>
             {this.renderGeneric(update => dispatch(updateGeneric(update)), refAccumulator, stackItemObject)}
         </StackItem>;
     }
 
     renderFloatingStack() {
         const {floating: stackItemObject, floatingName: name} = this.state;
-        return <StackFloating name={name} style={{position: 'fixed', top: this.state.y, left: this.state.x, width: '20vw', height: '20vw'}}>
-            <StackItem>
+        return <StackFloating name={name} x={this.state.x} y={this.state.y}>
+            <StackItem dispatch={noOp}>
                 {this.renderGeneric(noOp, ['floating'], stackItemObject)}
             </StackItem>
         </StackFloating>;
     }
 
     renderDropArea() {
-        // requires sub-component to be something like:
-        // getDropArea(x, y) => (x, y, width, height, dispatch, resolved)
-
-        // const {x, y, width, height} = DomUtil.elementOffset(this.getRef('container'));
-        const {x, y, width, height} = this.state.targetIndicator;
-        return <div style={{position: 'fixed', top: y, left: x, width, height, backgroundColor: 'rgba(0, 0, 0, 0.25)'}}/>;
-    }
-
-    resolveGeneric(position, refAccumulator, genericObject) {
-        switch (genericObject.type) {
-            case 'row':
-                return this.resolveRow(position, refAccumulator, genericObject);
-            case 'stack':
-                return this.resolveStack(position, refAccumulator, genericObject);
-            case 'prop-ref':
-            case 'child-ref':
-            case 'component':
-            default:
-                const element = ReactDOM.findDOMNode(this.getRef(refAccumulator.join('-')));
-                const {x, y, width, height} = DomUtil.elementOffset(element);
-                if (x <= position.x && position.x <= x + width && y <= position.y && position.y <= y + height) {
-                    return refAccumulator;
-                }
+        const {theme} = this.props;
+        const {showTargetIndicator} = this.state;
+        if (showTargetIndicator) {
+            const {x, y, width, height} = this.state.targetIndicator;
+            return <div className={theme['floaty-target-indicator']} style={{top: y, left: x, width, height}}/>;
         }
-    }
-
-    resolveRow(position, refAccumulator, rowObject) {
-        return rowObject.items.map((rowItemObject, index) => this.resolveGeneric(position, [...refAccumulator, 'rowItem' + index], rowItemObject)).find(Boolean);
-    }
-
-    resolveStack(position, refAccumulator, stackObject) {
-        return stackObject.items.map((stackItemObject, index) => this.resolveGeneric(position, [...refAccumulator, 'stackItem' + index, stackItemObject])).find(Boolean);
-    }
-
-    resolveDrop(position) {
-        return this.resolveGeneric(position, ['root'], this.props.store.getState());
     }
 
     render() {

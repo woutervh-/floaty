@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
+import shallowEqual from 'shallowequal';
 import Draggable from './Draggable';
 
 export default class RowSeparator extends React.Component {
@@ -17,8 +18,8 @@ export default class RowSeparator extends React.Component {
         offset: 0
     };
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return this.state.offset != nextState.offset;
+    shouldComponentUpdate(nextProps, nextState, nextContent) {
+        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.state, nextState) || !shallowEqual(this.context, nextContent);
     }
 
     componentDidMount() {

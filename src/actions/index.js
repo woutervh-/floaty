@@ -1,4 +1,4 @@
-import {SET_LAYOUT, NO_OPERATION, INSERT_TAB, REMOVE_TAB, UPDATE_ACTIVE_TAB, UPDATE_GENERIC, UPDATE_GROW_VALUES, UPDATE_ROW, UPDATE_ROW_ITEM, UPDATE_STACK, UPDATE_STACK_ITEM} from '../constants';
+import {TRANSFORM_INTO_ROW, NO_OPERATION, INSERT_TAB, REMOVE_TAB, UPDATE_ACTIVE_TAB, UPDATE_GENERIC, UPDATE_GROW_VALUES, UPDATE_ROW, UPDATE_ROW_ITEM, UPDATE_STACK, UPDATE_STACK_ITEM} from '../constants';
 
 export function updateGrowValues(growValues) {
     return {
@@ -71,10 +71,10 @@ export function noOperation() {
     return {type: NO_OPERATION};
 }
 
-export function setLayout(layout) {
+export function transformIntoRow(items, newItemsBefore) {
     return {
-        type: SET_LAYOUT,
-        layout
+        type: TRANSFORM_INTO_ROW,
+        items,
+        newItemsBefore
     };
 }
-

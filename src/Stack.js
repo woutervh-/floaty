@@ -3,11 +3,13 @@ import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import Draggable from './Draggable';
 import DomUtil from './DomUtil';
-import {noOperation, updateActiveTab} from './actions';
+import shallowEqual from 'shallowequal';
+import {noOperation, updateActiveTab, insertTab} from './actions';
+import GenericContent from './GenericContent';
 
 const noOp = () => undefined;
 
-export default class Stack extends React.Component {
+export default class Stack extends GenericContent {
     static propTypes = {
         active: React.PropTypes.number.isRequired,
         dispatch: React.PropTypes.func.isRequired,
@@ -22,6 +24,10 @@ export default class Stack extends React.Component {
     unmakeDraggablesImmediate = null;
 
     draggables = [];
+
+    shouldComponentUpdate(nextProps, nextState, nextContent) {
+        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContent);
+    }
 
     componentDidMount() {
         this.makeDraggables();
@@ -84,20 +90,32 @@ export default class Stack extends React.Component {
         return React.cloneElement(React.Children.toArray(children)[active], {ref: 'stack-item-' + active});
     }
 
+    dispatch(action) {
+        this.props.dispatch(action);
+    }
+
     resolveDropArea(position) {
         const headerElement = ReactDOM.findDOMNode(this.refs['header']);
-        const box = DomUtil.elementOffset(headerElement);
-        if (DomUtil.isWithinBox(position, box)) {
-            return {...box, action: noOperation, resolved: true};
+        const headerBox = DomUtil.elementOffset(headerElement);
+        if (DomUtil.isWithinBox(position, headerBox)) {
+            const {dispatch} = this.props;
+            return {...headerBox, dispatch: (item, name) => dispatch(insertTab(React.Children.count(this.props.children), item, name)), resolved: true};
         } else {
-            const {active} = this.props;
-            const activeChildElement = ReactDOM.findDOMNode(this.refs['stack-item-' + active]);
-            const childBox = DomUtil.elementOffset(activeChildElement);
-            if (DomUtil.isWithinBox(position, childBox)) {
-                return this.refs['stack-item-' + active].resolveDropArea(position);
+            const containerElement = ReactDOM.findDOMNode(this.refs['container']);
+            const containerBox = DomUtil.elementOffset(containerElement);
+            if (DomUtil.isWithinBox(position, containerBox)) {
+                return this.split(position);
             } else {
-                return {x: 0, y: 0, width: 0, height: 0, action: noOperation, resolved: false};
+                return {x: 0, y: 0, width: 0, height: 0, dispatch: noOperation, resolved: false};
             }
+            // const {active} = this.props;
+            // const childElement = ReactDOM.findDOMNode(this.refs['stack-item-' + active]);
+            // const childBox = DomUtil.elementOffset(childElement);
+            // if (DomUtil.isWithinBox(position, childBox)) {
+            //     return this.refs['stack-item-' + active].resolveDropArea(position);
+            // } else {
+            //     return {x: 0, y: 0, width: 0, height: 0, dispatch: noOperation, resolved: false};
+            // }
         }
     }
 
@@ -105,7 +123,7 @@ export default class Stack extends React.Component {
         const {active, children, className, dispatch, float, names, ...other} = this.props;
         const {theme} = this.context;
 
-        return <div className={classNames(theme['floaty-stack'], className)} {...other}>
+        return <div ref="container" className={classNames(theme['floaty-stack'], className)} {...other}>
             <div ref="header" className={theme['floaty-stack-header']}>
                 <ul className={theme['floaty-stack-header-tabs']}>
                     {React.Children.map(this.props.children, (child, index) =>

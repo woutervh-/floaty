@@ -9,4 +9,4 @@ export const UPDATE_ACTIVE_TAB = 'UPDATE_ACTIVE_TAB';
 export const REMOVE_TAB = 'REMOVE_TAB';
 export const INSERT_TAB = 'INSERT_TAB';
 export const NO_OPERATION = 'NO_OPERATION';
-export const SET_LAYOUT = 'SET_LAYOUT';
+export const TRANSFORM_INTO_ROW = 'TRANSFORM_INTO_ROW';

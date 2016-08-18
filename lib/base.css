@@ -33,6 +33,12 @@
     flex-direction: column;
 }
 
+.floaty-stack-floating {
+    position: fixed;
+    width: 20vw;
+    height: 20vw;
+}
+
 .floaty-stack-header {
     flex-basis: 1em;
     display: block;
@@ -60,4 +66,9 @@
     display: block;
     height: 0; /* height is controlled by flex-grow */
     flex-grow: 1; /* stretch to full stack height */
+}
+
+.floaty-target-indicator {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.25);
 }

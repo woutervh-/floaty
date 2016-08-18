@@ -1,21 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Row from './Row';
-import Stack from './Stack';
 import DomUtil from './DomUtil';
-import {noOperation} from './actions';
+import {noOperation, transformIntoRow} from './actions';
 
 export default class GenericContent extends React.Component {
+    dispatch(action) {
+        throw new Error('This method is abstract');
+    }
+
     transformChildren() {
         const {children} = this.props;
         if (React.Children.count(children) == 1) {
             const child = React.Children.toArray(children)[0];
-            switch (child.type) {
-                case Row:
-                case Stack:
-                    return React.cloneElement(child, {ref: 'content'});
-                default:
-                    return children;
+            if (React.isValidElement(child)) {
+                return React.cloneElement(child, {ref: 'content'});
+            } else {
+                return children;
             }
         } else {
             return children;
@@ -30,31 +30,29 @@ export default class GenericContent extends React.Component {
         const topBox = {...box, x: box.x + box.width * 0.2, width: box.width * 0.6, height: box.height * 0.5};
         const bottomBox = {...box, x: box.x + box.width * 0.2, width: box.width * 0.6, y: box.y + box.height * 0.5, height: box.height * 0.5};
         if (DomUtil.isWithinBox(position, leftBox)) {
-            return {...box, width: box.width / 2, action: noOperation, resolved: true};
+            // Make row here: floating content to the left, original content to the right
+            return {...box, width: box.width / 2, dispatch: (item, name) => this.dispatch(transformIntoRow([{type: 'stack', names: [name], items: [item]}], true)), resolved: true};
         }
         if (DomUtil.isWithinBox(position, rightBox)) {
-            return {...box, x: box.x + box.width / 2, width: box.width / 2, action: noOperation, resolved: true};
+            return {...box, x: box.x + box.width / 2, width: box.width / 2, dispatch: noOperation, resolved: true};
         }
         if (DomUtil.isWithinBox(position, topBox)) {
-            return {...box, height: box.height / 2, action: noOperation, resolved: true};
+            return {...box, height: box.height / 2, dispatch: noOperation, resolved: true};
         }
         if (DomUtil.isWithinBox(position, bottomBox)) {
-            return {...box, y: box.y + box.height / 2, height: box.height / 2, action: noOperation, resolved: true};
+            return {...box, y: box.y + box.height / 2, height: box.height / 2, dispatch: noOperation, resolved: true};
         }
-        throw new Error('Hmm...');
+        return {x: 0, y: 0, width: 0, height: 0, dispatch: noOperation, resolved: false};
     }
 
     resolveDropArea(position) {
         const {children} = this.props;
         if (React.Children.count(children) == 1) {
-            const {type} = React.Children.toArray(children)[0];
-            switch (type) {
-                case Row:
-                case Stack:
-                    return this.refs['content'].resolveDropArea(position);
-                default:
-                    // We were passed content
-                    return this.split(position);
+            if ('resolveDropArea' in this.refs['content']) {
+                return this.refs['content'].resolveDropArea(position);
+            } else {
+                // We were passed content
+                return this.split(position);
             }
         } else {
             // We were passed multiple children by the user - there is no Row/Stack inside here, just content

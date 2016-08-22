@@ -106,13 +106,6 @@ function stackItem(state, action) {
     }
 }
 
-function component(state, action) {
-    switch (action.type) {
-        default:
-            return state;
-    }
-}
-
 function generic(state, action) {
     switch (action.type) {
         case FLOATY_TRANSFORM_INTO_COLUMN:
@@ -126,7 +119,7 @@ function generic(state, action) {
         case FLOATY_UPDATE_STACK:
             return minimizeStack(stack(state, action.update));
         default:
-            return component(state, action);
+            return state;
     }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "floaty",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Floatable dockable panels in React",
   "main": "lib/index.js",
   "repository": {
@@ -16,7 +16,16 @@
     "email": "woutervh@gmail.com",
     "url": "https://github.com/woutervh-/"
   },
-  "keywords": ["floaty", "react", "dockable", "panels", "ui", "draggable", "windows", "layout"],
+  "keywords": [
+    "floaty",
+    "react",
+    "dockable",
+    "panels",
+    "ui",
+    "draggable",
+    "windows",
+    "layout"
+  ],
   "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.10.1",

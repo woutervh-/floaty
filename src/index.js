@@ -1,4 +1,4 @@
-import FloatyLayout from './FloatyLayout';
+import Floaty from './Floaty';
 import floatyReducer from './reducers';
 
-export {FloatyLayout, floatyReducer};
+export {Floaty, floatyReducer};

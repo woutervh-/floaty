@@ -12,10 +12,11 @@ import shallowEqual from 'shallowequal';
 
 const noOp = () => undefined;
 
-export default class FloatyLayout extends SplittablePanel {
+export default class Floaty extends SplittablePanel {
     static propTypes = {
         refs: React.PropTypes.object,
-        store: React.PropTypes.any.isRequired,
+        dispatch: React.PropTypes.func.isRequired,
+        layout: React.PropTypes.object.isRequired,
         theme: React.PropTypes.object.isRequired
     };
 
@@ -40,15 +41,6 @@ export default class FloatyLayout extends SplittablePanel {
         },
         showTargetIndicator: false
     };
-
-    componentWillMount() {
-        const {store} = this.props;
-        this.unsubscribe = store.subscribe(() => this.forceUpdate());
-    }
-
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
 
     getChildContext() {
         return {theme: this.props.theme};
@@ -87,7 +79,6 @@ export default class FloatyLayout extends SplittablePanel {
             document.body.classList.remove(theme['floaty-unselectable']);
             const resolution = this.resolveDropArea({x: event.originalEvent.pageX, y: event.originalEvent.pageY});
             if (resolution.resolved) {
-                const {store} = this.props;
                 resolution.dispatch(this.state.floating, this.state.floatingName);
             }
             this.setState({floating: null, floatingName: ''});
@@ -185,9 +176,9 @@ export default class FloatyLayout extends SplittablePanel {
     }
 
     render() {
-        const {refs, store, theme, ...other} = this.props;
+        const {refs, dispatch, layout, theme, ...other} = this.props;
         return <div ref={'container'} {...other}>
-            {this.renderGeneric(store.dispatch, ['root'], store.getState())}
+            {this.renderGeneric(dispatch, ['root'], layout)}
             {this.state.floating && this.renderFloatingStack()}
             {this.state.floating && this.renderDropArea()}
         </div>;

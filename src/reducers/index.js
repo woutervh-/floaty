@@ -1,25 +1,25 @@
 import {
-    INSERT_TAB,
-    REMOVE_TAB,
-    TRANSFORM_INTO_COLUMN,
-    TRANSFORM_INTO_ROW,
-    UPDATE_ACTIVE_TAB,
-    UPDATE_COLUMN,
-    UPDATE_COLUMN_ITEM,
-    UPDATE_GENERIC,
-    UPDATE_GROW_VALUES,
-    UPDATE_ROW,
-    UPDATE_ROW_ITEM,
-    UPDATE_STACK,
-    UPDATE_STACK_ITEM
+    FLOATY_INSERT_TAB,
+    FLOATY_REMOVE_TAB,
+    FLOATY_TRANSFORM_INTO_COLUMN,
+    FLOATY_TRANSFORM_INTO_ROW,
+    FLOATY_UPDATE_ACTIVE_TAB,
+    FLOATY_UPDATE_COLUMN,
+    FLOATY_UPDATE_COLUMN_ITEM,
+    FLOATY_UPDATE_GENERIC,
+    FLOATY_UPDATE_GROW_VALUES,
+    FLOATY_UPDATE_ROW,
+    FLOATY_UPDATE_ROW_ITEM,
+    FLOATY_UPDATE_STACK,
+    FLOATY_UPDATE_STACK_ITEM
 } from '../constants';
 import {minimizeColumn, minimizeRow, minimizeStack, transformToColumn, transformToRow} from './LayoutUtil';
 
 function column(state, action) {
     switch (action.type) {
-        case UPDATE_GROW_VALUES:
+        case FLOATY_UPDATE_GROW_VALUES:
             return {...state, growValues: action.growValues};
-        case UPDATE_COLUMN_ITEM:
+        case FLOATY_UPDATE_COLUMN_ITEM:
             const items = [...state.items];
             items[action.index] = columnItem(items[action.index], action.update);
             return {...state, items};
@@ -30,9 +30,9 @@ function column(state, action) {
 
 function row(state, action) {
     switch (action.type) {
-        case UPDATE_GROW_VALUES:
+        case FLOATY_UPDATE_GROW_VALUES:
             return {...state, growValues: action.growValues};
-        case UPDATE_ROW_ITEM:
+        case FLOATY_UPDATE_ROW_ITEM:
             const items = [...state.items];
             items[action.index] = rowItem(items[action.index], action.update);
             return {...state, items};
@@ -43,7 +43,7 @@ function row(state, action) {
 
 function columnItem(state, action) {
     switch (action.type) {
-        case UPDATE_GENERIC:
+        case FLOATY_UPDATE_GENERIC:
             return generic(state, action.update);
         default:
             return state;
@@ -52,7 +52,7 @@ function columnItem(state, action) {
 
 function rowItem(state, action) {
     switch (action.type) {
-        case UPDATE_GENERIC:
+        case FLOATY_UPDATE_GENERIC:
             return generic(state, action.update);
         default:
             return state;
@@ -61,14 +61,14 @@ function rowItem(state, action) {
 
 function stack(state, action) {
     switch (action.type) {
-        case UPDATE_ACTIVE_TAB:
+        case FLOATY_UPDATE_ACTIVE_TAB:
             return {...state, active: action.index};
-        case UPDATE_STACK_ITEM: {
+        case FLOATY_UPDATE_STACK_ITEM: {
             const items = [...state.items];
             items[action.index] = stackItem(items[action.index], action.update);
             return {...state, items};
         }
-        case REMOVE_TAB: {
+        case FLOATY_REMOVE_TAB: {
             const items = [...state.items];
             items.splice(action.index, 1);
             const names = [...state.names];
@@ -81,16 +81,16 @@ function stack(state, action) {
                 return {...state, items, names};
             }
         }
-        case INSERT_TAB: {
+        case FLOATY_INSERT_TAB: {
             const items = [...state.items];
             items.splice(action.index, 0, action.item);
             const names = [...state.names];
             names.splice(action.index, 0, action.name)
             return {...state, items, names};
         }
-        case TRANSFORM_INTO_ROW:
+        case FLOATY_TRANSFORM_INTO_ROW:
             return transformToRow(state, action.items, action.newItemsBefore);
-        case TRANSFORM_INTO_COLUMN:
+        case FLOATY_TRANSFORM_INTO_COLUMN:
             return transformToColumn(state, action.items, action.newItemsBefore);
         default:
             return state;
@@ -99,7 +99,7 @@ function stack(state, action) {
 
 function stackItem(state, action) {
     switch (action.type) {
-        case UPDATE_GENERIC:
+        case FLOATY_UPDATE_GENERIC:
             return generic(state, action.update);
         default:
             return state;
@@ -115,15 +115,15 @@ function component(state, action) {
 
 function generic(state, action) {
     switch (action.type) {
-        case TRANSFORM_INTO_COLUMN:
+        case FLOATY_TRANSFORM_INTO_COLUMN:
             return transformToColumn(state, action.items, action.newItemsBefore);
-        case TRANSFORM_INTO_ROW:
+        case FLOATY_TRANSFORM_INTO_ROW:
             return transformToRow(state, action.items, action.newItemsBefore);
-        case UPDATE_COLUMN:
+        case FLOATY_UPDATE_COLUMN:
             return minimizeColumn(column(state, action.update));
-        case UPDATE_ROW:
+        case FLOATY_UPDATE_ROW:
             return minimizeRow(row(state, action.update));
-        case UPDATE_STACK:
+        case FLOATY_UPDATE_STACK:
             return minimizeStack(stack(state, action.update));
         default:
             return component(state, action);

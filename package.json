@@ -16,6 +16,7 @@
     "email": "woutervh@gmail.com",
     "url": "https://github.com/woutervh-/"
   },
+  "keywords": ["floaty", "react", "dockable", "panels", "ui", "draggable", "windows", "layout"],
   "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.10.1",

@@ -1,13 +1,21 @@
 {
   "name": "floaty",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Floatable dockable panels in React",
   "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/woutervh-/floaty.git"
+  },
   "scripts": {
     "build": "rimraf lib && babel src -d lib && ncp src/base.css lib/base.css",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Wouter van Heeswijk",
+  "author": {
+    "name": "Wouter van Heeswijk",
+    "email": "woutervh@gmail.com",
+    "url": "https://github.com/woutervh-/"
+  },
   "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.10.1",

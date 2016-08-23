@@ -43,7 +43,7 @@ export default class Floaty extends SplittablePanel {
     };
 
     getChildContext() {
-        return {theme: this.props.theme, classes: this.props.classes};
+        return {theme: this.props.theme};
     }
 
     // todo: implement dispatch() from SplittablePanel
@@ -142,7 +142,7 @@ export default class Floaty extends SplittablePanel {
         const props = {
             dispatch,
             active: stackObject.active || 0,
-            titles: stackObject.titles.map(tabItem => this.renderTabItem(tabItem)) || [],
+            titles: stackObject.titles.map(tabTitle => this.renderTabTitle(tabTitle)) || [],
             float: this.dragStart.bind(this, stackObject),
             ...stackObject.props
         };
@@ -151,7 +151,7 @@ export default class Floaty extends SplittablePanel {
         </Stack>;
     }
 
-    renderTabItem(tabObject) {
+    renderTabTitle(tabObject) {
         switch (tabObject.type) {
             case 'prop-ref':
                 return this.props.refs[tabObject.name];
@@ -172,7 +172,7 @@ export default class Floaty extends SplittablePanel {
 
     renderFloatingStack() {
         const {floating: stackItemObject, floatingTitle: title} = this.state;
-        return <StackFloating title={title} x={this.state.x} y={this.state.y}>
+        return <StackFloating title={this.renderTabTitle(title)} x={this.state.x} y={this.state.y}>
             <StackItem dispatch={noOp}>
                 {this.renderGeneric(noOp, ['floating'], stackItemObject)}
             </StackItem>

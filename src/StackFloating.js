@@ -4,7 +4,7 @@ import shallowEqual from 'shallowequal';
 
 export default class StackFloating extends React.Component {
     static propTypes = {
-        title: React.PropTypes.string.isRequired,
+        title: React.PropTypes.any.isRequired,
         x: React.PropTypes.number.isRequired,
         y: React.PropTypes.number.isRequired
     };

@@ -33,8 +33,6 @@ function minimizeRowOrColumn(object, rowOrColumn) {
 }
 
 export function minimizeColumn(columnObject) {
-    console.log('minimizing')
-    console.log(columnObject)
     return minimizeRowOrColumn(columnObject, 'column');
 }
 

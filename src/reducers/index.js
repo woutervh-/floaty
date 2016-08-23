@@ -1,6 +1,7 @@
 import {
     FLOATY_INSERT_TAB,
     FLOATY_REMOVE_TAB,
+    FLOATY_SET_LAYOUT,
     FLOATY_TRANSFORM_INTO_COLUMN,
     FLOATY_TRANSFORM_INTO_ROW,
     FLOATY_UPDATE_ACTIVE_TAB,
@@ -118,6 +119,8 @@ function generic(state, action) {
             return minimizeRow(row(state, action.update));
         case FLOATY_UPDATE_STACK:
             return minimizeStack(stack(state, action.update));
+        case FLOATY_SET_LAYOUT:
+            return action.layout;
         default:
             return state;
     }

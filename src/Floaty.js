@@ -1,4 +1,6 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
+import DomUtil from './DomUtil';
 import Column from './Column';
 import ColumnItem from './ColumnItem';
 import Row from './Row';
@@ -6,7 +8,7 @@ import RowItem from './RowItem';
 import Stack from './Stack';
 import StackFloating from './StackFloating';
 import StackItem from './StackItem';
-import {removeTab, updateGeneric, updateRow, updateRowItem, updateColumn, updateColumnItem, updateStack, updateStackItem} from './actions';
+import {removeTab, updateGeneric, updateRow, updateRowItem, updateColumn, updateColumnItem, updateStack, updateStackItem, setLayout} from './actions';
 import SplittablePanel from './SplittablePanel';
 import shallowEqual from 'shallowequal';
 
@@ -46,13 +48,14 @@ export default class Floaty extends SplittablePanel {
         return {theme: this.props.theme};
     }
 
-    // todo: implement dispatch() from SplittablePanel
-
     resolveDropArea(position) {
         if ('root' in this.refs) {
             return this.refs['root'].resolveDropArea(position);
         } else {
-            return this.split(position);
+            const {dispatch} = this.props;
+            const element = ReactDOM.findDOMNode(this.refs['container']);
+            const box = DomUtil.elementOffset(element);
+            return {...box, dispatch: (item, title) => dispatch(setLayout({type: 'stack', titles: [title], items: [item]})), resolved: true};
         }
     }
 

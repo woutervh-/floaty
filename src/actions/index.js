@@ -2,6 +2,7 @@ import {
     FLOATY_INSERT_TAB,
     FLOATY_NO_OPERATION,
     FLOATY_REMOVE_TAB,
+    FLOATY_SET_LAYOUT,
     FLOATY_TRANSFORM_INTO_COLUMN,
     FLOATY_TRANSFORM_INTO_ROW,
     FLOATY_UPDATE_ACTIVE_TAB,
@@ -114,5 +115,12 @@ export function transformIntoColumn(items, newItemsBefore) {
         type: FLOATY_TRANSFORM_INTO_COLUMN,
         items,
         newItemsBefore
+    };
+}
+
+export function setLayout(layout) {
+    return {
+        type: FLOATY_SET_LAYOUT,
+        layout
     };
 }

@@ -81,7 +81,7 @@ export default class Stack extends SplittablePanel {
 
     renderActiveChild() {
         const {active, children} = this.props;
-        return React.cloneElement(React.Children.toArray(children)[active], {ref: 'stack-item-' + active});
+        return React.Children.toArray(children)[active];
     }
 
     dispatch(action) {
@@ -102,15 +102,33 @@ export default class Stack extends SplittablePanel {
             } else {
                 return {x: 0, y: 0, width: 0, height: 0, dispatch: noOperation, resolved: false};
             }
-            // const {active} = this.props;
-            // const childElement = ReactDOM.findDOMNode(this.refs['stack-item-' + active]);
-            // const childBox = DomUtil.elementOffset(childElement);
-            // if (DomUtil.isWithinBox(position, childBox)) {
-            //     return this.refs['stack-item-' + active].resolveDropArea(position);
-            // } else {
-            //     return {x: 0, y: 0, width: 0, height: 0, dispatch: noOperation, resolved: false};
-            // }
         }
+    }
+
+    renderHeaderTab(index) {
+        const {active, titles} = this.props;
+        const {theme} = this.context;
+
+        return <li ref={'tab-' + index} className={classNames(theme['floaty-stack-header-tabs-item'], {[theme['floaty-stack-header-tabs-item-active']]: index == active})} onClick={this.handleTabClick.bind(this, index)}>
+            {titles[index]}
+        </li>;
+    }
+
+    renderHeaderTabs() {
+        const {children} = this.props;
+        const {theme} = this.context;
+
+        return <ul className={theme['floaty-stack-header-tabs']}>
+            {React.Children.map(children, (child, index) => this.renderHeaderTab(index))}
+        </ul>;
+    }
+
+    renderHeader() {
+        const {theme} = this.context;
+
+        return <div ref="header" className={theme['floaty-stack-header']}>
+            {this.renderHeaderTabs()}
+        </div>;
     }
 
     render() {
@@ -118,15 +136,7 @@ export default class Stack extends SplittablePanel {
         const {theme} = this.context;
 
         return <div ref="container" className={classNames(theme['floaty-stack'], className)} {...other}>
-            <div ref="header" className={theme['floaty-stack-header']}>
-                <ul className={theme['floaty-stack-header-tabs']}>
-                    {React.Children.map(this.props.children, (child, index) =>
-                        <li ref={'tab-' + index} className={classNames(theme['floaty-stack-header-tabs-item'], {[theme['floaty-stack-header-tabs-item-active']]: index == active})} onClick={this.handleTabClick.bind(this, index)}>
-                            {titles[index]}
-                        </li>
-                    )}
-                </ul>
-            </div>
+            {this.renderHeader()}
             {this.renderActiveChild()}
         </div>;
     }

@@ -43,7 +43,7 @@ export default class Floaty extends SplittablePanel {
     };
 
     getChildContext() {
-        return {theme: this.props.theme};
+        return {theme: this.props.theme, classes: this.props.classes};
     }
 
     // todo: implement dispatch() from SplittablePanel

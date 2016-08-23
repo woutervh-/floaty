@@ -62,22 +62,22 @@ export default class Floaty extends SplittablePanel {
         document.body.classList.add(theme['floaty-unselectable']);
 
         // Start floating the item
-        this.setState({floating: stackObject.items[index], floatingName: stackObject.names[index], x: event.originalEvent.pageX, y: event.originalEvent.pageY});
+        this.setState({floating: stackObject.items[index], floatingName: stackObject.names[index], x: event.position.x, y: event.position.y});
         // Remove item from the stack
         dispatch(removeTab(index));
 
         draggable.on('drag', event => {
-            const resolution = this.resolveDropArea({x: event.originalEvent.pageX, y: event.originalEvent.pageY});
+            const resolution = this.resolveDropArea({x: event.position.x, y: event.position.y});
             const {x, y, width, height, resolved} = resolution;
             if (resolved) {
-                this.setState({x: event.originalEvent.pageX, y: event.originalEvent.pageY, targetIndicator: {x, y, width, height}, showTargetIndicator: true});
+                this.setState({x: event.position.x, y: event.position.y, targetIndicator: {x, y, width, height}, showTargetIndicator: true});
             } else {
-                this.setState({x: event.originalEvent.pageX, y: event.originalEvent.pageY, showTargetIndicator: false});
+                this.setState({x: event.position.x, y: event.position.y, showTargetIndicator: false});
             }
         });
         draggable.on('dragstop', event => {
             document.body.classList.remove(theme['floaty-unselectable']);
-            const resolution = this.resolveDropArea({x: event.originalEvent.pageX, y: event.originalEvent.pageY});
+            const resolution = this.resolveDropArea({x: event.position.x, y: event.position.y});
             if (resolution.resolved) {
                 resolution.dispatch(this.state.floating, this.state.floatingName);
             }

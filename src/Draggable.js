@@ -34,7 +34,7 @@ export default function Draggable(element, threshold = 0) {
             if (dragging) {
                 dragging = false;
                 current = getPosition(event);
-                emitter.emit('dragstop', {x: current.x - start.x, y: current.y - start.y, originalEvent: event});
+                emitter.emit('dragstop', {x: current.x - start.x, y: current.y - start.y, position: current, originalEvent: event});
             }
         }
     }
@@ -46,10 +46,10 @@ export default function Draggable(element, threshold = 0) {
             if (!dragging) {
                 if (distance(start, current) >= threshold) {
                     dragging = true;
-                    emitter.emit('dragstart', {originalEvent: event});
+                    emitter.emit('dragstart', {position: current, originalEvent: event});
                 }
             } else {
-                emitter.emit('drag', {x: current.x - start.x, y: current.y - start.y, originalEvent: event});
+                emitter.emit('drag', {x: current.x - start.x, y: current.y - start.y, position: current, originalEvent: event});
             }
         }
     }
@@ -65,7 +65,7 @@ export default function Draggable(element, threshold = 0) {
 
             if (threshold <= 0) {
                 dragging = true;
-                emitter.emit('dragstart', {originalEvent: event});
+                emitter.emit('dragstart', {position: current, originalEvent: event});
             }
         }
     }

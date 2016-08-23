@@ -14,7 +14,7 @@ export default class Stack extends SplittablePanel {
         active: React.PropTypes.number.isRequired,
         dispatch: React.PropTypes.func.isRequired,
         float: React.PropTypes.func.isRequired,
-        names: React.PropTypes.arrayOf(React.PropTypes.string).isRequired
+        titles: React.PropTypes.array.isRequired
     };
 
     static contextTypes = {
@@ -114,7 +114,7 @@ export default class Stack extends SplittablePanel {
     }
 
     render() {
-        const {active, children, className, dispatch, float, names, ...other} = this.props;
+        const {active, children, className, dispatch, float, titles, ...other} = this.props;
         const {theme} = this.context;
 
         return <div ref="container" className={classNames(theme['floaty-stack'], className)} {...other}>
@@ -122,7 +122,7 @@ export default class Stack extends SplittablePanel {
                 <ul className={theme['floaty-stack-header-tabs']}>
                     {React.Children.map(this.props.children, (child, index) =>
                         <li ref={'tab-' + index} className={classNames(theme['floaty-stack-header-tabs-item'], {[theme['floaty-stack-header-tabs-item-active']]: index == active})} onClick={this.handleTabClick.bind(this, index)}>
-                            {names[index]}
+                            {titles[index]}
                         </li>
                     )}
                 </ul>

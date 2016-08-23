@@ -30,7 +30,7 @@ export default class Floaty extends SplittablePanel {
 
     state = {
         floating: null,
-        floatingName: '',
+        floatingTitle: '',
         x: 0,
         y: 0,
         targetIndicator: {
@@ -62,7 +62,7 @@ export default class Floaty extends SplittablePanel {
         document.body.classList.add(theme['floaty-unselectable']);
 
         // Start floating the item
-        this.setState({floating: stackObject.items[index], floatingName: stackObject.names[index], x: event.position.x, y: event.position.y});
+        this.setState({floating: stackObject.items[index], floatingTitle: stackObject.titles[index], x: event.position.x, y: event.position.y});
         // Remove item from the stack
         dispatch(removeTab(index));
 
@@ -79,9 +79,9 @@ export default class Floaty extends SplittablePanel {
             document.body.classList.remove(theme['floaty-unselectable']);
             const resolution = this.resolveDropArea({x: event.position.x, y: event.position.y});
             if (resolution.resolved) {
-                resolution.dispatch(this.state.floating, this.state.floatingName);
+                resolution.dispatch(this.state.floating, this.state.floatingTitle);
             }
-            this.setState({floating: null, floatingName: ''});
+            this.setState({floating: null, floatingTitle: ''});
             draggable.emit('destroy');
         });
     }
@@ -142,13 +142,26 @@ export default class Floaty extends SplittablePanel {
         const props = {
             dispatch,
             active: stackObject.active || 0,
-            names: stackObject.names || [],
+            titles: stackObject.titles.map(tabItem => this.renderTabItem(tabItem)) || [],
             float: this.dragStart.bind(this, stackObject),
             ...stackObject.props
         };
         return <Stack ref={refAccumulator.join('-')} {...props}>
             {stackObject.items.map((stackItemObject, index) => this.renderStackItem(update => dispatch(updateStackItem(index, update)), [...refAccumulator, 'stack-item-' + index], stackItemObject, index))}
         </Stack>;
+    }
+
+    renderTabItem(tabObject) {
+        switch (tabObject.type) {
+            case 'prop-ref':
+                return this.props.refs[tabObject.name];
+            case 'child-ref':
+                return this.props.children[tabObject.index];
+            case 'component':
+                return tabObject.content;
+            default:
+                return tabObject;
+        }
     }
 
     renderStackItem(dispatch, refAccumulator, stackItemObject, index) {
@@ -158,8 +171,8 @@ export default class Floaty extends SplittablePanel {
     }
 
     renderFloatingStack() {
-        const {floating: stackItemObject, floatingName: name} = this.state;
-        return <StackFloating name={name} x={this.state.x} y={this.state.y}>
+        const {floating: stackItemObject, floatingTitle: title} = this.state;
+        return <StackFloating title={title} x={this.state.x} y={this.state.y}>
             <StackItem dispatch={noOp}>
                 {this.renderGeneric(noOp, ['floating'], stackItemObject)}
             </StackItem>

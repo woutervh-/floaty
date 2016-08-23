@@ -73,12 +73,12 @@ export function removeTab(index) {
     };
 }
 
-export function insertTab(index, item, name) {
+export function insertTab(index, item, title) {
     return {
         type: FLOATY_INSERT_TAB,
         index,
         item,
-        name
+        title
     };
 }
 

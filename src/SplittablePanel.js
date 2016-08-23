@@ -31,17 +31,17 @@ export default class SplittablePanel extends React.Component {
         const bottomBox = {...box, x: box.x + box.width * 0.2, width: box.width * 0.6, y: box.y + box.height * 0.5, height: box.height * 0.5};
         if (DomUtil.isWithinBox(position, leftBox)) {
             // Make row here: floating content to the left, original content to the right
-            return {...box, width: box.width / 2, dispatch: (item, name) => this.dispatch(transformIntoRow([{type: 'stack', names: [name], items: [item]}], true)), resolved: true};
+            return {...box, width: box.width / 2, dispatch: (item, title) => this.dispatch(transformIntoRow([{type: 'stack', titles: [title], items: [item]}], true)), resolved: true};
         }
         if (DomUtil.isWithinBox(position, rightBox)) {
             // Make row here: floating content to the right, original content to the left
-            return {...box, x: box.x + box.width / 2, width: box.width / 2, dispatch: (item, name) => this.dispatch(transformIntoRow([{type: 'stack', names: [name], items: [item]}], false)), resolved: true};
+            return {...box, x: box.x + box.width / 2, width: box.width / 2, dispatch: (item, title) => this.dispatch(transformIntoRow([{type: 'stack', titles: [title], items: [item]}], false)), resolved: true};
         }
         if (DomUtil.isWithinBox(position, topBox)) {
-            return {...box, height: box.height / 2, dispatch: (item, name) => this.dispatch(transformIntoColumn([{type: 'stack', names: [name], items: [item]}], true)), resolved: true};
+            return {...box, height: box.height / 2, dispatch: (item, title) => this.dispatch(transformIntoColumn([{type: 'stack', titles: [title], items: [item]}], true)), resolved: true};
         }
         if (DomUtil.isWithinBox(position, bottomBox)) {
-            return {...box, y: box.y + box.height / 2, height: box.height / 2, dispatch: (item, name) => this.dispatch(transformIntoColumn([{type: 'stack', names: [name], items: [item]}], false)), resolved: true};
+            return {...box, y: box.y + box.height / 2, height: box.height / 2, dispatch: (item, title) => this.dispatch(transformIntoColumn([{type: 'stack', titles: [title], items: [item]}], false)), resolved: true};
         }
         return {x: 0, y: 0, width: 0, height: 0, dispatch: noOperation, resolved: false};
     }

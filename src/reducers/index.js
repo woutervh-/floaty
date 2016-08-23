@@ -71,22 +71,22 @@ function stack(state, action) {
         case FLOATY_REMOVE_TAB: {
             const items = [...state.items];
             items.splice(action.index, 1);
-            const names = [...state.names];
-            names.splice(action.index, 1);
+            const titles = [...state.titles];
+            titles.splice(action.index, 1);
             if ('active' in state) {
                 // Ensure active index is in range
                 const active = Math.min(items.length - 1, state.active);
-                return {...state, active, items, names};
+                return {...state, active, items, titles};
             } else {
-                return {...state, items, names};
+                return {...state, items, titles};
             }
         }
         case FLOATY_INSERT_TAB: {
             const items = [...state.items];
             items.splice(action.index, 0, action.item);
-            const names = [...state.names];
-            names.splice(action.index, 0, action.name)
-            return {...state, items, names};
+            const titles = [...state.titles];
+            titles.splice(action.index, 0, action.title)
+            return {...state, items, titles};
         }
         case FLOATY_TRANSFORM_INTO_ROW:
             return transformToRow(state, action.items, action.newItemsBefore);

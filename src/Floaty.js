@@ -174,8 +174,8 @@ export default class Floaty extends SplittablePanel {
     }
 
     renderFloatingStack() {
-        const {floating: stackItemObject, floatingTitle: title} = this.state;
-        return <StackFloating title={this.renderTabTitle(title)} x={this.state.x} y={this.state.y}>
+        const {floating: stackItemObject, floatingTitle: title, x, y} = this.state;
+        return <StackFloating title={this.renderTabTitle(title)} x={x} y={y}>
             <StackItem dispatch={noOp}>
                 {this.renderGeneric(noOp, ['floating'], stackItemObject)}
             </StackItem>
@@ -192,7 +192,7 @@ export default class Floaty extends SplittablePanel {
     }
 
     render() {
-        const {refs, dispatch, layout, theme, ...other} = this.props;
+        const {children, dispatch, layout, refs, theme, ...other} = this.props;
         return <div ref={'container'} {...other}>
             {this.renderGeneric(dispatch, ['root'], layout)}
             {this.state.floating && this.renderFloatingStack()}

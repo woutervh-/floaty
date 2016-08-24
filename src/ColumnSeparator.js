@@ -44,7 +44,7 @@ export default class ColumnSeparator extends React.Component {
     }
 
     handleDrag(event) {
-        this.setState({offset: this.clampOffset(event.y)});
+        this.setState({offset: this.clampOffset(event.dy)});
     }
 
     handleDragStop() {

@@ -172,7 +172,8 @@ export default class Floaty extends SplittablePanel {
 
     renderFloatingStack() {
         const {floating: stackItemObject, floatingTitle: title, x, y} = this.state;
-        return <StackFloating title={this.renderLeafComponent(title)} x={x} y={y}>
+        const {scrollX, scrollY} = window;
+        return <StackFloating title={this.renderLeafComponent(title)} x={x - scrollX} y={y - scrollY}>
             <StackItem dispatch={noOp}>
                 {this.renderGeneric(noOp, ['floating'], stackItemObject)}
             </StackItem>
@@ -184,7 +185,8 @@ export default class Floaty extends SplittablePanel {
         const {showTargetIndicator} = this.state;
         if (showTargetIndicator) {
             const {x, y, width, height} = this.state.targetIndicator;
-            return <div className={theme['floaty-target-indicator']} style={{top: y, left: x, width, height}}/>;
+            const {scrollX, scrollY} = window;
+            return <div className={theme['floaty-target-indicator']} style={{top: y - scrollY, left: x - scrollX, width, height}}/>;
         }
     }
 

@@ -97,13 +97,21 @@ export default class Floaty extends SplittablePanel {
                 return this.renderRow(update => dispatch(updateRow(update)), refAccumulator, genericObject);
             case 'stack':
                 return this.renderStack(update => dispatch(updateStack(update)), refAccumulator, genericObject);
-            case 'prop-ref':
-                return this.props.refs[genericObject.name];
-            case 'child-ref':
-                return this.props.children[genericObject.index];
-            case 'component':
             default:
-                return genericObject.content;
+                return this.renderLeafComponent(genericObject);
+        }
+    }
+
+    renderLeafComponent(leafObject) {
+        switch (leafObject.type) {
+            case 'prop-ref':
+                return this.props.refs[leafObject.name];
+            case 'child-ref':
+                return this.props.children[leafObject.index];
+            case 'component':
+                return leafObject.content;
+            default:
+                return leafObject;
         }
     }
 
@@ -145,26 +153,15 @@ export default class Floaty extends SplittablePanel {
         const props = {
             dispatch,
             active: stackObject.active || 0,
-            titles: stackObject.titles.map(tabTitle => this.renderTabTitle(tabTitle)) || [],
+            titles: stackObject.titles.map(tabTitle => this.renderLeafComponent(tabTitle)) || [],
             float: this.dragStart.bind(this, stackObject),
+            beforeTabs: stackObject.beforeTabs && this.renderLeafComponent(stackObject.beforeTabs),
+            afterTabs: stackObject.afterTabs && this.renderLeafComponent(stackObject.afterTabs),
             ...stackObject.props
         };
         return <Stack ref={refAccumulator.join('-')} {...props}>
             {stackObject.items.map((stackItemObject, index) => this.renderStackItem(update => dispatch(updateStackItem(index, update)), [...refAccumulator, 'stack-item-' + index], stackItemObject, index))}
         </Stack>;
-    }
-
-    renderTabTitle(tabObject) {
-        switch (tabObject.type) {
-            case 'prop-ref':
-                return this.props.refs[tabObject.name];
-            case 'child-ref':
-                return this.props.children[tabObject.index];
-            case 'component':
-                return tabObject.content;
-            default:
-                return tabObject;
-        }
     }
 
     renderStackItem(dispatch, refAccumulator, stackItemObject, index) {
@@ -175,7 +172,7 @@ export default class Floaty extends SplittablePanel {
 
     renderFloatingStack() {
         const {floating: stackItemObject, floatingTitle: title, x, y} = this.state;
-        return <StackFloating title={this.renderTabTitle(title)} x={x} y={y}>
+        return <StackFloating title={this.renderLeafComponent(title)} x={x} y={y}>
             <StackItem dispatch={noOp}>
                 {this.renderGeneric(noOp, ['floating'], stackItemObject)}
             </StackItem>

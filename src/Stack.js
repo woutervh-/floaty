@@ -14,7 +14,9 @@ export default class Stack extends SplittablePanel {
         active: React.PropTypes.number.isRequired,
         dispatch: React.PropTypes.func.isRequired,
         float: React.PropTypes.func.isRequired,
-        titles: React.PropTypes.array.isRequired
+        titles: React.PropTypes.array.isRequired,
+        beforeTabs: React.PropTypes.any,
+        afterTabs: React.PropTypes.any
     };
 
     static contextTypes = {
@@ -92,7 +94,14 @@ export default class Stack extends SplittablePanel {
         const headerElement = ReactDOM.findDOMNode(this.refs['header']);
         const headerBox = DomUtil.elementOffset(headerElement);
         if (DomUtil.isWithinBox(position, headerBox)) {
-            const {dispatch} = this.props;
+            const {children, dispatch} = this.props;
+            for (let i = 0; i < React.Children.count(children); i++) {
+                const tabElement = ReactDOM.findDOMNode(this.refs['tab-' + i]);
+                const tabBox = DomUtil.elementOffset(tabElement);
+                if (DomUtil.isWithinBox(position, tabBox)) {
+                    return {...tabBox, dispatch: (item, name) => dispatch(insertTab(i, item, name)), resolved: true};
+                }
+            }
             return {...headerBox, dispatch: (item, name) => dispatch(insertTab(React.Children.count(this.props.children), item, name)), resolved: true};
         } else {
             const containerElement = ReactDOM.findDOMNode(this.refs['container']);
@@ -124,15 +133,18 @@ export default class Stack extends SplittablePanel {
     }
 
     renderHeader() {
+        const {beforeTabs, afterTabs} = this.props;
         const {theme} = this.context;
 
         return <div ref="header" className={theme['floaty-stack-header']}>
+            {beforeTabs}
             {this.renderHeaderTabs()}
+            {afterTabs}
         </div>;
     }
 
     render() {
-        const {active, children, className, dispatch, float, titles, ...other} = this.props;
+        const {active, afterTabs, beforeTabs, children, className, dispatch, float, titles, ...other} = this.props;
         const {theme} = this.context;
 
         return <div ref="container" className={classNames(theme['floaty-stack'], className)} {...other}>

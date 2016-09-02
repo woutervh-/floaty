@@ -14,9 +14,7 @@ export default class Stack extends SplittablePanel {
         active: React.PropTypes.number.isRequired,
         dispatch: React.PropTypes.func.isRequired,
         float: React.PropTypes.func.isRequired,
-        titles: React.PropTypes.array.isRequired,
-        beforeTabs: React.PropTypes.any,
-        afterTabs: React.PropTypes.any
+        titles: React.PropTypes.array.isRequired
     };
 
     static contextTypes = {
@@ -133,18 +131,15 @@ export default class Stack extends SplittablePanel {
     }
 
     renderHeader() {
-        const {beforeTabs, afterTabs} = this.props;
         const {theme} = this.context;
 
         return <div ref="header" className={theme['floaty-stack-header']}>
-            {beforeTabs}
             {this.renderHeaderTabs()}
-            {afterTabs}
         </div>;
     }
 
     render() {
-        const {active, afterTabs, beforeTabs, children, className, dispatch, float, titles, ...other} = this.props;
+        const {active, children, className, dispatch, float, titles, ...other} = this.props;
         const {theme} = this.context;
 
         return <div ref="container" className={classNames(theme['floaty-stack'], className)} {...other}>

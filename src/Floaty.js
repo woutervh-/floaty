@@ -155,8 +155,6 @@ export default class Floaty extends SplittablePanel {
             active: stackObject.active || 0,
             titles: stackObject.titles.map(tabTitle => this.renderLeafComponent(tabTitle)) || [],
             float: this.dragStart.bind(this, stackObject),
-            beforeTabs: stackObject.beforeTabs && this.renderLeafComponent(stackObject.beforeTabs),
-            afterTabs: stackObject.afterTabs && this.renderLeafComponent(stackObject.afterTabs),
             ...stackObject.props
         };
         return <Stack ref={refAccumulator.join('-')} {...props}>

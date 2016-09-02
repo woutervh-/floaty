@@ -58,6 +58,7 @@
     position: fixed;
     width: 20vw;
     height: 20vw;
+    overflow: hidden;
 }
 
 .floaty-stack-header {

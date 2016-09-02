@@ -127,5 +127,5 @@ function generic(state, action) {
 }
 
 export default function floaty(state, action) {
-    return generic(state, action) || {};
+    return generic(state, action) || {type: 'component', content: ''};
 };

@@ -20,18 +20,15 @@ export default class Row extends React.Component {
         return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContent);
     }
 
-    getWidthForRowItemIndex(index) {
-        return this.getWidthForRowItem(ReactDOM.findDOMNode(this.refs['row-item-' + index]));
-    }
-
-    getWidthForRowItem(rowItem) {
+    getWidthForRowItem(index) {
         const regExp = /^(\d+(\.\d+)?)px$/;
+        var rowItem = ReactDOM.findDOMNode(this.refs['row-item-' + index]);
         return parseFloat(window.getComputedStyle(rowItem).getPropertyValue('width').match(regExp)[1]);
     }
 
     getBoundsForSeparator(index) {
-        const widthA = this.getWidthForRowItemIndex(index);
-        const widthB = this.getWidthForRowItemIndex(index + 1);
+        const widthA = this.getWidthForRowItem(index);
+        const widthB = this.getWidthForRowItem(index + 1);
         return {min: -widthA, max: widthB};
     }
 
@@ -57,8 +54,8 @@ export default class Row extends React.Component {
     }
 
     handlePositionChange(index, offset) {
-        const widthA = this.getWidthForRowItemIndex(index);
-        const widthB = this.getWidthForRowItemIndex(index + 1);
+        const widthA = this.getWidthForRowItem(index);
+        const widthB = this.getWidthForRowItem(index + 1);
         const widthSum = widthA + widthB;
         const growValuesSum = this.props.growValues[index] + this.props.growValues[index + 1];
         const fraction = (widthA + offset) / widthSum;

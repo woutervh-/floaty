@@ -116,7 +116,7 @@ export default class Stack extends SplittablePanel {
         const {active, titles} = this.props;
         const {theme} = this.context;
 
-        return <li ref={'tab-' + index} className={classNames(theme['floaty-stack-header-tabs-item'], {[theme['floaty-stack-header-tabs-item-active']]: index == active})} onClick={this.handleTabClick.bind(this, index)}>
+        return <li ref={'tab-' + index} className={classNames(theme['floaty-stack-header-tabs-item'], {[theme['floaty-stack-header-tabs-item-active']]: index === active})} onClick={this.handleTabClick.bind(this, index)}>
             {titles[index]}
         </li>;
     }

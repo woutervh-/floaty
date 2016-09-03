@@ -20,18 +20,15 @@ export default class Column extends React.Component {
         return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContent);
     }
 
-    getHeightForColumnItemIndex(index) {
-        return this.getHeightForColumnItem(ReactDOM.findDOMNode(this.refs['column-item-' + index]));
-    }
-
-    getHeightForColumnItem(columnItem) {
+    getHeightForColumnItem(index) {
         const regExp = /^(\d+(\.\d+)?)px$/;
-        return parseFloat(window.getComputedStyle(columnItem).getPropertyValue('height').match(regExp)[1]);
+        const columnItem = ReactDOM.findDOMNode(this.refs['column-item-' + index]);
+        return parseFloat(window.getComputedStyle(columnItem).getPropertyValue('height').match(regExp)[1])
     }
 
     getBoundsForSeparator(index) {
-        const heightA = this.getHeightForColumnItemIndex(index);
-        const heightB = this.getHeightForColumnItemIndex(index + 1);
+        const heightA = this.getHeightForColumnItem(index);
+        const heightB = this.getHeightForColumnItem(index + 1);
         return {min: -heightA, max: heightB};
     }
 
@@ -57,8 +54,8 @@ export default class Column extends React.Component {
     }
 
     handlePositionChange(index, offset) {
-        const widthA = this.getHeightForColumnItemIndex(index);
-        const widthB = this.getHeightForColumnItemIndex(index + 1);
+        const widthA = this.getHeightForColumnItem(index);
+        const widthB = this.getHeightForColumnItem(index + 1);
         const widthSum = widthA + widthB;
         const growValuesSum = this.props.growValues[index] + this.props.growValues[index + 1];
         const fraction = (widthA + offset) / widthSum;

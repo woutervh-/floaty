@@ -5,7 +5,7 @@ import {noOperation, transformIntoRow, transformIntoColumn} from './actions';
 
 export default class SplittablePanel extends React.Component {
     dispatch(action) {
-        throw new Error('This method is abstract');
+        throw new Error('Abstract method');
     }
 
     transformChildren() {

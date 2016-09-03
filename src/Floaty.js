@@ -136,7 +136,7 @@ export default class Floaty extends SplittablePanel {
     renderRow(dispatch, refAccumulator, rowObject) {
         const props = {
             dispatch,
-            growValues: rowObject.growValues || Array(rowObject.items.length).fill(1),
+            growValues: rowObject.growValues || new Array(rowObject.items.length).fill(1),
             ...rowObject.props
         };
         return <Row ref={refAccumulator.join('-')} {...props}>

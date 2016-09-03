@@ -151,7 +151,7 @@ export default class Stack extends SplittablePanel {
     }
 
     render() {
-        const {active, children, className, dispatch, float, titles, ...other} = this.props;
+        const {active, children, className, controls, dispatch, float, titles, ...other} = this.props;
         const {theme} = this.context;
 
         return <div ref="container" className={classNames(theme['floaty-stack'], className)} {...other}>

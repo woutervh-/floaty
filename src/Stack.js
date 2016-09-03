@@ -12,6 +12,7 @@ const noOp = () => undefined;
 export default class Stack extends SplittablePanel {
     static propTypes = {
         active: React.PropTypes.number.isRequired,
+        controls: React.PropTypes.any,
         dispatch: React.PropTypes.func.isRequired,
         float: React.PropTypes.func.isRequired,
         titles: React.PropTypes.array.isRequired
@@ -112,29 +113,40 @@ export default class Stack extends SplittablePanel {
         }
     }
 
-    renderHeaderTab(index) {
-        const {active, titles} = this.props;
-        const {theme} = this.context;
-
-        return <li ref={'tab-' + index} className={classNames(theme['floaty-stack-header-tabs-item'], {[theme['floaty-stack-header-tabs-item-active']]: index === active})} onClick={this.handleTabClick.bind(this, index)}>
-            {titles[index]}
-        </li>;
-    }
-
-    renderHeaderTabs() {
-        const {children} = this.props;
+    renderTabs() {
+        const {active, children, titles} = this.props;
         const {theme} = this.context;
 
         return <ul className={theme['floaty-stack-header-tabs']}>
-            {React.Children.map(children, (child, index) => this.renderHeaderTab(index))}
+            {React.Children.map(children, (child, index) =>
+                <li key={index} ref={'tab-' + index} className={classNames(theme['floaty-stack-header-tabs-item'], {[theme['floaty-stack-header-tabs-item-active']]: index === active})} onClick={this.handleTabClick.bind(this, index)}>
+                    {titles[index]}
+                </li>
+            )}
         </ul>;
+    }
+
+    renderControls() {
+        const {controls, dispatch} = this.props;
+        const {theme} = this.context;
+
+        if (controls) {
+            return <ul className={theme['floaty-stack-header-controls']}>
+                {controls.map((control, index)=>
+                    <li key={index} className={theme['floaty-stack-header-controls-item']}>
+                        {control(dispatch)}
+                    </li>
+                )}
+            </ul>;
+        }
     }
 
     renderHeader() {
         const {theme} = this.context;
 
         return <div ref="header" className={theme['floaty-stack-header']}>
-            {this.renderHeaderTabs()}
+            {this.renderTabs()}
+            {this.renderControls()}
         </div>;
     }
 

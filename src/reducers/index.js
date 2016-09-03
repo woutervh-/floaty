@@ -1,5 +1,7 @@
 import {
+    FLOATY_ADD_TAB,
     FLOATY_INSERT_TAB,
+    FLOATY_REMOVE_ACTIVE_TAB,
     FLOATY_REMOVE_TAB,
     FLOATY_SET_LAYOUT,
     FLOATY_TRANSFORM_INTO_COLUMN,
@@ -82,11 +84,29 @@ function stack(state, action) {
                 return {...state, items, titles};
             }
         }
+        case FLOATY_REMOVE_ACTIVE_TAB: {
+            const items = [...state.items];
+            items.splice(state.active, 1);
+            const titles = [...state.titles];
+            titles.splice(state.active, 1);
+            if ('active' in state) {
+                // Ensure active index is in range
+                const active = Math.min(items.length - 1, state.active);
+                return {...state, active, items, titles};
+            } else {
+                return {...state, items, titles};
+            }
+        }
         case FLOATY_INSERT_TAB: {
             const items = [...state.items];
             items.splice(action.index, 0, action.item);
             const titles = [...state.titles];
-            titles.splice(action.index, 0, action.title)
+            titles.splice(action.index, 0, action.title);
+            return {...state, items, titles};
+        }
+        case FLOATY_ADD_TAB: {
+            const items = [...state.items, action.item];
+            const titles = [...state.title, action.title];
             return {...state, items, titles};
         }
         case FLOATY_TRANSFORM_INTO_ROW:

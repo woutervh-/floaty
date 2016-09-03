@@ -1,6 +1,8 @@
 import {
+    FLOATY_ADD_TAB,
     FLOATY_INSERT_TAB,
     FLOATY_NO_OPERATION,
+    FLOATY_REMOVE_ACTIVE_TAB,
     FLOATY_REMOVE_TAB,
     FLOATY_SET_LAYOUT,
     FLOATY_TRANSFORM_INTO_COLUMN,
@@ -74,10 +76,22 @@ export function removeTab(index) {
     };
 }
 
+export function removeActiveTab() {
+    return  {type: FLOATY_REMOVE_ACTIVE_TAB};
+}
+
 export function insertTab(index, item, title) {
     return {
         type: FLOATY_INSERT_TAB,
         index,
+        item,
+        title
+    };
+}
+
+export function addTab(item, title) {
+    return {
+        type: FLOATY_ADD_TAB,
         item,
         title
     };

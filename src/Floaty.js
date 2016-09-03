@@ -19,7 +19,8 @@ export default class Floaty extends SplittablePanel {
         refs: React.PropTypes.object,
         dispatch: React.PropTypes.func.isRequired,
         layout: React.PropTypes.object.isRequired,
-        theme: React.PropTypes.object.isRequired
+        theme: React.PropTypes.object.isRequired,
+        stackControls: React.PropTypes.any
     };
 
     static childContextTypes = {
@@ -152,6 +153,7 @@ export default class Floaty extends SplittablePanel {
     renderStack(dispatch, refAccumulator, stackObject) {
         const props = {
             dispatch,
+            controls: this.props.stackControls,
             active: stackObject.active || 0,
             titles: stackObject.titles.map(tabTitle => this.renderLeafComponent(tabTitle)) || [],
             float: this.dragStart.bind(this, stackObject),
@@ -189,7 +191,7 @@ export default class Floaty extends SplittablePanel {
     }
 
     render() {
-        const {children, dispatch, layout, refs, theme, ...other} = this.props;
+        const {children, dispatch, layout, refs, stackControls, theme, ...other} = this.props;
         return <div ref={'container'} {...other}>
             {this.renderGeneric(dispatch, ['root'], layout)}
             {this.state.floating && this.renderFloatingStack()}

@@ -67,6 +67,7 @@
 
 .floaty-stack-header-tabs {
     display: block;
+    float: left;
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -81,6 +82,19 @@
 .floaty-stack-header-tabs-item-active {
     color: white;
     background-color: black;
+}
+
+.floaty-stack-header-controls {
+    display: block;
+    float: right;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.floaty-stack-header-controls-item {
+    display: block;
+    float: left;
 }
 
 .floaty-stack-item {

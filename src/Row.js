@@ -23,7 +23,7 @@ export default class Row extends React.Component {
     getWidthForRowItem(index) {
         const regExp = /^(\d+(\.\d+)?)px$/;
         var rowItem = ReactDOM.findDOMNode(this.refs['row-item-' + index]);
-        return parseFloat(window.getComputedStyle(rowItem).getPropertyValue('width').match(regExp)[1]);
+        return parseFloat(window.getComputedStyle(rowItem)['width']);
     }
 
     getBoundsForSeparator(index) {

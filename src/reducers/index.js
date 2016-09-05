@@ -106,7 +106,7 @@ function stack(state, action) {
         }
         case FLOATY_ADD_TAB: {
             const items = [...state.items, action.item];
-            const titles = [...state.title, action.title];
+            const titles = [...state.titles, action.title];
             return {...state, items, titles};
         }
         case FLOATY_TRANSFORM_INTO_ROW:

@@ -21,9 +21,8 @@ export default class Column extends React.Component {
     }
 
     getHeightForColumnItem(index) {
-        const regExp = /^(\d+(\.\d+)?)px$/;
         const columnItem = ReactDOM.findDOMNode(this.refs['column-item-' + index]);
-        return parseFloat(window.getComputedStyle(columnItem).getPropertyValue('height').match(regExp)[1])
+        return parseFloat(window.getComputedStyle(columnItem)['height']);
     }
 
     getBoundsForSeparator(index) {

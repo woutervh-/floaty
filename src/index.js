@@ -1,4 +1,3 @@
-import Floaty from './Floaty';
-import floatyReducer from './reducers';
-
-export {Floaty, floatyReducer};
+export Floaty from './Floaty';
+export floatyReducer from './reducers';
+export floatyNavigator from './navigator';

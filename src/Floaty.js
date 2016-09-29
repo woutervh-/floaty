@@ -8,11 +8,12 @@ import RowItem from './RowItem';
 import Stack from './Stack';
 import StackFloating from './StackFloating';
 import StackItem from './StackItem';
-import {removeTab, updateGeneric, updateRow, updateRowItem, updateColumn, updateColumnItem, updateStack, updateStackItem, setLayout} from './actions';
+import {removeTab, updateGeneric, updateRow, updateRowItem, updateColumn, updateColumnItem, updateStack, updateStackItem, setLayout, setState} from './actions';
 import SplittablePanel from './SplittablePanel';
 import shallowEqual from 'shallowequal';
 
 const noOp = () => undefined;
+const identity = x => x;
 
 export default class Floaty extends SplittablePanel {
     static propTypes = {
@@ -91,6 +92,8 @@ export default class Floaty extends SplittablePanel {
     }
 
     renderGeneric(dispatch, refAccumulator, genericObject) {
+        // TODO: refAccumulator is obsolete?
+
         switch (genericObject.type) {
             case 'column':
                 return this.renderColumn(update => dispatch(updateColumn(update)), refAccumulator, genericObject);
@@ -99,11 +102,11 @@ export default class Floaty extends SplittablePanel {
             case 'stack':
                 return this.renderStack(update => dispatch(updateStack(update)), refAccumulator, genericObject);
             default:
-                return this.renderLeafComponent(genericObject);
+                return this.renderLeafComponent(genericObject, dispatch);
         }
     }
 
-    renderLeafComponent(leafObject) {
+    renderLeafComponent(leafObject, dispatch) {
         let result;
         switch (leafObject.type) {
             case 'prop-ref':
@@ -120,7 +123,8 @@ export default class Floaty extends SplittablePanel {
                 break;
         }
         if (leafObject.state && React.isValidElement(result)) {
-            return React.cloneElement(result, {...leafObject.state});
+            const {reducer = identity} = this.props;
+            return React.cloneElement(result, {dispatch: update => dispatch(setState(reducer(update))), ...leafObject.state});
         } else {
             return result;
         }
@@ -129,7 +133,7 @@ export default class Floaty extends SplittablePanel {
     renderColumn(dispatch, refAccumulator, columnObject) {
         const props = {
             dispatch,
-            growValues: columnObject.growValues || Array(columnObject.items.length).fill(1),
+            growValues: columnObject.growValues || new Array(columnObject.items.length).fill(1),
             ...columnObject.props
         };
         return <Column ref={refAccumulator.join('-')} {...props}>

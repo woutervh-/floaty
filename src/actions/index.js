@@ -5,6 +5,7 @@ import {
     FLOATY_REMOVE_ACTIVE_TAB,
     FLOATY_REMOVE_TAB,
     FLOATY_SET_LAYOUT,
+    FLOATY_SET_STATE,
     FLOATY_TRANSFORM_INTO_COLUMN,
     FLOATY_TRANSFORM_INTO_ROW,
     FLOATY_UPDATE_ACTIVE_TAB,
@@ -136,5 +137,12 @@ export function setLayout(layout) {
     return {
         type: FLOATY_SET_LAYOUT,
         layout
+    };
+}
+
+export function setState(state) {
+    return {
+        type: FLOATY_SET_STATE,
+        state
     };
 }

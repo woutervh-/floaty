@@ -124,7 +124,7 @@ export default class Floaty extends SplittablePanel {
         }
         if (leafObject.state && React.isValidElement(result)) {
             const {reducer = identity} = this.props;
-            return React.cloneElement(result, {dispatch: update => dispatch(setState(reducer(update))), ...leafObject.state});
+            return React.cloneElement(result, {dispatch: update => dispatch(setState(reducer(leafObject.state, update))), ...leafObject.state});
         } else {
             return result;
         }

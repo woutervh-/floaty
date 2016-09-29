@@ -104,15 +104,25 @@ export default class Floaty extends SplittablePanel {
     }
 
     renderLeafComponent(leafObject) {
+        let result;
         switch (leafObject.type) {
             case 'prop-ref':
-                return this.props.refs[leafObject.name];
+                result = this.props.refs[leafObject.name];
+                break;
             case 'child-ref':
-                return this.props.children[leafObject.index];
+                result = this.props.children[leafObject.index];
+                break;
             case 'component':
-                return leafObject.content;
+                result = leafObject.content;
+                break;
             default:
-                return leafObject;
+                result = leafObject;
+                break;
+        }
+        if (leafObject.state && React.isValidElement(result)) {
+            return React.cloneElement(result, {...leafObject.state});
+        } else {
+            return result;
         }
     }
 

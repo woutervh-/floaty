@@ -5,7 +5,7 @@ import {
     FLOATY_REMOVE_ACTIVE_TAB,
     FLOATY_REMOVE_TAB,
     FLOATY_SET_LAYOUT,
-    FLOATY_SET_STATE,
+    FLOATY_SET_STATE_FROM_REDUCER,
     FLOATY_TRANSFORM_INTO_COLUMN,
     FLOATY_TRANSFORM_INTO_ROW,
     FLOATY_UPDATE_ACTIVE_TAB,
@@ -140,9 +140,10 @@ export function setLayout(layout) {
     };
 }
 
-export function setState(state) {
+export function setStateFromReducer(reducer, update) {
     return {
-        type: FLOATY_SET_STATE,
-        state
+        type: FLOATY_SET_STATE_FROM_REDUCER,
+        reducer,
+        update
     };
 }

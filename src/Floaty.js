@@ -8,7 +8,7 @@ import RowItem from './RowItem';
 import Stack from './Stack';
 import StackFloating from './StackFloating';
 import StackItem from './StackItem';
-import {removeTab, updateGeneric, updateRow, updateRowItem, updateColumn, updateColumnItem, updateStack, updateStackItem, setLayout, setState} from './actions';
+import {removeTab, updateGeneric, updateRow, updateRowItem, updateColumn, updateColumnItem, updateStack, updateStackItem, setLayout, setStateFromReducer} from './actions';
 import SplittablePanel from './SplittablePanel';
 import shallowEqual from 'shallowequal';
 
@@ -102,11 +102,11 @@ export default class Floaty extends SplittablePanel {
             case 'stack':
                 return this.renderStack(update => dispatch(updateStack(update)), refAccumulator, genericObject);
             default:
-                return this.renderLeafComponent(genericObject, dispatch);
+                return this.renderLeafComponent(genericObject, dispatch, refAccumulator);
         }
     }
 
-    renderLeafComponent(leafObject, dispatch) {
+    renderLeafComponent(leafObject, dispatch, refAccumulator) {
         let result;
         switch (leafObject.type) {
             case 'prop-ref':
@@ -124,10 +124,10 @@ export default class Floaty extends SplittablePanel {
         }
         if (leafObject.state && React.isValidElement(result)) {
             const {reducer = identity} = this.props;
-            return React.cloneElement(result, {dispatch: update => dispatch(setState(reducer(leafObject.state, update))), ...leafObject.state});
+            return React.cloneElement(result, {dispatch: update => dispatch(setStateFromReducer(reducer, update)), ...leafObject.state});
         } else if (leafObject.state && typeof result === 'function') {
             const {reducer = identity} = this.props;
-            return result({dispatch: update => dispatch(setState(reducer(leafObject.state, update))), ...leafObject.state});
+            return result({dispatch: update => dispatch(setStateFromReducer(reducer, update)), ...leafObject.state});
         } else {
             return result;
         }

@@ -217,7 +217,7 @@ export default class Floaty extends SplittablePanel {
     }
 
     render() {
-        const {children, dispatch, layout, reducer, refs, stackControls, theme, ...other} = this.props;
+        const {children, dispatch, layout, reducers, refs, stackControls, theme, ...other} = this.props;
         return <div ref={'container'} {...other}>
             {this.renderGeneric(dispatch, ['root'], layout)}
             {this.state.floating && this.renderFloatingStack()}

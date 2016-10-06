@@ -113,7 +113,7 @@ export default class Floaty extends SplittablePanel {
                 result = this.props.refs[leafObject.name];
                 break;
             case 'child-ref':
-                result = this.props.children[leafObject.index];
+                result = React.Children.toArray(this.props.children)[leafObject.index];
                 break;
             case 'component':
                 result = leafObject.content;
@@ -122,12 +122,21 @@ export default class Floaty extends SplittablePanel {
                 result = leafObject;
                 break;
         }
-        if (leafObject.state && React.isValidElement(result)) {
-            const {reducer = identity} = this.props;
-            return React.cloneElement(result, {dispatch: update => dispatch(setStateFromReducer(reducer, update)), ...leafObject.state});
-        } else if (leafObject.state && typeof result === 'function') {
-            const {reducer = identity} = this.props;
-            return result({dispatch: update => dispatch(setStateFromReducer(reducer, update)), ...leafObject.state});
+        if (leafObject.state) {
+            const {reducers} = this.props;
+            const {reducer: reducerName} = leafObject;
+            const reducer = reducers[reducerName];
+            const props = {...leafObject.state};
+            if (reducer) {
+                props.dispatch = update => dispatch(setStateFromReducer(reducer, update));
+            }
+            if (React.isValidElement(result)) {
+                return React.cloneElement(result, props);
+            } else if (typeof result === 'function') {
+                return result(props);
+            } else {
+                return result;
+            }
         } else {
             return result;
         }

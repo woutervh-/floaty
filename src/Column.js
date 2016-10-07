@@ -8,7 +8,6 @@ import {noOperation, updateGrowValues} from './actions';
 
 export default class Column extends React.Component {
     static propTypes = {
-        dispatch: React.PropTypes.func.isRequired,
         growValues: React.PropTypes.array.isRequired
     };
 
@@ -16,8 +15,8 @@ export default class Column extends React.Component {
         theme: React.PropTypes.object.isRequired
     };
 
-    shouldComponentUpdate(nextProps, nextState, nextContent) {
-        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContent);
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContext);
     }
 
     getHeightForColumnItem(index) {

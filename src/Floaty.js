@@ -1,16 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import shallowEqual from 'shallowequal';
+import connect from 'react-redux/lib/components/connect';
 import DomUtil from './DomUtil';
 import Column from './Column';
 import ColumnItem from './ColumnItem';
 import Row from './Row';
+import Item from './Item';
 import RowItem from './RowItem';
 import Stack from './Stack';
 import StackFloating from './StackFloating';
 import StackItem from './StackItem';
 import {removeTab, updateGeneric, updateRow, updateRowItem, updateColumn, updateColumnItem, updateStack, updateStackItem, setLayout, setStateFromReducer} from './actions';
 import SplittablePanel from './SplittablePanel';
-import shallowEqual from 'shallowequal';
 
 const noOp = () => undefined;
 const identity = x => x;
@@ -18,14 +20,20 @@ const identity = x => x;
 export default class Floaty extends SplittablePanel {
     static propTypes = {
         refs: React.PropTypes.object,
-        dispatch: React.PropTypes.func.isRequired,
-        layout: React.PropTypes.object.isRequired,
+        id: React.PropTypes.number.isRequired,
         theme: React.PropTypes.object.isRequired,
         stackControls: React.PropTypes.any
     };
 
+    static defaultProps = {
+        refs: {}
+    };
+
     static childContextTypes = {
-        theme: React.PropTypes.object.isRequired
+        floatyContext: React.PropTypes.shape({
+            theme: React.PropTypes.object.isRequired,
+            refs: React.PropTypes.object.isRequired
+        }).isRequired
     };
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -47,7 +55,12 @@ export default class Floaty extends SplittablePanel {
     };
 
     getChildContext() {
-        return {theme: this.props.theme};
+        return {
+            floatyContext: {
+                refs: this.props.refs,
+                theme: this.props.theme
+            }
+        };
     }
 
     resolveDropArea(position) {
@@ -91,120 +104,40 @@ export default class Floaty extends SplittablePanel {
         });
     }
 
-    renderGeneric(dispatch, refAccumulator, genericObject) {
-        // TODO: refAccumulator is obsolete?
+    // renderRow(id) {
+    // TODO: stick growValues in a selector
+    // return <Row growValues={rowObject.growValues || new Array(rowObject.items.length).fill(1)}>}
+    //     {rowObject.items.map((id, index) =>
+    //         <RowItem key={index}>
+    //             {this.renderItem(id)}
+    //         </RowItem>
+    //     )}
+    // </Row>;
+    // }
 
-        switch (genericObject.type) {
-            case 'column':
-                return this.renderColumn(update => dispatch(updateColumn(update)), refAccumulator, genericObject);
-            case 'row':
-                return this.renderRow(update => dispatch(updateRow(update)), refAccumulator, genericObject);
-            case 'stack':
-                return this.renderStack(update => dispatch(updateStack(update)), refAccumulator, genericObject);
-            default:
-                return this.renderLeafComponent(genericObject, dispatch, refAccumulator);
-        }
-    }
+    // renderStack(stackObject) {
+    //     const props = {
+    //         dispatch,
+    //         controls: this.props.stackControls,
+    //         active: stackObject.active || 0,
+    //         titles: stackObject.titles.map(tabTitle => this.renderLeafComponent(tabTitle)) || [],
+    //         float: this.dragStart.bind(this, stackObject),
+    //         ...stackObject.props
+    //     };
+    //     return <Stack ref={refAccumulator.join('-')} {...props}>
+    //         {stackObject.items.map((stackItemObject, index) => this.renderStackItem(update => dispatch(updateStackItem(index, update)), [...refAccumulator, 'stack-item-' + index], stackItemObject, index))}
+    //     </Stack>;
+    // }
 
-    renderLeafComponent(leafObject, dispatch, refAccumulator) {
-        let result;
-        switch (leafObject.type) {
-            case 'prop-ref':
-                result = this.props.refs[leafObject.name];
-                break;
-            case 'child-ref':
-                result = React.Children.toArray(this.props.children)[leafObject.index];
-                break;
-            case 'component':
-                result = leafObject.content;
-                break;
-            default:
-                result = leafObject;
-                break;
-        }
-        if (leafObject.state) {
-            const {reducers} = this.props;
-            const {reducer: reducerName} = leafObject;
-            const reducer = reducers[reducerName];
-            const props = {...leafObject.state};
-            if (reducer) {
-                props.dispatch = update => dispatch(setStateFromReducer(reducer, update));
-            }
-            if (React.isValidElement(result)) {
-                return React.cloneElement(result, props);
-            } else if (typeof result === 'function') {
-                return result(props);
-            } else {
-                return result;
-            }
-        } else {
-            return result;
-        }
-    }
-
-    renderColumn(dispatch, refAccumulator, columnObject) {
-        const props = {
-            dispatch,
-            growValues: columnObject.growValues || new Array(columnObject.items.length).fill(1),
-            ...columnObject.props
-        };
-        return <Column ref={refAccumulator.join('-')} {...props}>
-            {columnObject.items.map((columnItemObject, index) => this.renderColumnItem(update => dispatch(updateColumnItem(index, update)), [...refAccumulator, 'column-item-' + index], columnItemObject, index))}
-        </Column>;
-    }
-
-    renderColumnItem(dispatch, refAccumulator, columnItemObject, index) {
-        return <ColumnItem dispatch={dispatch} key={index}>
-            {this.renderGeneric(update => dispatch(updateGeneric(update)), refAccumulator, columnItemObject)}
-        </ColumnItem>;
-    }
-
-    renderRow(dispatch, refAccumulator, rowObject) {
-        const props = {
-            dispatch,
-            growValues: rowObject.growValues || new Array(rowObject.items.length).fill(1),
-            ...rowObject.props
-        };
-        return <Row ref={refAccumulator.join('-')} {...props}>
-            {rowObject.items.map((rowItemObject, index) => this.renderRowItem(update => dispatch(updateRowItem(index, update)), [...refAccumulator, 'row-item-' + index], rowItemObject, index))}
-        </Row>;
-    }
-
-    renderRowItem(dispatch, refAccumulator, rowItemObject, index) {
-        return <RowItem dispatch={dispatch} key={index}>
-            {this.renderGeneric(update => dispatch(updateGeneric(update)), refAccumulator, rowItemObject)}
-        </RowItem>;
-    }
-
-    renderStack(dispatch, refAccumulator, stackObject) {
-        const props = {
-            dispatch,
-            controls: this.props.stackControls,
-            active: stackObject.active || 0,
-            titles: stackObject.titles.map(tabTitle => this.renderLeafComponent(tabTitle)) || [],
-            float: this.dragStart.bind(this, stackObject),
-            ...stackObject.props
-        };
-        return <Stack ref={refAccumulator.join('-')} {...props}>
-            {stackObject.items.map((stackItemObject, index) => this.renderStackItem(update => dispatch(updateStackItem(index, update)), [...refAccumulator, 'stack-item-' + index], stackItemObject, index))}
-        </Stack>;
-    }
-
-    renderStackItem(dispatch, refAccumulator, stackItemObject, index) {
-        return <StackItem dispatch={dispatch} key={index}>
-            {this.renderGeneric(update => dispatch(updateGeneric(update)), refAccumulator, stackItemObject)}
-        </StackItem>;
-    }
-
-    renderFloatingStack() {
-        const {floating: stackItemObject, floatingTitle: title, x, y} = this.state;
-        const {scrollX, scrollY} = window;
-        return <StackFloating title={this.renderLeafComponent(title)} x={x - scrollX} y={y - scrollY}>
-            <StackItem dispatch={noOp}>
-                {this.renderGeneric(noOp, ['floating'], stackItemObject)}
-            </StackItem>
-        </StackFloating>;
-    }
+    // renderFloatingStack() {
+    //     const {floating: stackItemObject, floatingTitle: title, x, y} = this.state;
+    //     const {scrollX, scrollY} = window;
+    //     return <StackFloating title={this.renderLeafComponent(title)} x={x - scrollX} y={y - scrollY}>
+    //         <StackItem dispatch={noOp}>
+    //             {this.renderGeneric(noOp, ['floating'], stackItemObject)}
+    //         </StackItem>
+    //     </StackFloating>;
+    // }
 
     renderDropArea() {
         const {theme} = this.props;
@@ -217,11 +150,11 @@ export default class Floaty extends SplittablePanel {
     }
 
     render() {
-        const {children, dispatch, layout, reducers, refs, stackControls, theme, ...other} = this.props;
+        const {children, layout, id, refs, stackControls, theme, ...other} = this.props;
         return <div ref={'container'} {...other}>
-            {this.renderGeneric(dispatch, ['root'], layout)}
-            {this.state.floating && this.renderFloatingStack()}
+            <Item id={id}/>
+            {/*{this.state.floating && this.renderFloatingStack()}*/}
             {this.state.floating && this.renderDropArea()}
         </div>;
     }
-};
+}

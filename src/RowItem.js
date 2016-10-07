@@ -5,27 +5,26 @@ import shallowEqual from 'shallowequal';
 
 export default class RowItem extends SplittablePanel {
     static propTypes = {
-        dispatch: React.PropTypes.func.isRequired
+        id: React.PropTypes.number.isRequired
     };
 
     static contextTypes = {
-        theme: React.PropTypes.object.isRequired
+        floatyContext: React.PropTypes.shape({
+            refs: React.PropTypes.object.isRequired,
+            theme: React.PropTypes.object.isRequired
+        }).isRequired
     };
 
     shouldComponentUpdate(nextProps, nextState, nextContent) {
         return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContent);
     }
 
-    dispatch(action) {
-        this.props.dispatch(action);
-    }
-    
     render() {
         const {theme} = this.context;
-        const {children, className, dispatch, ...other} = this.props;
+        const {className, id, ...other} = this.props;
 
         return <div ref="container" className={classNames(theme['floaty-row-item'], className)} {...other}>
-            {this.transformChildren()}
+            <Item id={id}/>
         </div>;
     }
 };

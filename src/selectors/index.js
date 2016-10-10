@@ -1,7 +1,13 @@
-export const itemSelector = (state, props) => typeof state === 'object' ? state.entities.floatyItems[props.id] : {type: 'component', content: state};
+export const floatySelector = (state, props) => ({
+    ...state.entities.floatyLayouts[props.id],
+    isFloating: !!state.entities.floatyLayouts[props.id].floatingItem
+});
 
-export const columnSelector = (state, props) => state.entities.floatyColumns[props.id];
-
-export const rowSelector = (state, props) => state.entities.floatyRows[props.id];
-
-export const stackSelector = (state, props) => state.entities.floatyStacks[props.id];
+export const itemSelector = (state, props) => {
+    const item = state.entities.floatyItems[props.id];
+    if (typeof item === 'object') {
+        return item;
+    } else {
+        return {type: 'component', content: state};
+    }
+};

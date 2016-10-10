@@ -5,28 +5,15 @@ import {
     FLOATY_REMOVE_TAB,
     FLOATY_SET_LAYOUT,
     FLOATY_SET_STATE_FROM_REDUCER,
+    FLOATY_START_FLOATING,
+    FLOATY_STOP_FLOATING,
     FLOATY_TRANSFORM_INTO_COLUMN,
-    FLOATY_TRANSFORM_INTO_ROW,
-    FLOATY_UPDATE_ACTIVE_TAB,
-    FLOATY_UPDATE_COLUMN,
-    FLOATY_UPDATE_COLUMN_ITEM,
-    FLOATY_UPDATE_GENERIC,
-    FLOATY_UPDATE_GROW_VALUES,
-    FLOATY_UPDATE_ROW,
-    FLOATY_UPDATE_ROW_ITEM,
-    FLOATY_UPDATE_STACK,
-    FLOATY_UPDATE_STACK_ITEM
+    FLOATY_TRANSFORM_INTO_ROW
 } from '../constants';
-import {minimizeColumn, minimizeRow, minimizeStack, transformToColumn, transformToRow} from './LayoutUtil';
+import {minimizeColumn, minimizeRow, minimizeStack} from './LayoutUtil';
 
 function column(state, action) {
     switch (action.type) {
-        case FLOATY_UPDATE_GROW_VALUES:
-            return {...state, growValues: action.growValues};
-        case FLOATY_UPDATE_COLUMN_ITEM:
-            const items = [...state.items];
-            items[action.index] = columnItem(items[action.index], action.update);
-            return {...state, items};
         default:
             return state;
     }
@@ -34,50 +21,19 @@ function column(state, action) {
 
 function row(state, action) {
     switch (action.type) {
-        case FLOATY_UPDATE_GROW_VALUES:
-            return {...state, growValues: action.growValues};
-        case FLOATY_UPDATE_ROW_ITEM:
-            const items = [...state.items];
-            items[action.index] = rowItem(items[action.index], action.update);
-            return {...state, items};
         default:
             return state;
     }
 }
 
-function columnItem(state, action) {
+function stack(state = {active: 0, titles: [], items: []}, action) {
     switch (action.type) {
-        case FLOATY_UPDATE_GENERIC:
-            return generic(state, action.update);
-        default:
-            return state;
-    }
-}
-
-function rowItem(state, action) {
-    switch (action.type) {
-        case FLOATY_UPDATE_GENERIC:
-            return generic(state, action.update);
-        default:
-            return state;
-    }
-}
-
-function stack(state, action) {
-    switch (action.type) {
-        case FLOATY_UPDATE_ACTIVE_TAB:
-            return {...state, active: action.index};
-        case FLOATY_UPDATE_STACK_ITEM: {
-            const items = [...state.items];
-            items[action.index] = stackItem(items[action.index], action.update);
-            return {...state, items};
-        }
         case FLOATY_REMOVE_TAB: {
             const items = [...state.items];
             items.splice(action.index, 1);
             const titles = [...state.titles];
             titles.splice(action.index, 1);
-            if ('active' in state) {
+            if (typeof state.active !== 'undefined') {
                 // Ensure active index is in range
                 const active = Math.min(items.length - 1, state.active);
                 return {...state, active, items, titles};
@@ -90,7 +46,7 @@ function stack(state, action) {
             items.splice(state.active, 1);
             const titles = [...state.titles];
             titles.splice(state.active, 1);
-            if ('active' in state) {
+            if (typeof state.active !== 'undefined') {
                 // Ensure active index is in range
                 const active = Math.min(items.length - 1, state.active);
                 return {...state, active, items, titles};
@@ -110,45 +66,99 @@ function stack(state, action) {
             const titles = [...state.titles, action.title];
             return {...state, active: items.length - 1, items, titles};
         }
-        case FLOATY_TRANSFORM_INTO_ROW:
-            return transformToRow(state, action.items, action.newItemsBefore);
-        case FLOATY_TRANSFORM_INTO_COLUMN:
-            return transformToColumn(state, action.items, action.newItemsBefore);
         default:
             return state;
     }
 }
 
-function stackItem(state, action) {
+// function generic(state, action) {
+//     switch (action.type) {
+//         case FLOATY_TRANSFORM_INTO_COLUMN:
+//             return transformToColumn(state, action.items, action.newItemsBefore);
+//         case FLOATY_TRANSFORM_INTO_ROW:
+//             return transformToRow(state, action.items, action.newItemsBefore);
+//         case FLOATY_SET_LAYOUT:
+//             return action.layout;
+//         case FLOATY_SET_STATE_FROM_REDUCER:
+//             return {...state, state: action.reducer(state.state, action.update)};
+//         default:
+//             return state;
+//     }
+// }
+
+function floatyItem(state = {}, action) {
     switch (action.type) {
-        case FLOATY_UPDATE_GENERIC:
-            return generic(state, action.update);
-        default:
-            return state;
-    }
-}
-
-function generic(state, action) {
-    switch (action.type) {
+        case FLOATY_REMOVE_TAB:
+        case FLOATY_REMOVE_ACTIVE_TAB:
+        case FLOATY_INSERT_TAB:
+        case FLOATY_ADD_TAB:
+            return stack(state, action);
         case FLOATY_TRANSFORM_INTO_COLUMN:
-            return transformToColumn(state, action.items, action.newItemsBefore);
+            return {type: 'column', items: action.items};
         case FLOATY_TRANSFORM_INTO_ROW:
-            return transformToRow(state, action.items, action.newItemsBefore);
-        case FLOATY_UPDATE_COLUMN:
-            return minimizeColumn(column(state, action.update));
-        case FLOATY_UPDATE_ROW:
-            return minimizeRow(row(state, action.update));
-        case FLOATY_UPDATE_STACK:
-            return minimizeStack(stack(state, action.update));
-        case FLOATY_SET_LAYOUT:
-            return action.layout;
-        case FLOATY_SET_STATE_FROM_REDUCER:
-            return {...state, state: action.reducer(state.state, action.update)};
+            return {type: 'row', items: action.items};
         default:
             return state;
     }
 }
 
-export default function floaty(state, action) {
-    return generic(state, action) || {type: 'component', content: ''};
-};
+function floatyItems(state = [], action) {
+    switch (action.type) {
+        case FLOATY_REMOVE_TAB:
+        case FLOATY_REMOVE_ACTIVE_TAB:
+        case FLOATY_INSERT_TAB:
+        case FLOATY_ADD_TAB: {
+            const items = [...state];
+            items[action.stackId] = floatyItem(state[action.stackId], action);
+            return items;
+        }
+        case FLOATY_TRANSFORM_INTO_COLUMN:
+        case FLOATY_TRANSFORM_INTO_ROW: {
+            const {itemId, newItemsBefore} = action;
+            const items = [...state, state[itemId], action.item];
+            if (newItemsBefore) {
+                items[action.itemId] = floatyItem(state[itemId], {type: action.type, items: [items.length - 1, items.length - 2]});
+            } else {
+                items[action.itemId] = floatyItem(state[itemId], {type: action.type, items: [items.length - 2, items.length - 1]});
+            }
+            return items;
+        }
+        default:
+            return state;
+    }
+}
+
+function floatyLayout(state = {item: 0, floatingItem: null, floatingTitle: null}, action) {
+    switch (action.type) {
+        case FLOATY_START_FLOATING:
+            return {...state, floatingItem: action.item, floatingTitle: action.title};
+        case FLOATY_STOP_FLOATING:
+            return {...state, floatingItem: null, floatingTitle: null};
+        default:
+            return state;
+    }
+}
+
+function floatyLayouts(state = [], action) {
+    switch (action.type) {
+        case FLOATY_START_FLOATING:
+        case FLOATY_STOP_FLOATING:
+            const layouts = [...state];
+            layouts[action.layoutId] = floatyLayout(layouts[action.layoutId], action);
+            return layouts;
+        default:
+            return state;
+    }
+}
+
+export default function floaty(state = {}, action) {
+    const {entities = {}} = state;
+    const {floatyItems: items, floatyLayouts: layouts} = entities;
+    return {...state, entities: {...entities, floatyItems: floatyItems(items, action), floatyLayouts: floatyLayouts(layouts, action)}};
+}
+
+// TODO: minimization & cleanup
+
+// export default function floaty(state, action) {
+//     return generic(state, action) || {type: 'component', content: ''};
+// };

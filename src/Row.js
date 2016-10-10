@@ -1,26 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import connect from 'react-redux/lib/components/connect';
 import classNames from 'classnames';
 import RowSeparator from './RowSeparator';
 import RowItem from './RowItem';
-import DomUtil from './DomUtil';
+import * as DomUtil from './DomUtil';
 import shallowEqual from 'shallowequal';
-import {noOperation, updateGrowValues} from './actions';
-import {rowSelector} from './selectors';
+import {noOperation} from './actions';
+import {floatyContextType} from './Types';
 
-class Row extends React.Component {
+export default class Row extends React.Component {
     static propTypes = {
-        id: React.PropTypes.number.isRequired,
         growValues: React.PropTypes.array,
         items: React.PropTypes.array.isRequired
     };
 
     static contextTypes = {
-        floatyContext: React.PropTypes.shape({
-            refs: React.PropTypes.object.isRequired,
-            theme: React.PropTypes.object.isRequired
-        }).isRequired
+        floatyContext: floatyContextType
     };
 
     shouldComponentUpdate(nextProps, nextState, nextContext) {
@@ -47,10 +42,10 @@ class Row extends React.Component {
         }
         for (let i = 0; i < items.length; i++) {
             if (i > 0) {
-                result.push(<RowSeparator key={2 * i - 1} getBounds={::this.getBoundsForSeparator(i - 1)} onPositionChange={::this.handlePositionChange(i - 1)}/>);
+                result.push(<RowSeparator key={2 * i - 1} getBounds={() => this.getBoundsForSeparator(i - 1)} onPositionChange={offset => this.handlePositionChange(i - 1, offset)}/>);
             }
             const growValue = (growValues[i] || 1) / growValuesSum;
-            const element = <RowItem key={2 * i} ref={r => this['row-item-' + i] = r} id={items[i]} style={{flexGrow: growValue}}/>;
+            const element = <RowItem key={2 * i} ref={r => this['row-item-' + i] = r} value={items[i]} style={{flexGrow: growValue}}/>;
             result.push(element);
         }
         return result;
@@ -66,18 +61,20 @@ class Row extends React.Component {
         const newGrowValues = [...growValues];
         newGrowValues[index] = fraction * growValuesSum;
         newGrowValues[index + 1] = (1 - fraction) * growValuesSum;
-        dispatch(updateGrowValues(newGrowValues));
+        // TODO:
+        // dispatch(updateGrowValues(newGrowValues));
     }
 
     resolveDropArea(position) {
-        for (let i = 0; i < React.Children.count(this.props.children); i++) {
+        const {items} = this.props;
+        for (let i = 0; i < items.length; i++) {
             const element = ReactDOM.findDOMNode(this['row-item-' + i]);
             const box = DomUtil.elementOffset(element);
             if (DomUtil.isWithinBox(position, box)) {
                 return this['row-item-' + i].resolveDropArea(position);
             }
         }
-        return {x: 0, y: 0, width: 0, height: 0, dispatch: noOperation, resolved: false};
+        return {x: 0, y: 0, width: 0, height: 0, resolved: false};
     }
 
     render() {
@@ -89,5 +86,3 @@ class Row extends React.Component {
         </div>;
     }
 }
-
-export default connect(rowSelector)(Row);

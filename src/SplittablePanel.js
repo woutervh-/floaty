@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import DomUtil from './DomUtil';
+import * as DomUtil from './DomUtil';
 import {noOperation, transformIntoRow, transformIntoColumn} from './actions';
 
 export default class SplittablePanel extends React.Component {
@@ -23,8 +23,8 @@ export default class SplittablePanel extends React.Component {
     }
 
     split(position) {
-        const element = ReactDOM.findDOMNode(this.refs['container']);
-        const box = DomUtil.elementOffset(element);
+        const node = ReactDOM.findDOMNode(this.refs['container']);
+        const box = DomUtil.elementOffset(node);
         const leftBox = {...box, width: 0.2 * box.width};
         const rightBox = {...box, x: box.x + box.width * 0.8, width: 0.2 * box.width};
         const topBox = {...box, x: box.x + box.width * 0.2, width: box.width * 0.6, height: box.height * 0.5};
@@ -48,7 +48,7 @@ export default class SplittablePanel extends React.Component {
 
     resolveDropArea(position) {
         const {children} = this.props;
-        if (React.Children.count(children) == 1) {
+        if (React.Children.count(children) === 1) {
             if ('resolveDropArea' in this.refs['content']) {
                 return this.refs['content'].resolveDropArea(position);
             } else {

@@ -4,81 +4,32 @@ import {
     FLOATY_NO_OPERATION,
     FLOATY_REMOVE_ACTIVE_TAB,
     FLOATY_REMOVE_TAB,
+    FLOATY_SET_ACTIVE_TAB,
     FLOATY_SET_LAYOUT,
     FLOATY_SET_STATE_FROM_REDUCER,
+    FLOATY_START_FLOATING,
+    FLOATY_STOP_FLOATING,
     FLOATY_TRANSFORM_INTO_COLUMN,
-    FLOATY_TRANSFORM_INTO_ROW,
-    FLOATY_UPDATE_ACTIVE_TAB,
-    FLOATY_UPDATE_COLUMN,
-    FLOATY_UPDATE_COLUMN_ITEM,
-    FLOATY_UPDATE_GENERIC,
-    FLOATY_UPDATE_GROW_VALUES,
-    FLOATY_UPDATE_ROW,
-    FLOATY_UPDATE_ROW_ITEM,
-    FLOATY_UPDATE_STACK,
-    FLOATY_UPDATE_STACK_ITEM
+    FLOATY_TRANSFORM_INTO_ROW
 } from '../constants';
 
-export function updateGrowValues(growValues) {
+export function setActiveTab(index) {
     return {
-        type: FLOATY_UPDATE_GROW_VALUES,
-        growValues
-    };
-}
-
-export function updateRow(update) {
-    return {
-        type: FLOATY_UPDATE_ROW,
-        update
-    };
-}
-
-export function updateRowItem(index, update) {
-    return {
-        type: FLOATY_UPDATE_ROW_ITEM,
-        index,
-        update
-    };
-}
-
-export function updateColumn(update) {
-    return {
-        type: FLOATY_UPDATE_COLUMN,
-        update
-    };
-}
-
-export function updateColumnItem(index, update) {
-    return {
-        type: FLOATY_UPDATE_COLUMN_ITEM,
-        index,
-        update
-    };
-}
-
-export function updateGeneric(update) {
-    return {
-        type: FLOATY_UPDATE_GENERIC,
-        update
-    };
-}
-
-export function updateActiveTab(index) {
-    return {
-        type: FLOATY_UPDATE_ACTIVE_TAB,
+        type: FLOATY_SET_ACTIVE_TAB,
         index
     };
 }
 
-export function removeTab(index) {
+export function removeTab(stackId, index) {
     return {
         type: FLOATY_REMOVE_TAB,
+        stackId,
         index
     };
 }
 
 export function removeActiveTab() {
-    return  {type: FLOATY_REMOVE_ACTIVE_TAB};
+    return {type: FLOATY_REMOVE_ACTIVE_TAB};
 }
 
 export function insertTab(index, item, title) {
@@ -98,37 +49,24 @@ export function addTab(item, title) {
     };
 }
 
-export function updateStack(update) {
-    return {
-        type: FLOATY_UPDATE_STACK,
-        update
-    };
-}
-
-export function updateStackItem(index, update) {
-    return {
-        type: FLOATY_UPDATE_STACK_ITEM,
-        index,
-        update
-    };
-}
-
 export function noOperation() {
     return {type: FLOATY_NO_OPERATION};
 }
 
-export function transformIntoRow(items, newItemsBefore) {
+export function transformIntoColumn(itemId, item, newItemsBefore) {
     return {
-        type: FLOATY_TRANSFORM_INTO_ROW,
-        items,
+        type: FLOATY_TRANSFORM_INTO_COLUMN,
+        itemId,
+        item,
         newItemsBefore
     };
 }
 
-export function transformIntoColumn(items, newItemsBefore) {
+export function transformIntoRow(itemId, item, newItemsBefore) {
     return {
-        type: FLOATY_TRANSFORM_INTO_COLUMN,
-        items,
+        type: FLOATY_TRANSFORM_INTO_ROW,
+        itemId,
+        item,
         newItemsBefore
     };
 }
@@ -145,5 +83,21 @@ export function setStateFromReducer(reducer, update) {
         type: FLOATY_SET_STATE_FROM_REDUCER,
         reducer,
         update
+    };
+}
+
+export function startFloating(layoutId, item, title) {
+    return {
+        type: FLOATY_START_FLOATING,
+        layoutId,
+        item,
+        title
+    };
+}
+
+export function stopFloating(layoutId) {
+    return {
+        type: FLOATY_STOP_FLOATING,
+        layoutId
     };
 }

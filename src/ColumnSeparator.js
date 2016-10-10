@@ -3,15 +3,16 @@ import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import shallowEqual from 'shallowequal';
 import Draggable from './Draggable';
+import {floatyContextType} from './Types';
 
 export default class ColumnSeparator extends React.Component {
-    static contextTypes = {
-        theme: React.PropTypes.object.isRequired
-    };
-
     static propTypes = {
         getBounds: React.PropTypes.func.isRequired,
         onPositionChange: React.PropTypes.func.isRequired
+    };
+
+    static contextTypes = {
+        floatyContext: floatyContextType
     };
 
     state = {
@@ -39,7 +40,7 @@ export default class ColumnSeparator extends React.Component {
     }
 
     handleDragStart() {
-        const {theme} = this.context;
+        const {floatyContext: {theme}} = this.context;
         document.body.classList.add(theme['floaty-unselectable']);
     }
 
@@ -48,16 +49,16 @@ export default class ColumnSeparator extends React.Component {
     }
 
     handleDragStop() {
-        const {theme} = this.context;
+        const {floatyContext: {theme}} = this.context;
         document.body.classList.remove(theme['floaty-unselectable']);
         this.props.onPositionChange(this.state.offset);
         this.setState({offset: 0});
     }
 
     render() {
-        const {offset} = this.state;
         const {className, onPositionChange} = this.props;
-        const {theme} = this.context;
+        const {offset} = this.state;
+        const {floatyContext: {theme}} = this.context;
 
         return <div className={classNames(theme['floaty-column-separator'], className)} style={{top: offset}}/>;
     }

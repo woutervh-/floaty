@@ -1,31 +1,39 @@
 import React from 'react';
-import SplittablePanel from './SplittablePanel';
+import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import shallowEqual from 'shallowequal';
+import Item from './Item';
+import {floatyContextType} from './Types';
+import split from './split';
 
-export default class ColumnItem extends SplittablePanel {
+export default class ColumnItem extends React.Component {
     static propTypes = {
-        dispatch: React.PropTypes.func.isRequired
+        value: React.PropTypes.any.isRequired
     };
 
     static contextTypes = {
-        theme: React.PropTypes.object.isRequired
+        floatyContext: floatyContextType
     };
 
     shouldComponentUpdate(nextProps, nextState, nextContent) {
         return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContent);
     }
 
-    dispatch(action) {
-        this.props.dispatch(action);
+    resolveDropArea(position) {
+        const {value} = this.props;
+        if (typeof value === 'number') {
+            return this.item.getWrappedInstance().resolveDropArea(position);
+        } else {
+            return split(ReactDOM.findDOMNode(this), position);
+        }
     }
 
     render() {
-        const {theme} = this.context;
-        const {children, className, dispatch, ...other} = this.props;
+        const {className, value, ...other} = this.props;
+        const {floatyContext: {theme}} = this.context;
 
-        return <div ref="container" className={classNames(theme['floaty-column-item'], className)} {...other}>
-            {this.transformChildren()}
+        return <div className={classNames(theme['floaty-column-item'], className)} {...other}>
+            {typeof value === 'number' ? <Item ref={r => this.item = r} id={value}/> : value}
         </div>;
     }
 };

@@ -2,27 +2,25 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import shallowEqual from 'shallowequal';
 import connect from 'react-redux/lib/components/connect';
-import DomUtil from './DomUtil';
-import Column from './Column';
-import ColumnItem from './ColumnItem';
-import Row from './Row';
+import * as DomUtil from './DomUtil';
 import Item from './Item';
-import RowItem from './RowItem';
-import Stack from './Stack';
-import StackFloating from './StackFloating';
-import StackItem from './StackItem';
-import {removeTab, updateGeneric, updateRow, updateRowItem, updateColumn, updateColumnItem, updateStack, updateStackItem, setLayout, setStateFromReducer} from './actions';
+import {removeTab, setLayout, startFloating, stopFloating} from './actions';
+import {floatySelector} from './selectors';
 import SplittablePanel from './SplittablePanel';
+import {floatyContextType} from './Types';
+import getPosition from './getPosition';
 
 const noOp = () => undefined;
 const identity = x => x;
 
-export default class Floaty extends SplittablePanel {
+class Floaty extends SplittablePanel {
     static propTypes = {
         refs: React.PropTypes.object,
         id: React.PropTypes.number.isRequired,
+        item: React.PropTypes.number.isRequired,
         theme: React.PropTypes.object.isRequired,
-        stackControls: React.PropTypes.any
+        stackControls: React.PropTypes.any,
+        isFloating: React.PropTypes.bool.isRequired
     };
 
     static defaultProps = {
@@ -30,79 +28,90 @@ export default class Floaty extends SplittablePanel {
     };
 
     static childContextTypes = {
-        floatyContext: React.PropTypes.shape({
-            theme: React.PropTypes.object.isRequired,
-            refs: React.PropTypes.object.isRequired
-        }).isRequired
+        floatyContext: floatyContextType
     };
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.state, nextState);
-    }
-
     state = {
-        floating: null,
-        floatingTitle: '',
         x: 0,
         y: 0,
         targetIndicator: {
-            x: 0,
-            y: 0,
+            top: 0,
+            left: 0,
             width: 0,
             height: 0
         },
         showTargetIndicator: false
     };
 
+    shouldComponentUpdate(nextProps, nextState) {
+        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.state, nextState);
+    }
+
+    componentWillMount() {
+        document.addEventListener('mousemove', this.handleMove);
+        document.addEventListener('mouseup', this.handleUp);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('mousemove', this.handleMove);
+        document.removeEventListener('mouseup', this.handleUp);
+    }
+
     getChildContext() {
         return {
             floatyContext: {
+                float: this.dragStart,
                 refs: this.props.refs,
                 theme: this.props.theme
             }
         };
     }
 
-    resolveDropArea(position) {
-        if ('root' in this.refs) {
-            return this.refs['root'].resolveDropArea(position);
-        } else {
-            const {dispatch} = this.props;
-            const element = ReactDOM.findDOMNode(this.refs['container']);
-            const box = DomUtil.elementOffset(element);
-            return {...box, dispatch: (item, title) => dispatch(setLayout({type: 'stack', titles: [title], items: [item]})), resolved: true};
-        }
-    }
+    // resolveDropArea(position) {
+    //     if ('root' in this.refs) {
+    //         return this.refs['root'].resolveDropArea(position);
+    //     } else {
+    //         const {dispatch} = this.props;
+    //         const element = ReactDOM.findDOMNode(this.refs['container']);
+    //         const box = DomUtil.elementOffset(element);
+    //         return {...box, dispatch: (item, title) => dispatch(setLayout({type: 'stack', titles: [title], items: [item]})), resolved: true};
+    //     }
+    // }
 
-    dragStart(stackObject, index, event, dispatch, draggable) {
-        // This will take control of a draggable
-        const {theme} = this.props;
-        document.body.classList.add(theme['floaty-unselectable']);
-
-        // Start floating the item
-        this.setState({floating: stackObject.items[index], floatingTitle: stackObject.titles[index], x: event.position.x, y: event.position.y});
-        // Remove item from the stack
-        dispatch(removeTab(index));
-
-        draggable.on('drag', event => {
-            const resolution = this.resolveDropArea({x: event.position.x, y: event.position.y});
-            const {x, y, width, height, resolved} = resolution;
+    handleMove = event => {
+        const {isFloating} = this.props;
+        if (isFloating) {
+            const {x, y} = getPosition(event);
+            const {x: left, y: top, width, height, resolved} = this.resolveDropArea({x, y});
             if (resolved) {
-                this.setState({x: event.position.x, y: event.position.y, targetIndicator: {x, y, width, height}, showTargetIndicator: true});
+                this.setState({x, y, showTargetIndicator: true, targetIndicator: {top, left, width, height}});
             } else {
-                this.setState({x: event.position.x, y: event.position.y, showTargetIndicator: false});
+                this.setState({x, y, showTargetIndicator: false});
             }
-        });
-        draggable.on('dragstop', event => {
+        }
+    };
+
+    handleUp = () => {
+        const {isFloating} = this.props;
+        if (isFloating) {
+            const {dispatch, id, theme} = this.props;
+            const {x, y} = getPosition(event);
+
             document.body.classList.remove(theme['floaty-unselectable']);
-            const resolution = this.resolveDropArea({x: event.position.x, y: event.position.y});
+            const resolution = this.resolveDropArea({x, y});
             if (resolution.resolved) {
-                resolution.dispatch(this.state.floating, this.state.floatingTitle);
+                const {floatingItem, floatingTitle} = this.props;
+                resolution.execute(floatingItem, floatingTitle);
             }
-            this.setState({floating: null, floatingTitle: ''});
-            draggable.emit('destroy');
-        });
-    }
+            dispatch(stopFloating(id));
+        }
+    };
+
+    dragStart = (item, title) => {
+        const {dispatch, id, theme} = this.props;
+        dispatch(startFloating(id, item, title));
+        document.body.classList.add(theme['floaty-unselectable']);
+    };
 
     // renderRow(id) {
     // TODO: stick growValues in a selector
@@ -139,22 +148,29 @@ export default class Floaty extends SplittablePanel {
     //     </StackFloating>;
     // }
 
+    resolveDropArea(position) {
+        return this.item.getWrappedInstance().resolveDropArea(position);
+    }
+
     renderDropArea() {
         const {theme} = this.props;
         const {showTargetIndicator} = this.state;
         if (showTargetIndicator) {
-            const {x, y, width, height} = this.state.targetIndicator;
+            const {targetIndicator: {left, top, width, height}} = this.state;
             const {scrollX, scrollY} = window;
-            return <div className={theme['floaty-target-indicator']} style={{top: y - scrollY, left: x - scrollX, width, height}}/>;
+            return <div className={theme['floaty-target-indicator']} style={{top: top - scrollY, left: left - scrollX, width, height}}/>;
         }
     }
 
     render() {
-        const {children, layout, id, refs, stackControls, theme, ...other} = this.props;
+        const {children, layout, dispatch, id, item, refs, stackControls, theme, isFloating, floatingItem, floatingTitle, ...other} = this.props;
+
         return <div ref={'container'} {...other}>
-            <Item id={id}/>
-            {/*{this.state.floating && this.renderFloatingStack()}*/}
-            {this.state.floating && this.renderDropArea()}
+            {typeof item === 'number' ? <Item ref={r => this.item = r} id={item}/> : item}
+            {/*{isFloating && this.renderFloatingStack()}*/}
+            {isFloating && this.renderDropArea()}
         </div>;
     }
 }
+
+export default connect(floatySelector)(Floaty);

@@ -1,4 +1,5 @@
 import EventEmitter from 'eventemitter3';
+import getPosition from './getPosition';
 
 export default function Draggable(element, threshold = 0) {
     const emitter = new EventEmitter();
@@ -9,18 +10,6 @@ export default function Draggable(element, threshold = 0) {
 
     function distance(a, b) {
         return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
-    }
-
-    function getPosition(event) {
-        if ('touches' in event) {
-            if (event.touches.length >= 1) {
-                return {x: event.touches[0].pageX, y: event.touches[0].pageY};
-            } else {
-                return current;
-            }
-        } else {
-            return {x: event.pageX, y: event.pageY};
-        }
     }
 
     function handleUp(event) {

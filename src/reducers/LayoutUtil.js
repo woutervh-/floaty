@@ -48,19 +48,3 @@ export function minimizeStack(stackObject) {
         return {...stackObject, items};
     }
 }
-
-export function transformToColumn(object, items, newItemsBefore) {
-    if (newItemsBefore) {
-        return {type: 'column', items: [...items, object]};
-    } else {
-        return {type: 'column', items: [object, ...items]};
-    }
-}
-
-export function transformToRow(object, items, newItemsBefore) {
-    if (newItemsBefore) {
-        return {type: 'row', items: [...items, object]};
-    } else {
-        return {type: 'row', items: [object, ...items]};
-    }
-}

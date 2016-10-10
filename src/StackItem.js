@@ -1,32 +1,28 @@
 import React from 'react';
-import SplittablePanel from './SplittablePanel';
 import classNames from 'classnames';
 import shallowEqual from 'shallowequal';
-import {updateGeneric} from './actions';
+import Item from './Item';
+import {floatyContextType} from './Types';
 
-export default class StackItem extends SplittablePanel {
+export default class StackItem extends React.Component {
     static propTypes = {
-        dispatch: React.PropTypes.func.isRequired
+        value: React.PropTypes.any.isRequired
     };
 
     static contextTypes = {
-        theme: React.PropTypes.object.isRequired
+        floatyContext: floatyContextType
     };
 
     shouldComponentUpdate(nextProps, nextState, nextContent) {
         return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContent);
     }
 
-    dispatch(action) {
-        this.props.dispatch(updateGeneric(action));
-    }
-
     render() {
-        const {theme} = this.context;
-        const {children, className, dispatch, ...other} = this.props;
+        const {className, value, ...other} = this.props;
+        const {floatyContext: {theme}} = this.context;
 
-        return <div ref="container" className={classNames(theme['floaty-stack-item'], className)} {...other}>
-            {this.transformChildren()}
+        return <div className={classNames(theme['floaty-stack-item'], className)} {...other}>
+            {typeof value === 'number' ? <Item id={value}/> : value}
         </div>;
     }
 };

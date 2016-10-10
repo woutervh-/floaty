@@ -1,22 +1,35 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import connect from 'react-redux/lib/components/connect';
 import Column from './Column';
 import Row from './Row';
 import Stack from './Stack';
 import {itemSelector} from './selectors';
+import {floatyContextType} from './Types';
+import split from './split';
 
 class Item extends React.Component {
     static propTypes = {
-        id: React.PropTypes.number.isRequired,
-        item: React.PropTypes.object.isRequired
+        id: React.PropTypes.number.isRequired
     };
 
     static contextTypes = {
-        floatyContext: React.PropTypes.shape({
-            refs: React.PropTypes.object.isRequired,
-            theme: React.PropTypes.object.isRequired
-        }).isRequired
+        floatyContext: floatyContextType
     };
+
+    resolveDropArea(position) {
+        const {type} = this.props;
+
+        switch (type) {
+            case 'column':
+            case 'row':
+            case 'stack':
+                return this.item.resolveDropArea(position);
+            default:
+                const {id, dispatch} = this.props;
+                return split(ReactDOM.findDOMNode(this), position, id, dispatch);
+        }
+    }
 
     renderLeafComponent() {
         const {type} = this.props;
@@ -50,18 +63,15 @@ class Item extends React.Component {
 
         switch (type) {
             case 'column':
-                const {column} = this.props;
-                return <Column id={column}/>;
+                return <Column ref={r => this.item = r} {...this.props}/>;
             case 'row':
-                const {row} = this.props;
-                return <Row id={row}/>;
+                return <Row ref={r => this.item = r} {...this.props}/>;
             case 'stack':
-                const {stack} = this.props;
-                return <Stack id={stack}/>;
+                return <Stack ref={r => this.item = r} {...this.props}/>;
             default:
                 return this.renderLeafComponent();
         }
     }
 }
 
-export default connect(itemSelector)(Item);
+export default connect(itemSelector, undefined, undefined, {withRef: true})(Item);

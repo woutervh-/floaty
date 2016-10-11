@@ -80,10 +80,11 @@ export function transformIntoRow(itemId, item, newItemsBefore) {
     };
 }
 
-export function setLayout(layout) {
+export function setLayout(layoutId, item) {
     return {
         type: FLOATY_SET_LAYOUT,
-        layout
+        layoutId,
+        item
     };
 }
 

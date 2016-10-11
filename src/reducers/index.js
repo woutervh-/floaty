@@ -5,6 +5,7 @@ import {
     FLOATY_REMOVE_TAB,
     FLOATY_SET_ACTIVE_TAB,
     FLOATY_SET_GROW_VALUES,
+    FLOATY_SET_LAYOUT,
     FLOATY_START_FLOATING,
     FLOATY_STOP_FLOATING,
     FLOATY_TRANSFORM_INTO_COLUMN,
@@ -180,6 +181,8 @@ function floatyItems(state = {}, action) {
                 return {...state, [itemId]: floatyItem(state[itemId], {type: action.type, items: [id1, id2]}), [id1]: state[itemId], [id2]: action.item};
             }
         }
+        case FLOATY_SET_LAYOUT:
+            return {...state, [action.itemId]: action.item};
         default:
             return state;
     }
@@ -191,6 +194,8 @@ function floatyLayout(state = {item: 0, floatingItem: null, floatingTitle: null}
             return {...state, floatingItem: action.item, floatingTitle: action.title};
         case FLOATY_STOP_FLOATING:
             return {...state, floatingItem: null, floatingTitle: null};
+        case FLOATY_SET_LAYOUT:
+            return {...state, item: action.itemId};
         default:
             return state;
     }
@@ -200,27 +205,59 @@ function floatyLayouts(state = {}, action) {
     switch (action.type) {
         case FLOATY_START_FLOATING:
         case FLOATY_STOP_FLOATING:
+        case FLOATY_SET_LAYOUT:
             return {...state, [action.layoutId]: floatyLayout(state[action.layoutId], action)};
         default:
             return state;
     }
 }
 
-export default function floaty(state = {}, action) {
-    const {entities = {}} = state;
-    const {floatyItems: items, floatyLayouts: layouts} = entities;
-    const next = {...state, entities: {...entities, floatyItems: {...floatyItems(items, action)}, floatyLayouts: {...floatyLayouts(layouts, action)}}};
-    const minimized = {};
-    Object.keys(next.entities.floatyLayouts).forEach(key => {
-        const {item, floatingItem} = next.entities.floatyLayouts[key];
-        next.entities.floatyLayouts[key].item = minimize(item, next.entities.floatyItems, minimized);
-        next.entities.floatyLayouts[key].floatingItem = minimize(floatingItem, next.entities.floatyItems, minimized);
-    });
-    return next;
+function sweep(items, marked) {
+    for (const key of Object.keys(items)) {
+        if (!(key in marked)) {
+            delete items[key];
+        }
+    }
 }
 
-// TODO: minimization & cleanup
-
-// export default function floaty(state, action) {
-//     return generic(state, action) || {type: 'component', content: ''};
-// };
+export default function floaty(state = {}, action) {
+    switch (action.type) {
+        case FLOATY_SET_LAYOUT:
+        case FLOATY_REMOVE_TAB:
+        case FLOATY_REMOVE_ACTIVE_TAB:
+        case FLOATY_INSERT_TAB:
+        case FLOATY_ADD_TAB:
+        case FLOATY_SET_ACTIVE_TAB:
+        case FLOATY_SET_GROW_VALUES:
+        case FLOATY_TRANSFORM_INTO_COLUMN:
+        case FLOATY_TRANSFORM_INTO_ROW:
+        case FLOATY_START_FLOATING:
+        case FLOATY_STOP_FLOATING:
+            if (action.type === FLOATY_SET_LAYOUT) {
+                action.itemId = generateIdentifier();
+            }
+            const {entities = {}} = state;
+            const {floatyItems: items, floatyLayouts: layouts} = entities;
+            const next = {
+                ...state,
+                entities: {
+                    ...entities,
+                    floatyItems: {...floatyItems(items, action)},
+                    floatyLayouts: {...floatyLayouts(layouts, action)}
+                }
+            };
+            const minimized = {};
+            Object.keys(next.entities.floatyLayouts).forEach(key => {
+                const layout = next.entities.floatyLayouts[key];
+                const {item, floatingItem} = layout;
+                layout.item = minimize(item, next.entities.floatyItems, minimized);
+                layout.floatingItem = minimize(floatingItem, next.entities.floatyItems, minimized);
+            });
+            if (action.type === FLOATY_STOP_FLOATING) {
+                sweep(next.entities.floatyItems, minimized);
+            }
+            return next;
+        default:
+            return state;
+    }
+}

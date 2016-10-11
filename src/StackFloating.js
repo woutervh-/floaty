@@ -40,7 +40,7 @@ export default class StackFloating extends React.Component {
     renderHeader() {
         const {floatyContext: {theme}} = this.context;
 
-        return <div ref="header" className={theme['floaty-stack-header']}>
+        return <div className={theme['floaty-stack-header']}>
             {this.renderHeaderTabs()}
         </div>;
     }

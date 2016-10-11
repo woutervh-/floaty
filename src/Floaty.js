@@ -2,19 +2,20 @@ import React from 'react';
 import shallowEqual from 'shallowequal';
 import connect from 'react-redux/lib/components/connect';
 import Item from './Item';
-import {startFloating, stopFloating} from './actions';
+import {startFloating, stopFloating, setLayout} from './actions';
 import {floatySelector} from './selectors';
 import SplittablePanel from './SplittablePanel';
 import {floatyContextType} from './Types';
 import getPosition from './getPosition';
 import {isReference} from './references';
 import StackFloating from './StackFloating';
+import * as DomUtil from './DomUtil';
 
 class Floaty extends SplittablePanel {
     static propTypes = {
         refs: React.PropTypes.object,
         id: React.PropTypes.any.isRequired,
-        item: React.PropTypes.any.isRequired,
+        item: React.PropTypes.any,
         theme: React.PropTypes.object.isRequired,
         stackControls: React.PropTypes.any,
         isFloating: React.PropTypes.bool.isRequired
@@ -107,7 +108,17 @@ class Floaty extends SplittablePanel {
     }
 
     resolveDropArea(position) {
-        return this.item.getWrappedInstance().resolveDropArea(position);
+        if (this.item) {
+            return this.item.getWrappedInstance().resolveDropArea(position);
+        } else {
+            const {dispatch, id, floatingItem: item, floatingTitle: title} = this.props;
+            const box = DomUtil.elementOffset(this.container);
+            return {
+                ...box,
+                resolved: true,
+                execute: (item, title) => dispatch(setLayout(id, {type: 'stack', items: [item], titles: [title]}))
+            };
+        }
     }
 
     renderDropArea() {
@@ -123,7 +134,7 @@ class Floaty extends SplittablePanel {
     render() {
         const {children, layout, dispatch, id, item, refs, stackControls, theme, isFloating, floatingItem, floatingTitle, ...other} = this.props;
 
-        return <div ref={'container'} {...other}>
+        return <div ref={r => this.container = r} {...other}>
             {isReference(item) ? <Item ref={r => this.item = r} id={item}/> : item}
             {isFloating && this.renderFloatingStack()}
             {isFloating && this.renderDropArea()}

@@ -236,25 +236,20 @@ export default function floaty(state = {}, action) {
             if (action.type === FLOATY_SET_LAYOUT) {
                 action.itemId = generateIdentifier();
             }
-            const {entities = {}} = state;
-            const {floatyItems: items, floatyLayouts: layouts} = entities;
+            const {items, layouts} = state;
             const next = {
-                ...state,
-                entities: {
-                    ...entities,
-                    floatyItems: {...floatyItems(items, action)},
-                    floatyLayouts: {...floatyLayouts(layouts, action)}
-                }
+                items: {...floatyItems(items, action)},
+                layouts: {...floatyLayouts(layouts, action)}
             };
             const minimized = {};
-            Object.keys(next.entities.floatyLayouts).forEach(key => {
-                const layout = next.entities.floatyLayouts[key];
+            Object.keys(next.layouts).forEach(key => {
+                const layout = next.layouts[key];
                 const {item, floatingItem} = layout;
-                layout.item = minimize(item, next.entities.floatyItems, minimized);
-                layout.floatingItem = minimize(floatingItem, next.entities.floatyItems, minimized);
+                layout.item = minimize(item, next.items, minimized);
+                layout.floatingItem = minimize(floatingItem, next.items, minimized);
             });
             if (action.type === FLOATY_STOP_FLOATING) {
-                sweep(next.entities.floatyItems, minimized);
+                sweep(next.items, minimized);
             }
             return next;
         default:

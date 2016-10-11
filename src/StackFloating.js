@@ -1,16 +1,19 @@
 import React from 'react';
 import classNames from 'classnames';
 import shallowEqual from 'shallowequal';
+import {floatyContextType} from './Types';
+import StackItem from './StackItem';
 
 export default class StackFloating extends React.Component {
     static propTypes = {
         title: React.PropTypes.any.isRequired,
+        item: React.PropTypes.any.isRequired,
         x: React.PropTypes.number.isRequired,
         y: React.PropTypes.number.isRequired
     };
 
     static contextTypes = {
-        theme: React.PropTypes.object.isRequired
+        floatyContext: floatyContextType
     };
 
     shouldComponentUpdate(nextProps, nextState, nextContent) {
@@ -19,7 +22,7 @@ export default class StackFloating extends React.Component {
 
     renderHeaderTab() {
         const {title} = this.props;
-        const {theme} = this.context;
+        const {floatyContext: {theme}} = this.context;
 
         return <li className={classNames(theme['floaty-stack-header-tabs-item'], theme['floaty-stack-header-tabs-item-active'])}>
             {title}
@@ -27,7 +30,7 @@ export default class StackFloating extends React.Component {
     }
 
     renderHeaderTabs() {
-        const {theme} = this.context;
+        const {floatyContext: {theme}} = this.context;
 
         return <ul className={theme['floaty-stack-header-tabs']}>
             {this.renderHeaderTab()}
@@ -35,7 +38,7 @@ export default class StackFloating extends React.Component {
     }
 
     renderHeader() {
-        const {theme} = this.context;
+        const {floatyContext: {theme}} = this.context;
 
         return <div ref="header" className={theme['floaty-stack-header']}>
             {this.renderHeaderTabs()}
@@ -43,12 +46,12 @@ export default class StackFloating extends React.Component {
     }
 
     render() {
-        const {children, className, title, style, x, y, ...other} = this.props;
-        const {theme} = this.context;
+        const {className, title, item, style, x, y, ...other} = this.props;
+        const {floatyContext: {theme}} = this.context;
 
         return <div className={classNames(theme['floaty-stack'], theme['floaty-stack-floating'], className)} style={{...style, top: y, left: x}} {...other}>
             {this.renderHeader()}
-            {children}
+            <StackItem value={item}/>
         </div>;
     }
 };

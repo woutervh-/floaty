@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import shallowEqual from 'shallowequal';
+import {isReference} from './references';
 import Item from './Item';
 import {floatyContextType} from './Types';
 import split from './split';
@@ -21,7 +22,7 @@ export default class ColumnItem extends React.Component {
 
     resolveDropArea(position) {
         const {value} = this.props;
-        if (typeof value === 'number') {
+        if (isReference(value)) {
             return this.item.getWrappedInstance().resolveDropArea(position);
         } else {
             return split(ReactDOM.findDOMNode(this), position);
@@ -33,7 +34,7 @@ export default class ColumnItem extends React.Component {
         const {floatyContext: {theme}} = this.context;
 
         return <div className={classNames(theme['floaty-column-item'], className)} {...other}>
-            {typeof value === 'number' ? <Item ref={r => this.item = r} id={value}/> : value}
+            {isReference(value) ? <Item ref={r => this.item = r} id={value}/> : value}
         </div>;
     }
 };

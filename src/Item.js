@@ -10,7 +10,7 @@ import split from './split';
 
 class Item extends React.Component {
     static propTypes = {
-        id: React.PropTypes.number.isRequired
+        id: React.PropTypes.any.isRequired
     };
 
     static contextTypes = {

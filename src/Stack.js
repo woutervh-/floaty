@@ -4,18 +4,14 @@ import classNames from 'classnames';
 import Draggable from './Draggable';
 import * as DomUtil from './DomUtil';
 import shallowEqual from 'shallowequal';
-import {noOperation, insertTab, removeTab} from './actions';
+import {insertTab, removeTab, setActiveTab} from './actions';
 import StackItem from './StackItem';
 import {floatyContextType} from './Types';
 import split from './split';
 
-const noOp = () => undefined;
-
 export default class Stack extends React.Component {
     static propTypes = {
         active: React.PropTypes.number,
-        // controls: React.PropTypes.any,
-        // float: React.PropTypes.func.isRequired,
         titles: React.PropTypes.array.isRequired,
         items: React.PropTypes.array.isRequired
     };
@@ -57,7 +53,7 @@ export default class Stack extends React.Component {
         }
     }
 
-    unmakeDraggables(callback = noOp) {
+    unmakeDraggables(callback = () => undefined) {
         if (this.unmakeDraggablesTimeout) {
             window.clearTimeout(this.unmakeDraggablesTimeout);
         }
@@ -85,8 +81,8 @@ export default class Stack extends React.Component {
     }
 
     handleTabClick(index) {
-        // TODO:
-        // this.props.dispatch(updateActiveTab(index));
+        const {id, dispatch} = this.props;
+        dispatch(setActiveTab(id, index));
     }
 
     resolveDropArea(position) {
@@ -147,7 +143,7 @@ export default class Stack extends React.Component {
 
         return <div ref={r => this.header = r} className={theme['floaty-stack-header']}>
             {this.renderTabs()}
-            {this.renderControls()}
+            {/*{this.renderControls()}*/}
         </div>;
     }
 
@@ -157,7 +153,7 @@ export default class Stack extends React.Component {
 
         return <div ref={r => this.container = r} className={classNames(theme['floaty-stack'], className)} {...other}>
             {this.renderHeader()}
-            <StackItem value={items[active]}/>
+            {0 <= active && active < items.length && <StackItem value={items[active]}/>}
         </div>;
     }
 };

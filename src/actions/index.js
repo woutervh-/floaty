@@ -1,56 +1,65 @@
 import {
     FLOATY_ADD_TAB,
     FLOATY_INSERT_TAB,
-    FLOATY_NO_OPERATION,
     FLOATY_REMOVE_ACTIVE_TAB,
     FLOATY_REMOVE_TAB,
     FLOATY_SET_ACTIVE_TAB,
+    FLOATY_SET_GROW_VALUES,
     FLOATY_SET_LAYOUT,
-    FLOATY_SET_STATE_FROM_REDUCER,
     FLOATY_START_FLOATING,
     FLOATY_STOP_FLOATING,
     FLOATY_TRANSFORM_INTO_COLUMN,
     FLOATY_TRANSFORM_INTO_ROW
 } from '../constants';
 
-export function setActiveTab(index) {
+export function setGrowValues(itemId, growValues) {
+    return {
+        type: FLOATY_SET_GROW_VALUES,
+        itemId,
+        growValues
+    };
+}
+
+export function setActiveTab(itemId, index) {
     return {
         type: FLOATY_SET_ACTIVE_TAB,
+        itemId,
         index
     };
 }
 
-export function removeTab(stackId, index) {
+export function removeTab(itemId, index) {
     return {
         type: FLOATY_REMOVE_TAB,
-        stackId,
+        itemId,
         index
     };
 }
 
-export function removeActiveTab() {
-    return {type: FLOATY_REMOVE_ACTIVE_TAB};
+export function removeActiveTab(itemId) {
+    return {
+        type: FLOATY_REMOVE_ACTIVE_TAB,
+        itemId
+    };
 }
 
-export function insertTab(index, item, title) {
+export function insertTab(itemId, index, item, title) {
     return {
         type: FLOATY_INSERT_TAB,
+        itemId,
         index,
         item,
         title
     };
 }
 
-export function addTab(item, title) {
+export function addTab(itemId, item, title) {
     return {
         type: FLOATY_ADD_TAB,
+        itemId,
         item,
         title
     };
-}
-
-export function noOperation() {
-    return {type: FLOATY_NO_OPERATION};
 }
 
 export function transformIntoColumn(itemId, item, newItemsBefore) {
@@ -75,14 +84,6 @@ export function setLayout(layout) {
     return {
         type: FLOATY_SET_LAYOUT,
         layout
-    };
-}
-
-export function setStateFromReducer(reducer, update) {
-    return {
-        type: FLOATY_SET_STATE_FROM_REDUCER,
-        reducer,
-        update
     };
 }
 

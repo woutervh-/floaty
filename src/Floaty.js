@@ -1,23 +1,20 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import shallowEqual from 'shallowequal';
 import connect from 'react-redux/lib/components/connect';
-import * as DomUtil from './DomUtil';
 import Item from './Item';
-import {removeTab, setLayout, startFloating, stopFloating} from './actions';
+import {startFloating, stopFloating} from './actions';
 import {floatySelector} from './selectors';
 import SplittablePanel from './SplittablePanel';
 import {floatyContextType} from './Types';
 import getPosition from './getPosition';
-
-const noOp = () => undefined;
-const identity = x => x;
+import {isReference} from './references';
+import StackFloating from './StackFloating';
 
 class Floaty extends SplittablePanel {
     static propTypes = {
         refs: React.PropTypes.object,
-        id: React.PropTypes.number.isRequired,
-        item: React.PropTypes.number.isRequired,
+        id: React.PropTypes.any.isRequired,
+        item: React.PropTypes.any.isRequired,
         theme: React.PropTypes.object.isRequired,
         stackControls: React.PropTypes.any,
         isFloating: React.PropTypes.bool.isRequired
@@ -67,17 +64,6 @@ class Floaty extends SplittablePanel {
         };
     }
 
-    // resolveDropArea(position) {
-    //     if ('root' in this.refs) {
-    //         return this.refs['root'].resolveDropArea(position);
-    //     } else {
-    //         const {dispatch} = this.props;
-    //         const element = ReactDOM.findDOMNode(this.refs['container']);
-    //         const box = DomUtil.elementOffset(element);
-    //         return {...box, dispatch: (item, title) => dispatch(setLayout({type: 'stack', titles: [title], items: [item]})), resolved: true};
-    //     }
-    // }
-
     handleMove = event => {
         const {isFloating} = this.props;
         if (isFloating) {
@@ -113,40 +99,12 @@ class Floaty extends SplittablePanel {
         document.body.classList.add(theme['floaty-unselectable']);
     };
 
-    // renderRow(id) {
-    // TODO: stick growValues in a selector
-    // return <Row growValues={rowObject.growValues || new Array(rowObject.items.length).fill(1)}>}
-    //     {rowObject.items.map((id, index) =>
-    //         <RowItem key={index}>
-    //             {this.renderItem(id)}
-    //         </RowItem>
-    //     )}
-    // </Row>;
-    // }
-
-    // renderStack(stackObject) {
-    //     const props = {
-    //         dispatch,
-    //         controls: this.props.stackControls,
-    //         active: stackObject.active || 0,
-    //         titles: stackObject.titles.map(tabTitle => this.renderLeafComponent(tabTitle)) || [],
-    //         float: this.dragStart.bind(this, stackObject),
-    //         ...stackObject.props
-    //     };
-    //     return <Stack ref={refAccumulator.join('-')} {...props}>
-    //         {stackObject.items.map((stackItemObject, index) => this.renderStackItem(update => dispatch(updateStackItem(index, update)), [...refAccumulator, 'stack-item-' + index], stackItemObject, index))}
-    //     </Stack>;
-    // }
-
-    // renderFloatingStack() {
-    //     const {floating: stackItemObject, floatingTitle: title, x, y} = this.state;
-    //     const {scrollX, scrollY} = window;
-    //     return <StackFloating title={this.renderLeafComponent(title)} x={x - scrollX} y={y - scrollY}>
-    //         <StackItem dispatch={noOp}>
-    //             {this.renderGeneric(noOp, ['floating'], stackItemObject)}
-    //         </StackItem>
-    //     </StackFloating>;
-    // }
+    renderFloatingStack() {
+        const {floatingItem: item, floatingTitle: title} = this.props;
+        const {x, y} = this.state;
+        const {scrollX, scrollY} = window;
+        return <StackFloating title={title} item={item} x={x - scrollX} y={y - scrollY}/>;
+    }
 
     resolveDropArea(position) {
         return this.item.getWrappedInstance().resolveDropArea(position);
@@ -166,8 +124,8 @@ class Floaty extends SplittablePanel {
         const {children, layout, dispatch, id, item, refs, stackControls, theme, isFloating, floatingItem, floatingTitle, ...other} = this.props;
 
         return <div ref={'container'} {...other}>
-            {typeof item === 'number' ? <Item ref={r => this.item = r} id={item}/> : item}
-            {/*{isFloating && this.renderFloatingStack()}*/}
+            {isReference(item) ? <Item ref={r => this.item = r} id={item}/> : item}
+            {isFloating && this.renderFloatingStack()}
             {isFloating && this.renderDropArea()}
         </div>;
     }

@@ -5,7 +5,7 @@ import ColumnSeparator from './ColumnSeparator';
 import ColumnItem from './ColumnItem';
 import * as DomUtil from './DomUtil';
 import shallowEqual from 'shallowequal';
-import {noOperation} from './actions';
+import {setGrowValues} from './actions';
 import {floatyContextType} from './Types';
 
 export default class Column extends React.Component {
@@ -61,8 +61,7 @@ export default class Column extends React.Component {
         const newGrowValues = [...growValues];
         newGrowValues[index] = fraction * growValuesSum;
         newGrowValues[index + 1] = (1 - fraction) * growValuesSum;
-        // TODO:
-        // this.props.dispatch(updateGrowValues(newGrowValues));
+        dispatch(setGrowValues(id, newGrowValues));
     }
 
     resolveDropArea(position) {

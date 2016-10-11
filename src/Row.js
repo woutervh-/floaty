@@ -5,7 +5,7 @@ import RowSeparator from './RowSeparator';
 import RowItem from './RowItem';
 import * as DomUtil from './DomUtil';
 import shallowEqual from 'shallowequal';
-import {noOperation} from './actions';
+import {setGrowValues} from './actions';
 import {floatyContextType} from './Types';
 
 export default class Row extends React.Component {
@@ -61,8 +61,7 @@ export default class Row extends React.Component {
         const newGrowValues = [...growValues];
         newGrowValues[index] = fraction * growValuesSum;
         newGrowValues[index + 1] = (1 - fraction) * growValuesSum;
-        // TODO:
-        // dispatch(updateGrowValues(newGrowValues));
+        dispatch(setGrowValues(id, newGrowValues));
     }
 
     resolveDropArea(position) {

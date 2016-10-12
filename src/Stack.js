@@ -117,13 +117,13 @@ export default class Stack extends React.Component {
     }
 
     renderTabs() {
-        const {active, children, titles, items} = this.props;
+        const {id, active, titles, items} = this.props;
         const {floatyContext: {theme}} = this.context;
 
         return <ul className={theme['floaty-stack-header-tabs']}>
             {[...new Array(items.length).keys()].map(index =>
                 <li key={index} ref={r => this['tab-' + index] = r} className={classNames(theme['floaty-stack-header-tabs-item'], {[theme['floaty-stack-header-tabs-item-active']]: index === active})} onClick={() => this.handleTabClick(index)}>
-                    {isIdentifier(titles[index]) ? <Item id={titles[index]}/> : titles[index]}
+                    {isIdentifier(titles[index]) ? <Item id={titles[index]} floatyStackId={id} floatyStackIndex={index}/> : titles[index]}
                 </li>
             )}
         </ul>;

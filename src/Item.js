@@ -32,27 +32,24 @@ class Item extends React.Component {
     }
 
     renderLeafComponent() {
-        const {type} = this.props;
+        const {type, state = {}, name, content, ...other} = this.props;
         const {floatyContext: {refs}} = this.context;
 
         let result;
         switch (type) {
             case 'prop-ref':
-                const {name} = this.props;
                 result = refs[name];
                 break;
             case 'component':
-                const {content} = this.props;
                 result = content;
                 break;
             default:
                 throw new Error(`Unknown leaf component type: ${type}`);
         }
-        const {state} = this.props;
-        if (state && React.isValidElement(result)) {
-            return React.cloneElement(result, {...state});
-        } else if (state && typeof result === 'function') {
-            return result(state);
+        if (React.isValidElement(result)) {
+            return React.cloneElement(result, {...other, ...state});
+        } else if (typeof result === 'function') {
+            return result({...other, ...state});
         } else {
             return result;
         }

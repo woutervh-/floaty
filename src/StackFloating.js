@@ -4,6 +4,7 @@ import shallowEqual from 'shallowequal';
 import {floatyContextType} from './Types';
 import StackItem from './StackItem';
 import {isIdentifier} from './identifiers';
+import Item from './Item';
 
 export default class StackFloating extends React.Component {
     static propTypes = {

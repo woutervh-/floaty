@@ -32,7 +32,7 @@ class Item extends React.Component {
     }
 
     renderLeafComponent() {
-        const {type, state = {}, name, content, ...other} = this.props;
+        const {type, state = {}, name, content, id, ...other} = this.props;
         const {floatyContext: {refs}} = this.context;
 
         let result;
@@ -47,9 +47,9 @@ class Item extends React.Component {
                 throw new Error(`Unknown leaf component type: ${type}`);
         }
         if (React.isValidElement(result)) {
-            return React.cloneElement(result, {...other, ...state});
+            return React.cloneElement(result, {...other, floatyId: id, ...state});
         } else if (typeof result === 'function') {
-            return result({...other, ...state});
+            return result({...other, floatyId: id, ...state});
         } else {
             return result;
         }

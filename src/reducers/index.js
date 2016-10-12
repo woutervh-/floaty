@@ -107,7 +107,7 @@ function stack(state = {active: 0, titles: [], items: []}, action) {
             items.splice(action.index, 1);
             const titles = [...state.titles];
             titles.splice(action.index, 1);
-            if (typeof state.active !== 'undefined') {
+            if (state.active !== undefined) {
                 // Ensure active index is in range
                 const active = Math.min(items.length - 1, state.active);
                 return {...state, active, items, titles};

@@ -2,18 +2,19 @@ import React from 'react';
 import shallowEqual from 'shallowequal';
 import connect from 'react-redux/lib/components/connect';
 import Item from './Item';
-import {startFloating, stopFloating, setLayout} from './actions';
+import {sweep, startFloating, stopFloating, setLayout} from './actions';
 import {floatySelector} from './selectors';
-import SplittablePanel from './SplittablePanel';
 import {floatyContextType} from './Types';
 import getPosition from './getPosition';
-import {isReference} from './references';
+import {isIdentifier} from './identifiers';
 import StackFloating from './StackFloating';
 import * as DomUtil from './DomUtil';
+import navigator from './navigator';
 
-class Floaty extends SplittablePanel {
+class Floaty extends React.Component {
     static propTypes = {
         refs: React.PropTypes.object,
+        floaty: React.PropTypes.object.isRequired,
         id: React.PropTypes.any.isRequired,
         item: React.PropTypes.any,
         theme: React.PropTypes.object.isRequired,
@@ -91,6 +92,7 @@ class Floaty extends SplittablePanel {
                 resolution.execute(floatingItem, floatingTitle);
             }
             dispatch(stopFloating(id));
+            dispatch(sweep());
         }
     };
 
@@ -99,6 +101,11 @@ class Floaty extends SplittablePanel {
         dispatch(startFloating(id, item, title));
         document.body.classList.add(theme['floaty-unselectable']);
     };
+
+    navigator() {
+        const {floaty, id} = this.props;
+        return navigator(floaty, id);
+    }
 
     renderFloatingStack() {
         const {floatingItem: item, floatingTitle: title} = this.props;
@@ -132,14 +139,14 @@ class Floaty extends SplittablePanel {
     }
 
     render() {
-        const {children, layout, dispatch, id, item, refs, stackControls, theme, isFloating, floatingItem, floatingTitle, ...other} = this.props;
+        const {children, layout, dispatch, id, item, refs, floaty, stackControls, theme, isFloating, floatingItem, floatingTitle, ...other} = this.props;
 
         return <div ref={r => this.container = r} {...other}>
-            {isReference(item) ? <Item ref={r => this.item = r} id={item}/> : item}
+            {isIdentifier(item) ? <Item ref={r => this.item = r} id={item}/> : item}
             {isFloating && this.renderFloatingStack()}
             {isFloating && this.renderDropArea()}
         </div>;
     }
 }
 
-export default connect(floatySelector)(Floaty);
+export default connect(floatySelector, undefined, undefined, {withRef: true})(Floaty);

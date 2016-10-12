@@ -5,7 +5,7 @@ import shallowEqual from 'shallowequal';
 import Item from './Item';
 import {floatyContextType} from './Types';
 import split from './split';
-import {isReference} from './references';
+import {isIdentifier} from './identifiers';
 
 export default class RowItem extends React.Component {
     static propTypes = {
@@ -22,7 +22,7 @@ export default class RowItem extends React.Component {
 
     resolveDropArea(position) {
         const {value} = this.props;
-        if (isReference(value)) {
+        if (isIdentifier(value)) {
             return this.item.getWrappedInstance().resolveDropArea(position);
         } else {
             return split(ReactDOM.findDOMNode(this), position);
@@ -34,7 +34,7 @@ export default class RowItem extends React.Component {
         const {floatyContext: {theme}} = this.context;
 
         return <div className={classNames(theme['floaty-row-item'], className)} {...other}>
-            {isReference(value) ? <Item ref={r => this.item = r} id={value}/> : value}
+            {isIdentifier(value) ? <Item ref={r => this.item = r} id={value}/> : value}
         </div>;
     }
 };

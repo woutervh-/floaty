@@ -1,43 +1,40 @@
-import {updateColumn, updateColumnItem, updateGeneric, updateRow, updateRowItem, updateStack, updateStackItem} from './actions';
-
-function createNavigator(object, parent, chained) {
-    switch (object.type) {
+function createNavigator(items, id, parent) {
+    switch (items[id].type) {
         case 'column':
-            return new ColumnNavigator(object, parent, action => chained(updateColumn(action)));
+            return new ColumnNavigator(items, id, parent);
         case 'row':
-            return new RowNavigator(object, parent, action => chained(updateRow(action)));
+            return new RowNavigator(items, id, parent);
         case 'stack':
-            return new StackNavigator(object, parent, action => chained(updateStack(action)));
+            return new StackNavigator(items, id, parent);
         case 'prop-ref':
-        case 'child-ref':
         case 'component':
-            return new LeafObjectNavigator(object, parent, action => chained(updateGeneric(action)));
+            return new LeafObjectNavigator(items, id, parent);
         default:
-            throw new Error('Unsupported type: ' + object.type);
+            throw new Error('Unsupported type: ' + items[id].type);
     }
 }
 
 class BaseNavigator {
-    constructor(object, parent, chained) {
-        this._object = object;
+    constructor(items, id, parent) {
+        this._items = items;
+        this._id = id;
         this._parent = parent;
-        this._chained = chained;
     }
 
     object() {
-        return this._object;
+        return this._items[this._id];
     }
 
     parent() {
         return this._parent;
     }
 
-    chained(action) {
-        return action ? this._chained(action) : this._chained;
+    id() {
+        return this._id;
     }
 
     find(predicate) {
-        if (predicate(this._object)) {
+        if (predicate(this)) {
             return this;
         }
     }
@@ -45,11 +42,11 @@ class BaseNavigator {
 
 class ItemsNavigator extends BaseNavigator {
     items() {
-        return this._object.items.map((item, index) => createNavigator(item, this, action => this.chained(this._chainItemAction()(index, updateGeneric(action)))));
+        return this._items[this._id].items.map(item => createNavigator(this._items, item, this));
     }
 
     item(index) {
-        return createNavigator(this._object.items[index], this, action => this.chained(this._chainItemAction()(index, updateGeneric(action))));
+        return createNavigator(this._items, this._items[this._id].items[index], this);
     }
 
     find(predicate) {
@@ -61,33 +58,20 @@ class ItemsNavigator extends BaseNavigator {
         }
         return super.find(predicate);
     }
-
-    _chainItemAction() {
-        throw new Error('Abstract method');
-    }
 }
 
 class ColumnNavigator extends ItemsNavigator {
-    _chainItemAction() {
-        return updateColumnItem;
-    }
 }
 
 class RowNavigator extends ItemsNavigator {
-    _chainItemAction() {
-        return updateRowItem;
-    }
 }
 
 class StackNavigator extends ItemsNavigator {
-    _chainItemAction() {
-        return updateStackItem;
-    }
 }
 
 class LeafObjectNavigator extends BaseNavigator {
 }
 
-export default function navigator(state) {
-    return createNavigator(state, null, action => action);
+export default function navigator(floaty, layoutId) {
+    return createNavigator(floaty.items, floaty.layouts[layoutId].item, null);
 }

@@ -1,5 +1,6 @@
 export const floatySelector = (state, props) => ({
     ...state.entities.floaty.layouts[props.id],
+    floaty: state.entities.floaty,
     isFloating: !!state.entities.floaty.layouts[props.id].floatingItem
 });
 

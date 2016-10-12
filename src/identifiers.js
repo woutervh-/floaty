@@ -5,6 +5,6 @@ export function generateIdentifier() {
     return uuid.v4();
 }
 
-export function isReference(reference) {
-    return typeof reference === 'number' || isUuid.v4(reference)
+export function isIdentifier(identifier) {
+    return typeof identifier === 'number' || isUuid.v4(identifier)
 }

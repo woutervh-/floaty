@@ -8,7 +8,7 @@ import {insertTab, removeTab, setActiveTab} from './actions';
 import StackItem from './StackItem';
 import {floatyContextType} from './Types';
 import split from './split';
-import {isReference}  from './references';
+import {isIdentifier}  from './identifiers';
 import Item from './Item';
 
 export default class Stack extends React.Component {
@@ -36,6 +36,10 @@ export default class Stack extends React.Component {
 
     componentDidMount() {
         this.makeDraggables();
+    }
+
+    componentWillUpdate() {
+        this.unmakeDraggables();
     }
 
     componentDidUpdate() {
@@ -119,7 +123,7 @@ export default class Stack extends React.Component {
         return <ul className={theme['floaty-stack-header-tabs']}>
             {[...new Array(items.length).keys()].map(index =>
                 <li key={index} ref={r => this['tab-' + index] = r} className={classNames(theme['floaty-stack-header-tabs-item'], {[theme['floaty-stack-header-tabs-item-active']]: index === active})} onClick={() => this.handleTabClick(index)}>
-                    {isReference(titles[index]) ? <Item id={titles[index]}/> : titles[index]}
+                    {isIdentifier(titles[index]) ? <Item id={titles[index]}/> : titles[index]}
                 </li>
             )}
         </ul>;

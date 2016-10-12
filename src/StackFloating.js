@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import shallowEqual from 'shallowequal';
 import {floatyContextType} from './Types';
 import StackItem from './StackItem';
+import {isIdentifier} from './identifiers';
 
 export default class StackFloating extends React.Component {
     static propTypes = {
@@ -25,7 +26,7 @@ export default class StackFloating extends React.Component {
         const {floatyContext: {theme}} = this.context;
 
         return <li className={classNames(theme['floaty-stack-header-tabs-item'], theme['floaty-stack-header-tabs-item-active'])}>
-            {title}
+            {isIdentifier(title) ? <Item id={title}/> : title}
         </li>;
     }
 

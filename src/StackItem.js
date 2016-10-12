@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import shallowEqual from 'shallowequal';
 import Item from './Item';
 import {floatyContextType} from './Types';
-import {isReference} from './references';
+import {isIdentifier} from './identifiers';
 
 export default class StackItem extends React.Component {
     static propTypes = {
@@ -23,7 +23,7 @@ export default class StackItem extends React.Component {
         const {floatyContext: {theme}} = this.context;
 
         return <div className={classNames(theme['floaty-stack-item'], className)} {...other}>
-            {isReference(value) ? <Item id={value}/> : value}
+            {isIdentifier(value) ? <Item id={value}/> : value}
         </div>;
     }
 };

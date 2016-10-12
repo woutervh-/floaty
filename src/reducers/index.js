@@ -1,4 +1,5 @@
 import {
+    FLOATY_ADD_ITEM,
     FLOATY_ADD_TAB,
     FLOATY_INSERT_TAB,
     FLOATY_REMOVE_ACTIVE_TAB,
@@ -8,10 +9,11 @@ import {
     FLOATY_SET_LAYOUT,
     FLOATY_START_FLOATING,
     FLOATY_STOP_FLOATING,
+    FLOATY_SWEEP,
     FLOATY_TRANSFORM_INTO_COLUMN,
     FLOATY_TRANSFORM_INTO_ROW
 } from '../constants';
-import {generateIdentifier, isReference} from '../references';
+import {generateIdentifier, isIdentifier} from '../identifiers';
 
 function minimizeColumnOrRow(itemId, floatyItems, minimized, type) {
     const items = [];
@@ -20,9 +22,9 @@ function minimizeColumnOrRow(itemId, floatyItems, minimized, type) {
     for (let i = 0; i < self.items.length; i++) {
         const child = self.items[i];
         const childItem = minimize(child, floatyItems, minimized);
-        if (childItem) {
+        if (childItem !== undefined) {
             const growValue = self.growValues && self.growValues[i] || 1;
-            if (isReference(childItem) && floatyItems[childItem].type === type) {
+            if (isIdentifier(childItem) && floatyItems[childItem].type === type) {
                 let growValuesSum = 0;
                 for (let j = 0; j < floatyItems[childItem].items.length; j++) {
                     growValuesSum += floatyItems[childItem].growValues && floatyItems[childItem].growValues[j] || 1;
@@ -53,9 +55,11 @@ function minimizeStack(itemId, floatyItems, minimized) {
     for (let i = 0; i < self.items.length; i++) {
         const child = self.items[i];
         const childItem = minimize(child, floatyItems, minimized);
-        if (childItem) {
+        const title = self.titles[i];
+        const titleItem = minimize(title, floatyItems, minimized);
+        if (childItem !== undefined && titleItem !== undefined) {
             items.push(childItem);
-            titles.push(self.titles[i]);
+            titles.push(titleItem);
         }
     }
     if (items.length >= 1) {
@@ -65,7 +69,7 @@ function minimizeStack(itemId, floatyItems, minimized) {
 }
 
 function minimize(item, floatyItems, minimized) {
-    if (isReference(item)) {
+    if (isIdentifier(item)) {
         if (!(item in minimized)) {
             switch (floatyItems[item].type) {
                 case 'column':
@@ -157,6 +161,8 @@ function floatyItem(state = {}, action) {
             return {type: 'row', items: action.items};
         case FLOATY_SET_GROW_VALUES:
             return columnOrRow(state, action);
+        case FLOATY_ADD_ITEM:
+            return action.item;
         default:
             return state;
     }
@@ -170,6 +176,7 @@ function floatyItems(state = {}, action) {
         case FLOATY_ADD_TAB:
         case FLOATY_SET_ACTIVE_TAB:
         case FLOATY_SET_GROW_VALUES:
+        case FLOATY_ADD_ITEM:
             return {...state, [action.itemId]: floatyItem(state[action.itemId], action)};
         case FLOATY_TRANSFORM_INTO_COLUMN:
         case FLOATY_TRANSFORM_INTO_ROW: {
@@ -233,6 +240,8 @@ export default function floaty(state = {}, action) {
         case FLOATY_TRANSFORM_INTO_ROW:
         case FLOATY_START_FLOATING:
         case FLOATY_STOP_FLOATING:
+        case FLOATY_SWEEP:
+        case FLOATY_ADD_ITEM:
             if (action.type === FLOATY_SET_LAYOUT) {
                 action.itemId = generateIdentifier();
             }
@@ -248,7 +257,7 @@ export default function floaty(state = {}, action) {
                 layout.item = minimize(item, next.items, minimized);
                 layout.floatingItem = minimize(floatingItem, next.items, minimized);
             });
-            if (action.type === FLOATY_STOP_FLOATING) {
+            if (action.type === FLOATY_SWEEP) {
                 sweep(next.items, minimized);
             }
             return next;

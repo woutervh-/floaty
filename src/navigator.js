@@ -43,6 +43,7 @@ class BaseNavigator {
         if (predicate(this)) {
             accumulator.push(this);
         }
+        return accumulator;
     }
 
     isLeafNode() {
@@ -74,6 +75,7 @@ class ItemsNavigator extends BaseNavigator {
             item.findAll(predicate, accumulator);
         }
         super.find(predicate, accumulator);
+        return accumulator;
     }
 
     isLeafNode() {

@@ -13,6 +13,7 @@ import {
     FLOATY_TRANSFORM_INTO_COLUMN,
     FLOATY_TRANSFORM_INTO_ROW
 } from '../constants';
+import {generateIdentifier} from '../identifiers';
 
 export function setGrowValues(itemId, growValues) {
     return {
@@ -64,29 +65,34 @@ export function addTab(itemId, item, title) {
     };
 }
 
-export function transformIntoColumn(itemId, item, newItemsBefore) {
+export function transformIntoColumn(itemId, item, newItemsBefore, newId1 = generateIdentifier(), newId2 = generateIdentifier()) {
     return {
         type: FLOATY_TRANSFORM_INTO_COLUMN,
         itemId,
         item,
-        newItemsBefore
+        newItemsBefore,
+        newId1,
+        newId2
     };
 }
 
-export function transformIntoRow(itemId, item, newItemsBefore) {
+export function transformIntoRow(itemId, item, newItemsBefore, newId1 = generateIdentifier(), newId2 = generateIdentifier()) {
     return {
         type: FLOATY_TRANSFORM_INTO_ROW,
         itemId,
         item,
-        newItemsBefore
+        newItemsBefore,
+        newId1,
+        newId2
     };
 }
 
-export function setLayout(layoutId, item) {
+export function setLayout(layoutId, item, itemId = generateIdentifier()) {
     return {
         type: FLOATY_SET_LAYOUT,
         layoutId,
-        item
+        item,
+        itemId
     };
 }
 

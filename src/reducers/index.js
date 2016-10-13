@@ -13,7 +13,7 @@ import {
     FLOATY_TRANSFORM_INTO_COLUMN,
     FLOATY_TRANSFORM_INTO_ROW
 } from '../constants';
-import {generateIdentifier, isIdentifier} from '../identifiers';
+import {isIdentifier} from '../identifiers';
 
 function minimizeColumnOrRow(itemId, floatyItems, minimized, type) {
     const items = [];
@@ -181,7 +181,7 @@ function floatyItems(state = {}, action) {
         case FLOATY_TRANSFORM_INTO_COLUMN:
         case FLOATY_TRANSFORM_INTO_ROW: {
             const {itemId, newItemsBefore} = action;
-            const [id1, id2] = [generateIdentifier(), generateIdentifier()];
+            const [id1, id2] = [action.newId1, action.newId2];
             if (newItemsBefore) {
                 return {...state, [itemId]: floatyItem(state[itemId], {type: action.type, items: [id1, id2]}), [id1]: action.item, [id2]: state[itemId]};
             } else {
@@ -242,9 +242,6 @@ export default function floaty(state = {}, action) {
         case FLOATY_STOP_FLOATING:
         case FLOATY_SWEEP:
         case FLOATY_ADD_ITEM:
-            if (action.type === FLOATY_SET_LAYOUT) {
-                action.itemId = generateIdentifier();
-            }
             const {items, layouts} = state;
             const next = {
                 items: {...floatyItems(items, action)},

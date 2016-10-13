@@ -82,8 +82,8 @@ export default class Stack extends React.Component {
         const {id, dispatch, items, titles} = this.props;
         const {floatyContext: {float}} = this.context;
         this.draggables.splice(index, 1)[0].emit('destroy');
-        dispatch(removeTab(id, index));
         float(items[index], titles[index]);
+        dispatch(removeTab(id, index));
     }
 
     handleTabClick(index) {

@@ -35,7 +35,12 @@ export function removeTab(itemId, index) {
     return {
         type: FLOATY_REMOVE_TAB,
         itemId,
-        index
+        index,
+        meta: {
+            floaty: {
+                sweep: true
+            }
+        }
     };
 }
 
@@ -72,7 +77,12 @@ export function transformIntoColumn(itemId, item, newItemsBefore, newId1 = gener
         item,
         newItemsBefore,
         newId1,
-        newId2
+        newId2,
+        meta: {
+            floaty: {
+                sweep: true
+            }
+        }
     };
 }
 
@@ -83,7 +93,12 @@ export function transformIntoRow(itemId, item, newItemsBefore, newId1 = generate
         item,
         newItemsBefore,
         newId1,
-        newId2
+        newId2,
+        meta: {
+            floaty: {
+                sweep: true
+            }
+        }
     };
 }
 
@@ -92,7 +107,12 @@ export function setLayout(layoutId, item, itemId = generateIdentifier()) {
         type: FLOATY_SET_LAYOUT,
         layoutId,
         item,
-        itemId
+        itemId,
+        meta: {
+            floaty: {
+                sweep: true
+            }
+        }
     };
 }
 
@@ -108,12 +128,13 @@ export function startFloating(layoutId, item, title) {
 export function stopFloating(layoutId) {
     return {
         type: FLOATY_STOP_FLOATING,
-        layoutId
+        layoutId,
+        meta: {
+            floaty: {
+                sweep: true
+            }
+        }
     };
-}
-
-export function sweep() {
-    return {type: FLOATY_SWEEP};
 }
 
 export function addItem(itemId, item) {

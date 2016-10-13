@@ -2,7 +2,7 @@ import React from 'react';
 import shallowEqual from 'shallowequal';
 import connect from 'react-redux/lib/components/connect';
 import Item from './Item';
-import {sweep, startFloating, stopFloating, setLayout} from './actions';
+import {startFloating, stopFloating, setLayout} from './actions';
 import {floatySelector} from './selectors';
 import {floatyContextType} from './Types';
 import getPosition from './getPosition';
@@ -92,7 +92,6 @@ class Floaty extends React.Component {
                 resolution.execute(floatingItem, floatingTitle);
             }
             dispatch(stopFloating(id));
-            dispatch(sweep());
         }
     };
 

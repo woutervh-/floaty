@@ -9,7 +9,6 @@ import {
     FLOATY_SET_LAYOUT,
     FLOATY_START_FLOATING,
     FLOATY_STOP_FLOATING,
-    FLOATY_SWEEP,
     FLOATY_TRANSFORM_INTO_COLUMN,
     FLOATY_TRANSFORM_INTO_ROW
 } from '../constants';
@@ -240,7 +239,6 @@ export default function floaty(state = {}, action) {
         case FLOATY_TRANSFORM_INTO_ROW:
         case FLOATY_START_FLOATING:
         case FLOATY_STOP_FLOATING:
-        case FLOATY_SWEEP:
         case FLOATY_ADD_ITEM:
             const {items, layouts} = state;
             const next = {
@@ -254,7 +252,7 @@ export default function floaty(state = {}, action) {
                 layout.item = minimize(item, next.items, minimized);
                 layout.floatingItem = minimize(floatingItem, next.items, minimized);
             });
-            if (action.type === FLOATY_SWEEP) {
+            if (action.meta && action.meta.floaty && action.meta.floaty.sweep === true) {
                 sweep(next.items, minimized);
             }
             return next;

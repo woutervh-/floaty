@@ -38,6 +38,16 @@ class BaseNavigator {
             return this;
         }
     }
+
+    findAll(predicate, accumulator = []) {
+        if (predicate(this)) {
+            accumulator.push(this);
+        }
+    }
+
+    isLeafNode() {
+        return true;
+    }
 }
 
 class ItemsNavigator extends BaseNavigator {
@@ -57,6 +67,17 @@ class ItemsNavigator extends BaseNavigator {
             }
         }
         return super.find(predicate);
+    }
+
+    findAll(predicate, accumulator = []) {
+        for (const item of this.items()) {
+            item.findAll(predicate, accumulator);
+        }
+        super.find(predicate, accumulator);
+    }
+
+    isLeafNode() {
+        return false;
     }
 }
 

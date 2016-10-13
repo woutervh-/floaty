@@ -248,9 +248,10 @@ export default function floaty(state = {}, action) {
             const minimized = {};
             Object.keys(next.layouts).forEach(key => {
                 const layout = next.layouts[key];
-                const {item, floatingItem} = layout;
+                const {item, floatingItem, floatingTitle} = layout;
                 layout.item = minimize(item, next.items, minimized);
                 layout.floatingItem = minimize(floatingItem, next.items, minimized);
+                layout.floatingTitle = minimize(floatingTitle, next.items, minimized)
             });
             if (action.meta && action.meta.floaty && action.meta.floaty.sweep === true) {
                 sweep(next.items, minimized);

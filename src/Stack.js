@@ -129,32 +129,16 @@ export default class Stack extends React.Component {
         </ul>;
     }
 
-    renderControls() {
-        const {controls, dispatch} = this.props;
-        const {floatyContext: {theme}} = this.context;
-
-        if (controls) {
-            return <ul className={theme['floaty-stack-header-controls']}>
-                {controls.map((control, index)=>
-                    <li key={index} className={theme['floaty-stack-header-controls-item']}>
-                        {control(dispatch)}
-                    </li>
-                )}
-            </ul>;
-        }
-    }
-
     renderHeader() {
         const {floatyContext: {theme}} = this.context;
 
         return <div ref={r => this.header = r} className={theme['floaty-stack-header']}>
             {this.renderTabs()}
-            {/*{this.renderControls()}*/}
         </div>;
     }
 
     render() {
-        const {active, items, className, controls, dispatch, float, titles, ...other} = this.props;
+        const {active, items, className, dispatch, float, titles, ...other} = this.props;
         const {floatyContext: {theme}} = this.context;
 
         return <div ref={r => this.container = r} className={classNames(theme['floaty-stack'], className)} {...other}>

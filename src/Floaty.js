@@ -117,7 +117,7 @@ class Floaty extends React.Component {
         if (this.item) {
             return this.item.getWrappedInstance().resolveDropArea(position);
         } else {
-            const {dispatch, id, floatingItem: item, floatingTitle: title} = this.props;
+            const {dispatch, id} = this.props;
             const box = DomUtil.elementOffset(this.container);
             return {
                 ...box,

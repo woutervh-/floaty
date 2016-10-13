@@ -84,19 +84,6 @@
     background-color: black;
 }
 
-.floaty-stack-header-controls {
-    display: block;
-    float: right;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-
-.floaty-stack-header-controls-item {
-    display: block;
-    float: left;
-}
-
 .floaty-stack-item {
     display: block;
     height: 0; /* height is controlled by flex-grow */

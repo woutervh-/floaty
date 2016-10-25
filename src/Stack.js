@@ -138,7 +138,7 @@ export default class Stack extends React.Component {
     }
 
     render() {
-        const {active, items, className, dispatch, float, titles, ...other} = this.props;
+        const {active, items, className, id, dispatch, float, titles, ...other} = this.props;
         const {floatyContext: {theme}} = this.context;
 
         return <div ref={r => this.container = r} className={classNames(theme['floaty-stack'], className)} {...other}>

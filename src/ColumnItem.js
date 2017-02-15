@@ -16,10 +16,6 @@ export default class ColumnItem extends React.Component {
         floatyContext: floatyContextType
     };
 
-    shouldComponentUpdate(nextProps, nextState, nextContent) {
-        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContent);
-    }
-
     resolveDropArea(position) {
         const {value} = this.props;
         if (isIdentifier(value)) {

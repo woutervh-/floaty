@@ -30,10 +30,6 @@ export default class Stack extends React.Component {
 
     draggables = [];
 
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
-        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContext);
-    }
-
     componentDidMount() {
         this.makeDraggables();
     }

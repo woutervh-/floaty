@@ -14,10 +14,6 @@ export default class StackItem extends React.Component {
         floatyContext: floatyContextType
     };
 
-    shouldComponentUpdate(nextProps, nextState, nextContent) {
-        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContent);
-    }
-
     render() {
         const {className, value, ...other} = this.props;
         const {floatyContext: {theme}} = this.context;

@@ -73,7 +73,7 @@ export default class Row extends React.Component {
     }
 
     render() {
-        const {className, dispatch, id, growValues, items, ...other} = this.props;
+        const {className, dispatch, id, growValues, items, type, ...other} = this.props;
         const {floatyContext: {theme}} = this.context;
 
         return <div className={classNames(theme['floaty-row'], className)} {...other}>

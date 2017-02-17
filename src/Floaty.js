@@ -42,10 +42,6 @@ class Floaty extends React.Component {
         showTargetIndicator: false
     };
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.state, nextState);
-    }
-
     componentWillMount() {
         document.addEventListener('mousemove', this.handleMove);
         document.addEventListener('mouseup', this.handleUp);

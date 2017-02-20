@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import connect from 'react-redux/lib/components/connect';
+import connect from 'react-redux/lib/connect/connect';
 import Column from './Column';
 import Row from './Row';
 import Stack from './Stack';

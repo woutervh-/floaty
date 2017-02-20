@@ -1,6 +1,6 @@
 import React from 'react';
 import shallowEqual from 'shallowequal';
-import connect from 'react-redux/lib/components/connect';
+import connect from 'react-redux/lib/connect/connect';
 import Item from './Item';
 import {startFloating, stopFloating, setLayout} from './actions';
 import {floatySelector} from './selectors';

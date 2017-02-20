@@ -9,6 +9,6 @@ export const itemSelector = (state, props) => {
     if (typeof item === 'object') {
         return item;
     } else {
-        return {type: 'component', content: state};
+        return {type: 'component', content: item};
     }
 };

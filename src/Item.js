@@ -71,4 +71,4 @@ class Item extends React.Component {
     }
 }
 
-export default connect(itemSelector, undefined, undefined, {withRef: true})(Item);
+export default connect(itemSelector, undefined, undefined, {withRef: true, pure: false})(Item);

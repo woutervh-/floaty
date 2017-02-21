@@ -144,4 +144,4 @@ class Floaty extends React.Component {
     }
 }
 
-export default connect(floatySelector)(Floaty);
+export default connect(floatySelector, undefined, undefined, {pure: false})(Floaty);

@@ -140,7 +140,7 @@ class Floaty extends React.Component {
     }
 
     render() {
-        const {children, layout, dispatch, id, item, refs, floaty, stackControls, theme, isFloating, floatingItem, floatingTitle, ...other} = this.props;
+        const {children, layout, dispatch, id, item, refs, floaty, stackControls, theme, isFloating, floatingItem, floatingTitle, onClose, ...other} = this.props;
 
         return <div ref={r => this.container = r} {...other}>
             {isIdentifier(item) ? <Item ref={r => this.item = r} id={item}/> : item}

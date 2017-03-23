@@ -19,7 +19,8 @@ class Floaty extends React.Component {
         item: React.PropTypes.any,
         theme: React.PropTypes.object.isRequired,
         stackControls: React.PropTypes.any,
-        isFloating: React.PropTypes.bool.isRequired
+        isFloating: React.PropTypes.bool.isRequired,
+        onClose: React.PropTypes.func
     };
 
     static defaultProps = {
@@ -86,6 +87,11 @@ class Floaty extends React.Component {
             if (resolution.resolved) {
                 const {floatingItem, floatingTitle} = this.props;
                 resolution.execute(floatingItem, floatingTitle);
+            } else {
+                const {floatingItem, floatingTitle, onClose} = this.props;
+                if (onClose) {
+                    onClose(floatingItem, floatingTitle);
+                }
             }
             dispatch(stopFloating(id));
         }

@@ -88,9 +88,9 @@ class Floaty extends React.Component {
                 const {floatingItem, floatingTitle} = this.props;
                 resolution.execute(floatingItem, floatingTitle);
             } else {
-                const {floatingItem, floatingTitle, onClose} = this.props;
+                const {floatingItem, floatingTitle, floaty, onClose} = this.props;
                 if (onClose) {
-                    onClose(floatingItem, floatingTitle);
+                    onClose(floaty.items[floatingItem] || floatingItem, floaty.items[floatingTitle] || floatingTitle);
                 }
             }
             dispatch(stopFloating(id));

@@ -45,8 +45,8 @@ export default class RowSeparator extends React.Component {
     }
 
     handleDrag(event) {
-        event.stopPropagation();
-        event.preventDefault();
+        event.originalEvent.stopPropagation();
+        event.originalEvent.preventDefault();
         this.setState({offset: this.clampOffset(event.dx)});
     }
 

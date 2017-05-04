@@ -18,6 +18,10 @@ export default class StackFloating extends React.Component {
         floatyContext: floatyContextType
     };
 
+    shouldComponentUpdate(nextProps, _, nextContext) {
+        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContext);
+    }
+
     renderHeaderTab() {
         const {title} = this.props;
         const {floatyContext: {theme}} = this.context;

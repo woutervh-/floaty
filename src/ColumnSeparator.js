@@ -19,8 +19,8 @@ export default class ColumnSeparator extends React.Component {
         offset: 0
     };
 
-    shouldComponentUpdate(nextProps, nextState, nextContent) {
-        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.state, nextState) || !shallowEqual(this.context, nextContent);
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.state, nextState) || !shallowEqual(this.context, nextContext);
     }
 
     componentDidMount() {

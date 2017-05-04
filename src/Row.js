@@ -18,6 +18,10 @@ export default class Row extends React.Component {
         floatyContext: floatyContextType
     };
 
+    shouldComponentUpdate(nextProps, _, nextContext) {
+        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContext);
+    }
+
     getWidthForRowItem(index) {
         const rowItem = ReactDOM.findDOMNode(this['row-item-' + index]);
         return parseFloat(window.getComputedStyle(rowItem)['width']);

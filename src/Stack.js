@@ -26,6 +26,10 @@ export default class Stack extends React.Component {
         floatyContext: floatyContextType
     };
 
+    shouldComponentUpdate(nextProps, _, nextContext) {
+        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContext);
+    }
+
     unmakeDraggablesTimeout = null;
 
     draggables = [];

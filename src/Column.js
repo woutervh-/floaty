@@ -18,6 +18,10 @@ export default class Column extends React.Component {
         floatyContext: floatyContextType
     };
 
+    shouldComponentUpdate(nextProps, _, nextContext) {
+        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContext);
+    }
+
     getHeightForColumnItem(index) {
         const columnItem = ReactDOM.findDOMNode(this['column-item-' + index]);
         return parseFloat(window.getComputedStyle(columnItem)['height']);

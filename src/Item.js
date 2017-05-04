@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import connect from 'react-redux/lib/components/connect';
+import shallowEqual from 'shallowequal';
 import Column from './Column';
 import Row from './Row';
 import Stack from './Stack';
@@ -16,6 +17,10 @@ class Item extends React.Component {
     static contextTypes = {
         floatyContext: floatyContextType
     };
+
+    shouldComponentUpdate(nextProps, _, nextContext) {
+        return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContext);
+    }
 
     resolveDropArea(position) {
         const {type} = this.props;

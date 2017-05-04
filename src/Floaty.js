@@ -1,6 +1,6 @@
 import React from 'react';
 import shallowEqual from 'shallowequal';
-import connect from 'react-redux/lib/components/connect';
+import connect from 'react-redux/lib/connect/connect';
 import Item from './Item';
 import {startFloating, stopFloating, setLayout} from './actions';
 import {floatySelector} from './selectors';
@@ -19,7 +19,8 @@ class Floaty extends React.Component {
         item: React.PropTypes.any,
         theme: React.PropTypes.object.isRequired,
         stackControls: React.PropTypes.any,
-        isFloating: React.PropTypes.bool.isRequired
+        isFloating: React.PropTypes.bool.isRequired,
+        onClose: React.PropTypes.func
     };
 
     static defaultProps = {
@@ -90,6 +91,11 @@ class Floaty extends React.Component {
             if (resolution.resolved) {
                 const {floatingItem, floatingTitle} = this.props;
                 resolution.execute(floatingItem, floatingTitle);
+            } else {
+                const {floatingItem, floatingTitle, floaty, onClose} = this.props;
+                if (onClose) {
+                    onClose(floaty.items[floatingItem] || floatingItem, floaty.items[floatingTitle] || floatingTitle);
+                }
             }
             dispatch(stopFloating(id));
         }
@@ -138,7 +144,7 @@ class Floaty extends React.Component {
     }
 
     render() {
-        const {children, layout, dispatch, id, item, refs, floaty, stackControls, theme, isFloating, floatingItem, floatingTitle, ...other} = this.props;
+        const {children, layout, dispatch, id, item, refs, floaty, stackControls, theme, isFloating, floatingItem, floatingTitle, onClose, ...other} = this.props;
 
         return <div ref={r => this.container = r} {...other}>
             {isIdentifier(item) ? <Item ref={r => this.item = r} id={item}/> : item}
@@ -148,4 +154,4 @@ class Floaty extends React.Component {
     }
 }
 
-export default connect(floatySelector, undefined, undefined, {withRef: true})(Floaty);
+export default connect(floatySelector, undefined, undefined, {pure: false})(Floaty);

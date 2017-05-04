@@ -1,6 +1,6 @@
 {
   "name": "floaty",
-  "version": "0.1.12",
+  "version": "0.2.5",
   "description": "Floatable dockable panels in React",
   "main": "lib/index.js",
   "repository": {
@@ -46,7 +46,7 @@
     "is-uuid": "^1.0.2",
     "react": "^15.3.0",
     "react-dom": "^15.3.0",
-    "react-redux": "^4.4.5",
+    "react-redux": "^5.0.2",
     "reselect": "^2.5.4",
     "shallowequal": "^0.2.2",
     "uuid": "^2.0.3"

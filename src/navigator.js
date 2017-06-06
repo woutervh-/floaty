@@ -95,6 +95,6 @@ class StackNavigator extends ItemsNavigator {
 class LeafObjectNavigator extends BaseNavigator {
 }
 
-export default function navigator(floaty, layoutId) {
+export default function navigator(floaty, layoutId = 0) {
     return createNavigator(floaty.items, floaty.layouts[layoutId].item, null);
 }

@@ -89,10 +89,11 @@ class Floaty extends React.Component {
             document.body.classList.remove(theme['floaty-unselectable']);
             const resolution = this.resolveDropArea({x, y});
             const {floatingItem, floatingTitle, floaty, onClose} = this.props;
-            dispatch(stopFloating(id));
             if (resolution.resolved) {
                 resolution.execute(floatingItem, floatingTitle);
+                dispatch(stopFloating(id));
             } else {
+                dispatch(stopFloating(id));
                 if (onClose) {
                     onClose(floaty.items[floatingItem] || floatingItem, floaty.items[floatingTitle] || floatingTitle);
                 }

@@ -9,9 +9,9 @@ import {
     FLOATY_SET_LAYOUT,
     FLOATY_START_FLOATING,
     FLOATY_STOP_FLOATING,
-    FLOATY_SWEEP,
     FLOATY_TRANSFORM_INTO_COLUMN,
-    FLOATY_TRANSFORM_INTO_ROW
+    FLOATY_TRANSFORM_INTO_ROW,
+    FLOATY_SET_ITEM_STATE
 } from '../constants';
 import {generateIdentifier} from '../identifiers';
 
@@ -142,5 +142,13 @@ export function addItem(itemId, item) {
         type: FLOATY_ADD_ITEM,
         itemId,
         item
+    };
+}
+
+export function setItemState(itemId, state) {
+    return {
+        type: FLOATY_SET_ITEM_STATE,
+        itemId,
+        state
     };
 }

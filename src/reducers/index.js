@@ -10,7 +10,8 @@ import {
     FLOATY_START_FLOATING,
     FLOATY_STOP_FLOATING,
     FLOATY_TRANSFORM_INTO_COLUMN,
-    FLOATY_TRANSFORM_INTO_ROW
+    FLOATY_TRANSFORM_INTO_ROW,
+    FLOATY_SET_ITEM_STATE
 } from '../constants';
 import {isIdentifier} from '../identifiers';
 
@@ -162,6 +163,8 @@ function floatyItem(state = {}, action) {
             return columnOrRow(state, action);
         case FLOATY_ADD_ITEM:
             return action.item;
+        case FLOATY_SET_ITEM_STATE:
+            return {...state, state: action.state};
         default:
             return state;
     }
@@ -176,6 +179,7 @@ function floatyItems(state = {}, action) {
         case FLOATY_SET_ACTIVE_TAB:
         case FLOATY_SET_GROW_VALUES:
         case FLOATY_ADD_ITEM:
+        case FLOATY_SET_ITEM_STATE:
             return {...state, [action.itemId]: floatyItem(state[action.itemId], action)};
         case FLOATY_TRANSFORM_INTO_COLUMN:
         case FLOATY_TRANSFORM_INTO_ROW: {

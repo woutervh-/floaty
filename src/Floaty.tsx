@@ -17,6 +17,7 @@ export interface IFloatyProps {
     refs: any;
     id: string;
     theme: any;
+    selector?: (state: any) => IFloatyState;
     onClose: (item: IFloatyItem, title: any) => void;
 }
 
@@ -41,16 +42,6 @@ export interface IFloatyComponentState {
 }
 
 class Floaty extends React.Component<IFloatyProps & IFloatySelectedProps & {dispatch: Redux.Dispatch<IFloatyState>} & React.AllHTMLAttributes<HTMLDivElement>, IFloatyComponentState> {
-    static propTypes = {
-        refs: React.PropTypes.object,
-        floaty: React.PropTypes.object.isRequired,
-        id: React.PropTypes.any.isRequired,
-        item: React.PropTypes.any,
-        theme: React.PropTypes.object.isRequired,
-        isFloating: React.PropTypes.bool.isRequired,
-        onClose: React.PropTypes.func
-    };
-
     static defaultProps = {
         refs: {}
     };

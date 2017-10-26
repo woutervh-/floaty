@@ -69,7 +69,7 @@ export class ItemBase extends React.Component<any, any> implements IResolvableDr
             default:
                 throw new Error(`Unknown leaf component type: ${type}`);
         }
-        if (React.isValidElement(result)) {
+        if (React.isValidElement(result) && result.type && typeof result.type !== 'string' && result.type.prototype && result.type.prototype.isReactComponent) {
             return React.cloneElement(result, {...other, floatyId: id, ...state});
         } else if (typeof result === 'function') {
             return result({...other, floatyId: id, ...state}) as JSX.Element;

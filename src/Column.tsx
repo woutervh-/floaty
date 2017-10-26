@@ -18,7 +18,7 @@ export default class Column extends React.Component<{id: string, dispatch: Redux
 
     context: {floatyContext: IFloatyContext};
 
-    items: {[key: string]: ColumnItem};
+    items: {[key: string]: ColumnItem} = {};
 
     shouldComponentUpdate(nextProps: any, _: any, nextContext: any) {
         return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContext);

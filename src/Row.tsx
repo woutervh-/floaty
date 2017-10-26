@@ -18,7 +18,7 @@ export default class Row extends React.Component<{id: string, dispatch: Redux.Di
 
     context: {floatyContext: IFloatyContext};
 
-    items: {[key: string]: RowItem};
+    items: {[key: string]: RowItem} = {};
 
     shouldComponentUpdate(nextProps: any, _: any, nextContext: any) {
         return !shallowEqual(this.props, nextProps) || !shallowEqual(this.context, nextContext);

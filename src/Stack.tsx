@@ -33,7 +33,7 @@ export default class Stack extends React.Component<IFloatyStackProps & React.All
 
     context: {floatyContext: IFloatyContext};
 
-    tabs: {[key: string]: HTMLLIElement};
+    tabs: {[key: string]: HTMLLIElement} = {};
 
     header: HTMLDivElement;
 
@@ -85,6 +85,7 @@ export default class Stack extends React.Component<IFloatyStackProps & React.All
             this.draggables.forEach(draggable => draggable.on('destroyed', () => {
                 if (++destroyedCount == this.draggables.length) {
                     this.draggables = [];
+                    this.tabs = {};
                     this.unmakeDraggablesTimeout = window.setTimeout(callback, 0);
                 }
             }));

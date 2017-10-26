@@ -23,8 +23,8 @@ export interface IFloatyProps {
 
 export interface IFloatySelectedProps {
     item: string | undefined;
-    floatingItem: string | null;
-    floatingTitle: any | null;
+    floatingItem: string | null | undefined;
+    floatingTitle: any | null | undefined;
     floaty: IFloatyState;
     isFloating: boolean;
 }
@@ -112,7 +112,7 @@ class Floaty extends React.Component<IFloatyProps & IFloatySelectedProps & {disp
             document.body.classList.remove(theme['floaty-unselectable']);
             const resolution = this.resolveDropArea({x, y});
             const {floatingItem, floatingTitle, floaty, onClose} = this.props;
-            if (floatingItem !== null && floatingTitle !== null) {
+            if (floatingItem && floatingTitle) {
                 if (resolution.resolved && resolution.execute !== undefined) {
                     resolution.execute(floatingItem, floatingTitle);
                     dispatch(stopFloating(id));

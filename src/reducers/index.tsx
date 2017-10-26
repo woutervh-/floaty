@@ -26,8 +26,8 @@ export interface IFloatyItems {
 
 export interface IFloatyLayout {
     item: string | undefined;
-    floatingItem: string | null;
-    floatingTitle: any | null;
+    floatingItem: string | null | undefined;
+    floatingTitle: any | null | undefined;
 }
 
 export interface IFloatyLayouts {
@@ -291,10 +291,10 @@ export default function floaty(state: IFloatyState = {items: {}, layouts: {}}, a
                 if (item !== undefined) {
                     layout.item = minimize(item, next.items, minimized);
                 }
-                if (floatingItem !== null) {
+                if (floatingItem) {
                     layout.floatingItem = minimize(floatingItem, next.items, minimized) || null;
                 }
-                if (floatingTitle !== null) {
+                if (floatingTitle) {
                     layout.floatingTitle = minimize(floatingTitle, next.items, minimized) || null;
                 }
             });

@@ -11,8 +11,8 @@ export interface IFloatyProps {
 }
 export interface IFloatySelectedProps {
     item: string | undefined;
-    floatingItem: string | null;
-    floatingTitle: any | null;
+    floatingItem: string | null | undefined;
+    floatingTitle: any | null | undefined;
     floaty: IFloatyState;
     isFloating: boolean;
 }

@@ -80,7 +80,7 @@ function minimizeColumnOrRow(itemId: string, floatyItems: IFloatyItems, minimize
         }
     }
     if (items.length >= 2) {
-        floatyItems[itemId] = {type: self.type, state: self.state, items, growValues} as IFloatyColumnOrRow;
+        floatyItems[itemId] = {...self, items, growValues} as IFloatyColumnOrRow;
         return itemId;
     } else if (items.length === 1) {
         return items[0];
@@ -102,7 +102,7 @@ function minimizeStack(itemId: string, floatyItems: IFloatyItems, minimized: {[k
         }
     }
     if (items.length >= 1) {
-        floatyItems[itemId] = {type: self.type, state: self.state, active: self.active, items, titles} as IFloatyStack;
+        floatyItems[itemId] = {...self, active: self.active, items, titles} as IFloatyStack;
         return itemId;
     }
 }
@@ -129,7 +129,7 @@ function minimize(item: string, floatyItems: IFloatyItems, minimized: {[key: str
 function columnOrRow(state: IFloatyColumnOrRow, action: Redux.Action): IFloatyColumnOrRow {
     switch (action.type) {
         case FLOATY_SET_GROW_VALUES:
-            return {type: state.type, growValues: (action as IFloatySetGrowValues).growValues, items: state.items};
+            return {...state, growValues: (action as IFloatySetGrowValues).growValues} as IFloatyColumnOrRow;
         default:
             return state;
     }
@@ -145,9 +145,9 @@ function stack(state: IFloatyStack = {type: 'stack', active: 0, titles: [], item
             if (state.active !== undefined) {
                 // Ensure active index is in range
                 const active = Math.min(items.length - 1, state.active);
-                return {type: state.type, active, items, titles};
+                return {...state, active, items, titles} as IFloatyStack;
             } else {
-                return {type: state.type, active: state.active, items, titles};
+                return {...state, items, titles} as IFloatyStack;
             }
         }
         case FLOATY_REMOVE_ACTIVE_TAB: {
@@ -155,12 +155,12 @@ function stack(state: IFloatyStack = {type: 'stack', active: 0, titles: [], item
             items.splice(state.active, 1);
             const titles = state.titles.slice();
             titles.splice(state.active, 1);
-            if (typeof state.active !== 'undefined') {
+            if (state.active !== undefined) {
                 // Ensure active index is in range
                 const active = Math.min(items.length - 1, state.active);
-                return {type: state.type, active, items, titles};
+                return {...state, active, items, titles} as IFloatyStack;
             } else {
-                return {type: state.type, active: state.active, items, titles};
+                return {...state, items, titles} as IFloatyStack;
             }
         }
         case FLOATY_INSERT_TAB: {
@@ -168,15 +168,15 @@ function stack(state: IFloatyStack = {type: 'stack', active: 0, titles: [], item
             items.splice((action as IFloatyInsertTab).index, 0, (action as IFloatyInsertTab).item);
             const titles = state.titles.slice();
             titles.splice((action as IFloatyInsertTab).index, 0, (action as IFloatyInsertTab).title);
-            return {type: state.type, active: state.active, items, titles};
+            return {...state, items, titles} as IFloatyStack;
         }
         case FLOATY_ADD_TAB: {
             const items = [...state.items, (action as IFloatyAddTab).item];
             const titles = [...state.titles, (action as IFloatyAddTab).title];
-            return {type: state.type, active: items.length - 1, items, titles};
+            return {...state, active: items.length - 1, items, titles} as IFloatyStack;
         }
         case FLOATY_SET_ACTIVE_TAB:
-            return {type: state.type, active: (action as IFloatySetActiveTab).index, items: state.items, titles: state.titles};
+            return {...state, active: (action as IFloatySetActiveTab).index} as IFloatyStack;
         default:
             return state;
     }
@@ -236,11 +236,11 @@ function floatyItems(state: IFloatyItems = {}, action: Redux.Action): IFloatyIte
 function floatyLayout(state: IFloatyLayout = {item: '0', floatingItem: null, floatingTitle: null}, action: Redux.Action): IFloatyLayout {
     switch (action.type) {
         case FLOATY_START_FLOATING:
-            return {item: state.item, floatingItem: (action as IFloatyStartFloating).item, floatingTitle: (action as IFloatyStartFloating).title};
+            return {...state, floatingItem: (action as IFloatyStartFloating).item, floatingTitle: (action as IFloatyStartFloating).title} as IFloatyLayout;
         case FLOATY_STOP_FLOATING:
-            return {item: state.item, floatingItem: null, floatingTitle: null};
+            return {...state, floatingItem: null, floatingTitle: null} as IFloatyLayout;
         case FLOATY_SET_LAYOUT:
-            return {item: (action as IFloatySetLayout).itemId, floatingItem: state.floatingItem, floatingTitle: state.floatingTitle};
+            return {...state, item: (action as IFloatySetLayout).itemId} as IFloatyLayout;
         default:
             return state;
     }

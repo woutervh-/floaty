@@ -65,8 +65,7 @@ export class ItemBase extends React.Component<any, any> implements IResolvableDr
                 }
                 break;
             case 'text':
-                result = <span>{content}</span>;
-                break;
+                return <span>{content}</span>;
             default:
                 throw new Error(`Unknown leaf component type: ${type}`);
         }

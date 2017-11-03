@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as Redux from 'redux';
-import shallowEqual = require('shallowequal');
+import shallowEqual from 'shallowequal';
 import {connect} from 'react-redux';
 import Column from './Column';
 import Row from './Row';

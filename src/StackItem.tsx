@@ -1,6 +1,6 @@
 import * as React from 'react';
-import classNames = require('classnames');
-import shallowEqual = require('shallowequal');
+import classNames from 'classnames';
+import shallowEqual from 'shallowequal';
 import {Item} from './Item';
 import {floatyContextType} from './Types';
 

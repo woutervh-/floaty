@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import classNames = require('classnames');
-import shallowEqual = require('shallowequal');
+import classNames from 'classnames';
+import shallowEqual from 'shallowequal';
 import {EventEmitter} from 'eventemitter3';
 import Draggable from './Draggable';
 import {floatyContextType, IFloatyContext} from './Types';

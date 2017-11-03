@@ -2,6 +2,7 @@ import { IFloatyTransformIntoColumnOrRow, IFloatyActionWithMeta } from '../actio
 export interface IFloatyItem {
     type: string;
     state?: any;
+    [key: string]: any;
 }
 export interface IFloatyNodeItem extends IFloatyItem {
     items: Array<string>;

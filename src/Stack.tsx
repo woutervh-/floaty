@@ -1,10 +1,10 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as Redux from 'redux';
-import classNames = require('classnames');
+import classNames from 'classnames';
 import Draggable from './Draggable';
 import * as DomUtil from './DomUtil';
-import shallowEqual = require('shallowequal');
+import shallowEqual from 'shallowequal';
 import {insertTab, removeTab, setActiveTab} from './actions';
 import StackItem from './StackItem';
 import {floatyContextType, IFloatyContext} from './Types';

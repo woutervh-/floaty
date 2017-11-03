@@ -5,6 +5,7 @@ import {IFloatySetGrowValues, IFloatyRemoveTab, IFloatyInsertTab, IFloatyAddTab,
 export interface IFloatyItem {
     type: string;
     state?: any;
+    [key: string]: any;
 }
 
 export interface IFloatyNodeItem extends IFloatyItem {

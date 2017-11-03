@@ -38,12 +38,12 @@ export declare function addTab(itemId: string, item: string, title: any): IFloat
 export interface IFloatyTransformIntoColumnOrRow extends IFloatyActionWithMeta {
     itemId: string;
     item: IFloatyItem;
-    newItemsBefore: boolean;
+    newItemsBefore?: boolean;
     newId1: string;
     newId2: string;
 }
-export declare function transformIntoColumn(itemId: string, item: IFloatyItem, newItemsBefore: boolean, newId1?: string, newId2?: string): IFloatyTransformIntoColumnOrRow;
-export declare function transformIntoRow(itemId: string, item: IFloatyItem, newItemsBefore: boolean, newId1?: string, newId2?: string): IFloatyTransformIntoColumnOrRow;
+export declare function transformIntoColumn(itemId: string, item: IFloatyItem, newItemsBefore?: boolean, newId1?: string, newId2?: string): IFloatyTransformIntoColumnOrRow;
+export declare function transformIntoRow(itemId: string, item: IFloatyItem, newItemsBefore?: boolean, newId1?: string, newId2?: string): IFloatyTransformIntoColumnOrRow;
 export interface IFloatySetLayout extends IFloatyActionWithMeta {
     layoutId: string;
     item: IFloatyItem;

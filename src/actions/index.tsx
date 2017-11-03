@@ -111,12 +111,12 @@ export function addTab(itemId: string, item: string, title: any): IFloatyAddTab 
 export interface IFloatyTransformIntoColumnOrRow extends IFloatyActionWithMeta {
     itemId: string;
     item: IFloatyItem;
-    newItemsBefore: boolean;
+    newItemsBefore?: boolean;
     newId1: string;
     newId2: string;
 }
 
-export function transformIntoColumn(itemId: string, item: IFloatyItem, newItemsBefore: boolean, newId1: string = generateIdentifier(), newId2: string = generateIdentifier()): IFloatyTransformIntoColumnOrRow {
+export function transformIntoColumn(itemId: string, item: IFloatyItem, newItemsBefore?: boolean, newId1: string = generateIdentifier(), newId2: string = generateIdentifier()): IFloatyTransformIntoColumnOrRow {
     return {
         type: FLOATY_TRANSFORM_INTO_COLUMN,
         itemId,
@@ -132,7 +132,7 @@ export function transformIntoColumn(itemId: string, item: IFloatyItem, newItemsB
     };
 }
 
-export function transformIntoRow(itemId: string, item: IFloatyItem, newItemsBefore: boolean, newId1: string = generateIdentifier(), newId2: string = generateIdentifier()): IFloatyTransformIntoColumnOrRow {
+export function transformIntoRow(itemId: string, item: IFloatyItem, newItemsBefore?: boolean, newId1: string = generateIdentifier(), newId2: string = generateIdentifier()): IFloatyTransformIntoColumnOrRow {
     return {
         type: FLOATY_TRANSFORM_INTO_ROW,
         itemId,

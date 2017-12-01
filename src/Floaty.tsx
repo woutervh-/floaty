@@ -144,7 +144,7 @@ class Floaty extends React.Component<IFloatyProps & IFloatySelectedProps & {disp
         const {floatingItem: item, floatingTitle: title} = this.props;
         const {x, y} = this.state;
         const {scrollX, scrollY} = window;
-        return <StackFloating title={title} item={item} x={x - scrollX} y={y - scrollY}/>;
+        return <StackFloating title={title} item={item} x={x - scrollX} y={y - scrollY} />;
     }
 
     resolveDropArea(position: {x: number, y: number}): IDropAreaResolution {
@@ -170,30 +170,26 @@ class Floaty extends React.Component<IFloatyProps & IFloatySelectedProps & {disp
         if (showTargetIndicator) {
             const {targetIndicator: {left, top, width, height}} = this.state;
             const {scrollX, scrollY} = window;
-            return <div className={theme['floaty-target-indicator']} style={{top: top - scrollY, left: left - scrollX, width, height}}/>;
+            return <div className={theme['floaty-target-indicator']} style={{top: top - scrollY, left: left - scrollX, width, height}} />;
         }
     }
 
     render() {
         const {children, dispatch, id, item, refs, floaty, theme, isFloating, floatingItem, floatingTitle, onClose, ...other} = this.props;
 
-        if (item !== undefined && item !== null) {
-            return <div ref={r => {
-            if(r !== null) {
+        return <div ref={r => {
+            if (r !== null) {
                 this.container = r;
             }
         }} {...other}>
-                <Item ref={(r: any) => {
+            {item && <Item ref={(r: any) => {
                 if (r !== null) {
                     this.item = (r as {[key: string]: any})['wrappedInstance'] as ItemBase;
                 }
-            }} id={item}/>
-                {isFloating && this.renderFloatingStack()}
-                {isFloating && this.renderDropArea()}
-            </div>;
-        } else {
-            return null;
-        }
+            }} id={item} />}
+            {isFloating && this.renderFloatingStack()}
+            {isFloating && this.renderDropArea()}
+        </div>;
     }
 }
 

@@ -64,7 +64,7 @@ class Floaty extends React.Component<IFloatyProps & IFloatySelectedProps & {disp
 
     container: HTMLDivElement;
 
-    item: ItemBase;
+    item: ItemBase | null = null;
 
     shouldComponentUpdate(nextProps: any, nextState: any) {
         return !shallowEqual(this.props, nextProps) || !shallowEqual(this.state, nextState);
@@ -185,6 +185,8 @@ class Floaty extends React.Component<IFloatyProps & IFloatySelectedProps & {disp
             {item && <Item ref={(r: any) => {
                 if (r !== null) {
                     this.item = (r as {[key: string]: any})['wrappedInstance'] as ItemBase;
+                } else {
+                    this.item = r;
                 }
             }} id={item} />}
             {isFloating && this.renderFloatingStack()}

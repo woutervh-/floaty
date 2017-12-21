@@ -3,9 +3,9 @@ import * as ReactDOM from 'react-dom';
 import * as Redux from 'redux';
 import shallowEqual from 'shallowequal';
 import {connect} from 'react-redux';
-import Column from './Column';
-import Row from './Row';
-import Stack from './Stack';
+import Column, {ColumnProps} from './Column';
+import Row, {RowProps} from './Row';
+import Stack, {StackProps} from './Stack';
 import {itemSelector} from './selectors';
 import {floatyContextType, IFloatyContext} from './Types';
 import split from './split';
@@ -26,7 +26,7 @@ export interface IFloatyItemSelectedProps extends IFloatyItem {
 
 // IFloatyItemProps & IFloatyItemSelectedProps & React.Props<ItemBase> & {dispatch: Redux.Dispatch<IFloatyState>}
 
-export class ItemBase extends React.Component<any, any> implements IResolvableDropArea {
+export class ItemBase extends React.Component<any, never> implements IResolvableDropArea {
     static contextTypes = {
         floatyContext: floatyContextType
     };
@@ -87,19 +87,19 @@ export class ItemBase extends React.Component<any, any> implements IResolvableDr
                     if (r !== null) {
                         this.item = r;
                     }
-                }} {...this.props}/>;
+                }} {...this.props as ColumnProps}/>;
             case 'row':
                 return <Row ref={r => {
                     if (r !== null) {
                         this.item = r;
                     }
-                }} {...this.props}/>;
+                }} {...this.props as RowProps}/>;
             case 'stack':
                 return <Stack ref={r => {
                     if (r !== null) {
                         this.item = r;
                     }
-                }} {...this.props}/>;
+                }} {...this.props as StackProps}/>;
             default:
                 return this.renderLeafComponent();
         }

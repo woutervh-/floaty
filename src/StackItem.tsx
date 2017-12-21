@@ -9,10 +9,6 @@ export interface IFloatyStackItemProps {
 }
 
 export default class StackItem extends React.Component<IFloatyStackItemProps & React.AllHTMLAttributes<HTMLDivElement>, any> {
-    static propTypes = {
-        value: React.PropTypes.any.isRequired
-    };
-
     static contextTypes = {
         floatyContext: floatyContextType
     };

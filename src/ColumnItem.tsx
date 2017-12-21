@@ -5,7 +5,11 @@ import {Item, ItemBase} from './Item';
 import {floatyContextType, IFloatyContext} from './Types';
 import {IResolvableDropArea, IDropAreaResolution} from './DropAreaTypes';
 
-export default class ColumnItem extends React.Component<{value: any} & React.AllHTMLAttributes<HTMLDivElement>, any> implements IResolvableDropArea {
+export interface ColumnItemProps extends React.AllHTMLAttributes<HTMLDivElement> {
+    value: any;
+}
+
+export default class ColumnItem extends React.Component<ColumnItemProps, never> implements IResolvableDropArea {
     static contextTypes = {
         floatyContext: floatyContextType
     };

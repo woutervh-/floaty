@@ -30,21 +30,23 @@
   "license": "MIT",
   "devDependencies": {
     "@types/classnames": "^2.2.3",
+    "@types/prop-types": "^15.5.2",
     "@types/react": "^15.3.0",
     "@types/react-dom": "^15.3.0",
     "@types/react-redux": "^5.0.10",
     "@types/shallowequal": "^0.2.1",
     "@types/uuid": "^3.4.3",
     "ncp": "^2.0.0",
+    "prop-types": "^15.6.0",
     "rimraf": "^2.5.4",
-    "typescript": "^2.5.3"
+    "typescript": "^2.6.2"
   },
   "dependencies": {
     "classnames": "^2.2.5",
     "eventemitter3": "^2.0.3",
     "is-uuid": "^1.0.2",
-    "react": "^15.3.0",
-    "react-dom": "^15.3.0",
+    "react": "^15.4.0 || ^16.0.0",
+    "react-dom": "^15.4.0 || ^16.0.0",
     "react-redux": "^5.0.2",
     "redux": "^3.7.2",
     "shallowequal": "^0.2.2",

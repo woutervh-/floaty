@@ -11,7 +11,14 @@ import {floatyContextType, IFloatyContext} from './Types';
 import {IFloatyState} from './reducers/index';
 import {IResolvableDropArea, IDropAreaResolution} from './DropAreaTypes';
 
-export default class Row extends React.Component<{id: string, dispatch: Redux.Dispatch<IFloatyState>, growValues: Array<number>, items: Array<any>} & React.AllHTMLAttributes<HTMLDivElement>, any> implements IResolvableDropArea {
+export interface RowProps extends React.AllHTMLAttributes<HTMLDivElement> {
+    id: string;
+    dispatch: Redux.Dispatch<IFloatyState>;
+    growValues: Array<number>;
+    items: Array<any>;
+}
+
+export default class Row extends React.Component<RowProps, never> implements IResolvableDropArea {
     static contextTypes = {
         floatyContext: floatyContextType
     };

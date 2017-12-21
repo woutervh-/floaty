@@ -7,16 +7,17 @@ import Draggable from './Draggable';
 import {floatyContextType, IFloatyContext} from './Types';
 import {IDraggableEventWithDelta} from './Draggable';
 
-export interface IColumnSeparatorProps {
+export interface ColumnSeparatorProps {
+    className?: string;
     getBounds: () => {min: number, max: number};
     onPositionChange: (offset: number) => void;
 }
 
-export interface IColumnSeparatorState {
+export interface ColumnSeparatorState {
     offset: number;
 }
 
-export class ColumnSeparator extends React.Component<IColumnSeparatorProps & React.HTMLProps<ColumnSeparator>, IColumnSeparatorState> {
+export class ColumnSeparator extends React.Component<ColumnSeparatorProps, ColumnSeparatorState> {
     static contextTypes = {
         floatyContext: floatyContextType
     };

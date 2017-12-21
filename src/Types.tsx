@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 
 export interface IFloatyContext {
     float: (item: string, title: any) => void,
@@ -6,8 +7,8 @@ export interface IFloatyContext {
     refs: any
 }
 
-export const floatyContextType = React.PropTypes.shape({
-    float: React.PropTypes.func.isRequired,
-    theme: React.PropTypes.object.isRequired,
-    refs: React.PropTypes.object.isRequired
+export const floatyContextType = PropTypes.shape({
+    float: PropTypes.func.isRequired,
+    theme: PropTypes.object.isRequired,
+    refs: PropTypes.object.isRequired
 }).isRequired;

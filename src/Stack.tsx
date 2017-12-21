@@ -14,7 +14,7 @@ import {EventEmitter} from 'eventemitter3';
 import {IDropAreaResolution} from './DropAreaTypes';
 import {IFloatyState} from './reducers/index';
 
-export interface IFloatyStackProps {
+export interface StackProps extends React.AllHTMLAttributes<HTMLDivElement> {
     id: string;
     active: number;
     titles: Array<any>;
@@ -22,7 +22,7 @@ export interface IFloatyStackProps {
     dispatch: Redux.Dispatch<IFloatyState>;
 }
 
-export default class Stack extends React.Component<IFloatyStackProps & React.AllHTMLAttributes<HTMLDivElement>, any> {
+export default class Stack extends React.Component<StackProps, never> {
     static defaultProps = {
         active: 0
     };

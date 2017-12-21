@@ -37,13 +37,13 @@
     "@types/shallowequal": "^0.2.1",
     "@types/uuid": "^3.4.3",
     "ncp": "^2.0.0",
-    "prop-types": "^15.6.0",
     "rimraf": "^2.5.4",
     "typescript": "^2.6.2"
   },
   "dependencies": {
     "classnames": "^2.2.5",
     "eventemitter3": "^2.0.3",
+    "prop-types": "^15.6.0",
     "react": "^15.4.0 || ^16.0.0",
     "react-dom": "^15.4.0 || ^16.0.0",
     "react-redux": "^5.0.2",

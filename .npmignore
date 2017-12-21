@@ -1,5 +1,2 @@
 # NPM modules
 node_modules/
-
-# Build output
-lib/

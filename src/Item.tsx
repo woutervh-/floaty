@@ -49,7 +49,7 @@ export class ItemBase extends React.Component<any, never> implements IResolvable
                 return this.item.resolveDropArea(position);
             default:
                 const {id, dispatch} = this.props;
-                return split(ReactDOM.findDOMNode(this), position, id, dispatch);
+                return split(ReactDOM.findDOMNode(this) as HTMLElement, position, id, dispatch);
         }
     }
 

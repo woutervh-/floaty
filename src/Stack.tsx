@@ -66,7 +66,7 @@ export default class Stack extends React.Component<StackProps, never> {
     makeDraggables() {
         const {items} = this.props;
         for (let i = 0; i < items.length; i++) {
-            const draggable = Draggable(ReactDOM.findDOMNode(this.tabs['tab-' + i]), 5);
+            const draggable = Draggable(this.tabs['tab-' + i], 5);
             draggable.on('dragstart', () => this.handleDragStart(i));
             this.draggables.push(draggable);
         }

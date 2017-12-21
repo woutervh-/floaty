@@ -35,7 +35,7 @@ export class ColumnSeparator extends React.Component<ColumnSeparatorProps, Colum
     }
 
     componentDidMount() {
-        this.draggable = Draggable(ReactDOM.findDOMNode(this));
+        this.draggable = Draggable(ReactDOM.findDOMNode(this) as HTMLElement);
         this.draggable.on('dragstart', () => this.handleDragStart());
         this.draggable.on('drag', (event: IDraggableEventWithDelta) => this.handleDrag(event));
         this.draggable.on('dragstop', () => this.handleDragStop());

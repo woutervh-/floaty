@@ -1,5 +1,5 @@
 import * as React from 'react';
-import shallowEqual from 'shallowequal';
+import shallowEqual = require('shallowequal');
 import {connect} from 'react-redux';
 import * as Redux from 'redux';
 import {Item, ItemBase} from './Item';

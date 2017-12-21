@@ -1,11 +1,11 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import classNames from 'classnames';
+import * as classNames from 'classnames';
 import * as Redux from 'redux';
 import {ColumnSeparator} from './ColumnSeparator';
 import ColumnItem from './ColumnItem';
 import * as DomUtil from './DomUtil';
-import shallowEqual from 'shallowequal';
+import shallowEqual = require('shallowequal');
 import {setGrowValues} from './actions';
 import {floatyContextType, IFloatyContext} from './Types';
 import {IFloatyState} from './reducers/index';

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import classNames from 'classnames';
-import shallowEqual from 'shallowequal';
+import * as classNames from 'classnames';
+import shallowEqual = require('shallowequal');
 import {Item, ItemBase} from './Item';
 import {floatyContextType, IFloatyContext} from './Types';
 import {IResolvableDropArea, IDropAreaResolution} from './DropAreaTypes';

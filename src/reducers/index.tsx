@@ -28,7 +28,7 @@ export interface IFloatyItems {
 export interface IFloatyLayout {
     item: string | undefined;
     floatingItem: string | null | undefined;
-    floatingTitle: any | null | undefined;
+    floatingTitle: string | null | undefined;
 }
 
 export interface IFloatyLayouts {

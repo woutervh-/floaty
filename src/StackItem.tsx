@@ -6,6 +6,7 @@ import {floatyContextType} from './Types';
 
 export interface IFloatyStackItemProps {
     value: any;
+    floatyStackId?: string;
 }
 
 export default class StackItem extends React.Component<IFloatyStackItemProps & React.AllHTMLAttributes<HTMLDivElement>, any> {
@@ -18,11 +19,11 @@ export default class StackItem extends React.Component<IFloatyStackItemProps & R
     }
 
     render() {
-        const {className, value, ...other} = this.props;
+        const {className, value, floatyStackId, ...other} = this.props;
         const {floatyContext: {theme}} = this.context;
 
         return <div className={classNames(theme['floaty-stack-item'], className)} {...other}>
-            <Item id={value}/>
+            <Item id={value} floatyStackId={floatyStackId} />
         </div>;
     }
 };

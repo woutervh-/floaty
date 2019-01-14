@@ -184,7 +184,7 @@ export default class Stack extends React.Component<StackProps, never> {
             }
         }} className={classNames(theme['floaty-stack'], className)} {...other}>
             {this.renderHeader()}
-            {0 <= active && active < items.length && <StackItem value={items[active]}/>}
+            {0 <= active && active < items.length && <StackItem value={items[active]} floatyStackId={id}/>}
         </div>;
     }
 };

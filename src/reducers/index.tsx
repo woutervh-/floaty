@@ -280,6 +280,7 @@ export default function floaty(state: IFloatyState = {items: {}, layouts: {}}, a
         case FLOATY_START_FLOATING:
         case FLOATY_STOP_FLOATING:
         case FLOATY_ADD_ITEM:
+        case FLOATY_SET_ITEM_STATE:
             const {items, layouts} = state;
             const next = {
                 items: {...floatyItems(items, action)},

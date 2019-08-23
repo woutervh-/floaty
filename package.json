@@ -9,7 +9,8 @@
     "url": "https://github.com/woutervh-/floaty.git"
   },
   "scripts": {
-    "build": "rimraf lib && tsc && ncp src/base.css lib/base.css",
+    "lint": "tslint \"src/**/*.ts\" \"test/**/*.ts\"",
+    "build": "rimraf lib/ && tsc && copy-cli \"src/**/*.d.ts\" \"lib/es6/\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": {
@@ -29,26 +30,14 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@types/classnames": "^2.2.3",
-    "@types/prop-types": "^15.5.2",
-    "@types/react": "^16.0.0",
-    "@types/react-dom": "^16.0.0",
-    "@types/react-redux": "^5.0.10",
-    "@types/shallowequal": "^0.2.1",
-    "@types/uuid": "^3.4.3",
-    "ncp": "^2.0.0",
-    "rimraf": "^2.5.4",
-    "typescript": "^2.6.2"
+    "@types/react": "^16.9.2",
+    "copy": "^0.3.2",
+    "react": "^16.9.0",
+    "rimraf": "^3.0.0",
+    "tslint": "^5.19.0",
+    "typescript": "^3.5.3"
   },
-  "dependencies": {
-    "classnames": "^2.2.5",
-    "eventemitter3": "^2.0.3",
-    "prop-types": "^15.6.0",
-    "react": "^15.4.0 || ^16.0.0",
-    "react-dom": "^15.4.0 || ^16.0.0",
-    "react-redux": "^5.0.2",
-    "redux": "^3.7.2",
-    "shallowequal": "^0.2.2",
-    "uuid": "^2.0.3"
+  "peerDependencies": {
+    "react": ">=15.3"
   }
 }

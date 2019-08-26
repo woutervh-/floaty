@@ -3,18 +3,18 @@ import { Draggable, DragInformation } from 'react-managed-draggable';
 import * as RenderersModel from '../renderers-model';
 
 interface State {
-    dragging: DragInformation | null;
+    deltaX: number | null;
 }
 
 export class RowSeparatorRenderer extends React.PureComponent<RenderersModel.RowSeparatorRendererProps, State> {
     public state: State = {
-        dragging: null
+        deltaX: null
     };
 
     public render() {
         let left = 0;
-        if (this.state.dragging) {
-            left = this.state.dragging.current.x - this.state.dragging.start.x;
+        if (this.state.deltaX !== null) {
+            left = this.state.deltaX;
         }
 
         return <Draggable
@@ -28,15 +28,18 @@ export class RowSeparatorRenderer extends React.PureComponent<RenderersModel.Row
     }
 
     private handleDragStart = (event: MouseEvent | TouchEvent, dragInformation: DragInformation) => {
-        this.setState({ dragging: dragInformation });
+        const deltaX = this.props.clamp(this.props.index, dragInformation.current.x - dragInformation.start.x);
+        this.setState({ deltaX });
     }
 
     private handleDragMove = (event: MouseEvent | TouchEvent, dragInformation: DragInformation) => {
-        this.setState({ dragging: dragInformation });
+        const deltaX = this.props.clamp(this.props.index, dragInformation.current.x - dragInformation.start.x);
+        this.setState({ deltaX });
     }
 
     private handleDragEnd = (event: MouseEvent | TouchEvent | undefined, dragInformation: DragInformation) => {
-        this.setState({ dragging: null });
-        this.props.onMove(this.props.index, dragInformation.current.x - dragInformation.start.x);
+        this.setState({ deltaX: null });
+        const deltaX = this.props.clamp(this.props.index, dragInformation.current.x - dragInformation.start.x);
+        this.props.onMove(this.props.index, deltaX);
     }
 }

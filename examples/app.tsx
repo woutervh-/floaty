@@ -44,6 +44,16 @@ export class App extends React.PureComponent<{}, State> {
                         }
                     }]
                 }
+            }, {
+                key: 'C',
+                fraction: 0.5,
+                child: {
+                    type: 'stack',
+                    active: 0,
+                    items: [{
+                        identifier: 'C1'
+                    }]
+                }
             }]
         },
         floating: null

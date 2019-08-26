@@ -16,11 +16,13 @@ export interface RowRendererProps {
 export interface ColumnSeparatorRendererProps {
     index: number;
     onMove: (index: number, deltaY: number) => void;
+    clamp: (index: number, deltaY: number) => number;
 }
 
 export interface RowSeparatorRendererProps {
     index: number;
     onMove: (index: number, deltaX: number) => void;
+    clamp: (index: number, deltaX: number) => number;
 }
 
 export interface TabRendererProps {

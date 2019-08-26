@@ -3,18 +3,18 @@ import { Draggable, DragInformation } from 'react-managed-draggable';
 import * as RenderersModel from '../renderers-model';
 
 interface State {
-    dragging: DragInformation | null;
+    deltaY: number | null;
 }
 
 export class ColumnSeparatorRenderer extends React.PureComponent<RenderersModel.ColumnSeparatorRendererProps, State> {
     public state: State = {
-        dragging: null
+        deltaY: null
     };
 
     public render() {
         let top = 0;
-        if (this.state.dragging) {
-            top = this.state.dragging.current.y - this.state.dragging.start.y;
+        if (this.state.deltaY !== null) {
+            top = this.state.deltaY;
         }
 
         return <Draggable
@@ -28,15 +28,18 @@ export class ColumnSeparatorRenderer extends React.PureComponent<RenderersModel.
     }
 
     private handleDragStart = (event: MouseEvent | TouchEvent, dragInformation: DragInformation) => {
-        this.setState({ dragging: dragInformation });
+        const deltaY = this.props.clamp(this.props.index, dragInformation.current.y - dragInformation.start.y);
+        this.setState({ deltaY });
     }
 
     private handleDragMove = (event: MouseEvent | TouchEvent, dragInformation: DragInformation) => {
-        this.setState({ dragging: dragInformation });
+        const deltaY = this.props.clamp(this.props.index, dragInformation.current.y - dragInformation.start.y);
+        this.setState({ deltaY });
     }
 
     private handleDragEnd = (event: MouseEvent | TouchEvent | undefined, dragInformation: DragInformation) => {
-        this.setState({ dragging: null });
-        this.props.onMove(this.props.index, dragInformation.current.y - dragInformation.start.y);
+        this.setState({ deltaY: null });
+        const deltaY = this.props.clamp(this.props.index, dragInformation.current.y - dragInformation.start.y);
+        this.props.onMove(this.props.index, deltaY);
     }
 }

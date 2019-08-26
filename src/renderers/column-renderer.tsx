@@ -16,10 +16,11 @@ export class ColumnRenderer extends React.PureComponent<RenderersModel.ColumnRen
                         key={`${this.props.column.items[i].key}-seperator`}
                         index={i - 1}
                         onMove={this.handleMove}
+                        clamp={this.clamp}
                     />
                 );
             }
-            gridTemplateRows.push(`${this.props.column.items[i].fraction}fr`);
+            gridTemplateRows.push(`minmax(0, ${this.props.column.items[i].fraction}fr)`);
             elements.push(
                 <this.props.floatyRenderers.layoutRenderer
                     key={this.props.column.items[i].key}
@@ -39,14 +40,36 @@ export class ColumnRenderer extends React.PureComponent<RenderersModel.ColumnRen
         this.container = ref;
     }
 
+    private clamp = (index: number, deltaY: number) => {
+        if (this.container) {
+            const heightA = this.container.children[index * 2].getBoundingClientRect().height;
+            const heightB = this.container.children[index * 2 + 2].getBoundingClientRect().height;
+            return Math.min(heightB, Math.max(-heightA, deltaY));
+        }
+        return Number.NaN;
+    }
+
     private handleMove = (index: number, deltaY: number) => {
         if (this.container) {
-            const fractions = this.props.column.items.map((item) => item.fraction);
-            const totalHeight = this.container.getBoundingClientRect().height;
-            const separatorsHeight = (this.props.column.items.length - 1) * 6;
-            const totalFraction = fractions.reduce((sum, fraction) => sum + fraction) + separatorsHeight / totalHeight;
-            const deltaF = totalFraction * (deltaY / totalHeight);
-            this.props.floatyManager.onColumnUpdateFractions(this.props.column, index, fractions[index] + deltaF, index + 1, fractions[index + 1] - deltaF);
+            const heightA = this.container.children[index * 2].getBoundingClientRect().height;
+            const heightS = this.container.children[index * 2 + 1].getBoundingClientRect().height;
+            const heightB = this.container.children[index * 2 + 2].getBoundingClientRect().height;
+            const heightTotal = heightA + heightS + heightB;
+            const fractionA = heightA / heightTotal;
+            const fractionS = heightS / heightTotal;
+            const fractionB = heightB / heightTotal;
+            const fractionTotal = fractionA + fractionS + fractionB;
+            const deltaF = fractionTotal * deltaY / heightTotal;
+            const fractionOriginal = this.props.column.items[index].fraction + this.props.column.items[index + 1].fraction;
+            const normalizer = fractionOriginal / (fractionA + fractionB);
+
+            this.props.floatyManager.onColumnUpdateFractions(
+                this.props.column,
+                index,
+                normalizer * (fractionA + deltaF),
+                index + 1,
+                normalizer * (fractionB - deltaF)
+            );
         }
     }
 }

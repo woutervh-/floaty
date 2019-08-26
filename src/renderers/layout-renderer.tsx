@@ -15,26 +15,14 @@ export class LayoutRenderer extends React.PureComponent<RenderersModel.LayoutRen
     }
 
     private renderColumn(column: Model.Column) {
-        return <this.props.renderers.columnRenderer renderers={this.props.renderers} column={column} onUpdateFractions={this.handleUpdateFractions} />;
+        return <this.props.floatyRenderers.columnRenderer floatyRenderers={this.props.floatyRenderers} stateManager={this.props.stateManager} column={column} />;
     }
 
     private renderRow(row: Model.Row) {
-        return <this.props.renderers.rowRenderer renderers={this.props.renderers} row={row} onUpdateFractions={this.handleUpdateFractions} />;
+        return <this.props.floatyRenderers.rowRenderer floatyRenderers={this.props.floatyRenderers} stateManager={this.props.stateManager} row={row} />;
     }
 
     private renderStack(stack: Model.Stack) {
-        return <this.props.renderers.stackRenderer renderers={this.props.renderers} stack={stack} onActivate={this.handleStackActivate} onStartFloat={this.handleStartFloat} />;
-    }
-
-    private handleStackActivate = (stackItem: Model.StackItem) => {
-
-    }
-
-    private handleStartFloat = (stackItem: Model.StackItem) => {
-
-    }
-
-    private handleUpdateFractions = (fractions: number[]) => {
-        
+        return <this.props.floatyRenderers.stackRenderer floatyRenderers={this.props.floatyRenderers} stateManager={this.props.stateManager} stack={stack} />;
     }
 }

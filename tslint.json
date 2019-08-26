@@ -54,7 +54,8 @@
             true
         ],
         "object-literal-sort-keys": [
-            true
+            true,
+            "match-declaration-order"
         ],
         "no-shadowed-variable": [
             false
@@ -79,10 +80,7 @@
             true
         ],
         "member-ordering": [
-            true,
-            {
-                "order": "instance-sandwich"
-            }
+            false
         ],
         "linebreak-style": [
             true,

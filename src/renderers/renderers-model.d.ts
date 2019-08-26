@@ -1,15 +1,16 @@
 import * as Model from '../model';
+import { StateManager } from '../state-manager';
 
 export interface ColumnRendererProps {
-    renderers: Renderers;
+    stateManager: StateManager;
+    floatyRenderers: FloatyRenderers;
     column: Model.Column;
-    onUpdateFractions: (fractions: number[]) => void;
 }
 
 export interface RowRendererProps {
-    renderers: Renderers;
+    stateManager: StateManager;
+    floatyRenderers: FloatyRenderers;
     row: Model.Row;
-    onUpdateFractions: (fractions: number[]) => void;
 }
 
 export interface ColumnSeparatorRendererProps {
@@ -33,14 +34,14 @@ export interface ContentRendererProps {
 }
 
 export interface StackRendererProps {
-    renderers: Renderers;
+    stateManager: StateManager;
+    floatyRenderers: FloatyRenderers;
     stack: Model.Stack;
-    onActivate: (stackItem: Model.StackItem) => void;
-    onStartFloat: (stackItem: Model.StackItem) => void;
 }
 
 export interface LayoutRendererProps {
-    renderers: Renderers;
+    stateManager: StateManager;
+    floatyRenderers: FloatyRenderers;
     layout: Model.Layout;
 }
 
@@ -48,7 +49,7 @@ export interface FloatingRendererProps {
     floating: Model.StackItem | null;
 }
 
-export interface Renderers {
+export interface FloatyRenderers {
     columnRenderer: React.ComponentType<ColumnRendererProps>;
     columnSeparatorRenderer: React.ComponentType<ColumnSeparatorRendererProps>;
     rowRenderer: React.ComponentType<RowRendererProps>;

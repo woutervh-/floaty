@@ -11,10 +11,10 @@ export class ColumnRenderer extends React.PureComponent<RenderersModel.ColumnRen
         for (let i = 0; i < this.props.column.items.length; i++) {
             if (i > 0) {
                 gridTemplateRows.push('6px');
-                elements.push(<this.props.renderers.columnSeparatorRenderer key={`${this.props.column.items[i].key}-seperator`} index={i} onMove={this.handleMove} />);
+                elements.push(<this.props.floatyRenderers.columnSeparatorRenderer key={`${this.props.column.items[i].key}-seperator`} index={i} onMove={this.handleMove} />);
             }
             gridTemplateRows.push(`${this.props.column.items[i]}fr`);
-            elements.push(<this.props.renderers.layoutRenderer key={this.props.column.items[i].key} renderers={this.props.renderers} layout={this.props.column.items[i].child} />);
+            elements.push(<this.props.floatyRenderers.layoutRenderer key={this.props.column.items[i].key} floatyRenderers={this.props.floatyRenderers} stateManager={this.props.stateManager} layout={this.props.column.items[i].child} />);
         }
 
         return <div ref={this.handleRef} style={{ display: 'grid', gridTemplateRows: gridTemplateRows.join(' ') }}>
@@ -32,9 +32,7 @@ export class ColumnRenderer extends React.PureComponent<RenderersModel.ColumnRen
             const totalFraction = fractions.reduce((sum, fraction) => sum + fraction);
             const totalHeight = this.container.getBoundingClientRect().height;
             const deltaF = totalFraction * (deltaY / totalHeight);
-            fractions[index] += deltaF;
-            fractions[index + 1] -= deltaF;
-            this.props.onUpdateFractions(fractions);
+            this.props.stateManager.onColumnUpdateFractions(this.props.column, index, fractions[index] + deltaF, index + 1, fractions[index + 1] - deltaF);
         }
     }
 }

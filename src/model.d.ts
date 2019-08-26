@@ -2,7 +2,7 @@ export interface ElementReference {
     identifier: string;
 }
 
-export interface ColumnItem {
+export interface ColumnOrRowItem {
     key: string;
     fraction: number;
     child: Layout;
@@ -10,18 +10,12 @@ export interface ColumnItem {
 
 export interface Column {
     type: 'column';
-    items: ColumnItem[];
-}
-
-export interface RowItem {
-    key: string;
-    fraction: number;
-    child: Layout;
+    items: ColumnOrRowItem[];
 }
 
 export interface Row {
     type: 'row';
-    items: RowItem[];
+    items: ColumnOrRowItem[];
 }
 
 export interface StackItem {
@@ -37,6 +31,8 @@ export interface Stack {
 }
 
 export type Layout = Column | Row | Stack;
+
+export type Item = ColumnOrRowItem | StackItem;
 
 export interface State {
     layout: Layout;

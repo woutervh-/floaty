@@ -12,9 +12,19 @@ interface Props {
 export class Floaty extends React.PureComponent<Props, never> implements StateManager {
     public render() {
         return <React.Fragment>
-            <this.props.floatyRenderers.layoutRenderer floatyRenderers={this.props.floatyRenderers} stateManager={this} layout={this.props.state.layout} />
+            {this.renderLayout()}
             <this.props.floatyRenderers.floatingRenderer floatyRenderers={this.props.floatyRenderers} stateManager={this} floating={this.props.state.floating} />
         </React.Fragment>;
+    }
+
+    private renderLayout() {
+        if (this.props.state.layout) {
+            return <this.props.floatyRenderers.layoutRenderer floatyRenderers={this.props.floatyRenderers} stateManager={this} layout={this.props.state.layout} />;
+        }
+    }
+
+    private updateState = (state: Model.State) => {
+        this.props.onStateChange({ ...state, layout: Floaty.minimizeLayout(state.layout) });
     }
 
     private onLayoutChange(layout: Model.Layout) {
@@ -22,7 +32,7 @@ export class Floaty extends React.PureComponent<Props, never> implements StateMa
             ...this.props.state,
             layout
         };
-        this.props.onStateChange(newState);
+        this.updateState(newState);
     }
 
     private onRowOrColumnUpdateFractions = (rowOrColumn: Model.Column | Model.Row, index1: number, fraction1: number, index2: number, fraction2: number) => {
@@ -47,7 +57,12 @@ export class Floaty extends React.PureComponent<Props, never> implements StateMa
 
     public onRowUpdateFractions = this.onRowOrColumnUpdateFractions;
 
-    public onActivate = (stack: Model.Stack, index: number) => {
+    public onActivate = (stackItem: Model.StackItem) => {
+        const stack = this.findStack(stackItem, this.props.state.layout);
+        if (!stack) {
+            throw new Error(`StackItem ${stackItem.key} not found.`);
+        }
+        const index = stack.items.indexOf(stackItem);
         const path = this.findPath(stack, this.props.state.layout);
         if (!path) {
             throw new Error('Stack not found.');
@@ -58,11 +73,12 @@ export class Floaty extends React.PureComponent<Props, never> implements StateMa
         this.onLayoutChange(path[path.length - 1]);
     }
 
-    public onStartFloat = (stack: Model.Stack, index: number) => {
-        if (this.props.state.floating) {
-            return;
+    public onClose = (stackItem: Model.StackItem) => {
+        const stack = this.findStack(stackItem, this.props.state.layout);
+        if (!stack) {
+            throw new Error(`StackItem ${stackItem.key} not found.`);
         }
-
+        const index = stack.items.indexOf(stackItem);
         const path = this.findPath(stack, this.props.state.layout);
         if (!path) {
             throw new Error('Stack not found.');
@@ -70,14 +86,35 @@ export class Floaty extends React.PureComponent<Props, never> implements StateMa
 
         const items = stack.items.slice();
         items.splice(index, 1);
-        const newStack = { ...stack, items, active: Math.min(stack.items.length - 1, index) };
+        const newStack = { ...stack, items, active: Math.min(items.length - 1, stack.active) };
+        this.replaceInPath(newStack, path);
+        this.onLayoutChange(path[path.length - 1]);
+    }
+
+    public onStartFloat = (stackItem: Model.StackItem) => {
+        if (this.props.state.floating) {
+            return;
+        }
+        const stack = this.findStack(stackItem, this.props.state.layout);
+        if (!stack) {
+            throw new Error(`StackItem ${stackItem.key} not found.`);
+        }
+        const index = stack.items.indexOf(stackItem);
+        const path = this.findPath(stack, this.props.state.layout);
+        if (!path) {
+            throw new Error('Stack not found.');
+        }
+
+        const items = stack.items.slice();
+        items.splice(index, 1);
+        const newStack = { ...stack, items, active: Math.min(items.length - 1, stack.active) };
         this.replaceInPath(newStack, path);
 
         const newState: Model.State = {
             layout: path[path.length - 1],
             floating: stack.items[index]
         };
-        this.props.onStateChange(newState);
+        this.updateState(newState);
     }
 
     private replaceInPath(target: Model.Layout, path: Model.Layout[]) {
@@ -94,7 +131,10 @@ export class Floaty extends React.PureComponent<Props, never> implements StateMa
         }
     }
 
-    private findPath(target: Model.Layout, from: Model.Layout): Model.Layout[] | null {
+    private findPath(target: Model.Layout, from: Model.Layout | null): Model.Layout[] | null {
+        if (from === null) {
+            return null;
+        }
         if (target === from) {
             return [target];
         }
@@ -111,5 +151,77 @@ export class Floaty extends React.PureComponent<Props, never> implements StateMa
             }
         }
         return null;
+    }
+
+    private findStack(stackItem: Model.StackItem, from: Model.Layout | null): Model.Stack | null {
+        if (from === null) {
+            return null;
+        }
+        switch (from.type) {
+            case 'column':
+            case 'row': {
+                for (const item of from.items) {
+                    const found = this.findStack(stackItem, item.child);
+                    if (found) {
+                        return found;
+                    }
+                }
+                break;
+            }
+            case 'stack': {
+                for (const item of from.items) {
+                    if (stackItem === item) {
+                        return from;
+                    }
+                }
+                break;
+            }
+        }
+        return null;
+    }
+
+    private static minimizeLayout(layout: Model.Layout | null): Model.Layout | null {
+        if (layout === null) {
+            return null;
+        }
+        switch (layout.type) {
+            case 'column':
+            case 'row': {
+                const type = layout.type;
+                const items: Model.ColumnOrRowItem[] = [];
+                let changed = false;
+                for (const item of layout.items) {
+                    const result = this.minimizeLayout(item.child);
+                    if (result !== item.child) {
+                        changed = true;
+                    }
+                    if (result) {
+                        if (result.type === type) {
+                            const sumFractions = result.items.map((item) => item.fraction).reduce((sum, fraction) => sum + fraction);
+                            const normalizedFractions = result.items.map((item) => item.fraction / sumFractions);
+                            for (let i = 0; i < result.items.length; i++) {
+                                items.push({ ...result.items[i], fraction: normalizedFractions[i] });
+                            }
+                        } else {
+                            items.push({ ...item, child: result });
+                        }
+                    }
+                }
+                if (items.length >= 2) {
+                    if (changed) {
+                        return { ...layout, items };
+                    } else {
+                        return layout;
+                    }
+                } else if (items.length === 1) {
+                    return items[0].child;
+                } else {
+                    return null;
+                }
+            }
+            case 'stack': {
+                return layout;
+            }
+        }
     }
 }

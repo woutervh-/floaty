@@ -21,12 +21,35 @@ export class App extends React.PureComponent<{}, State> {
                 key: 'B',
                 fraction: 0.5,
                 child: {
-                    type: 'stack',
-                    active: 0,
+                    type: 'column',
                     items: [{
                         key: 'B1',
-                        content: { identifier: 'B1' },
-                        tab: { identifier: 'B1' }
+                        fraction: 0.5,
+                        child: {
+                            type: 'stack',
+                            active: 0,
+                            items: [{
+                                key: 'B1',
+                                content: { identifier: 'B1' },
+                                tab: { identifier: 'B1' }
+                            }]
+                        }
+                    }, {
+                        key: 'B2',
+                        fraction: 0.5,
+                        child: {
+                            type: 'stack',
+                            active: 0,
+                            items: [{
+                                key: 'B2',
+                                content: { identifier: 'B2' },
+                                tab: { identifier: 'B2' }
+                            }, {
+                                key: 'B3',
+                                content: { identifier: 'B3' },
+                                tab: { identifier: 'B3' }
+                            }]
+                        }
                     }]
                 }
             }]
@@ -45,15 +68,24 @@ export class App extends React.PureComponent<{}, State> {
         rowRenderer: Renderers.RowRenderer,
         rowSeparatorRenderer: Renderers.RowSeparatorRenderer,
         stackRenderer: Renderers.StackRenderer,
-        tabRenderer: (props) => <div>Tab: {props.stackItem.tab.identifier}</div>
+        tabRenderer: (props) => <div>
+            Tab: {props.stackItem.tab.identifier}
+            <button onClick={() => props.stateManager.onActivate(props.stackItem)}>•</button>
+            <button onClick={() => props.stateManager.onClose(props.stackItem)}>×</button>
+        </div>
     };
 
     public render() {
-        return <Floaty
-            floatyRenderers={this.floatyRenderers}
-            state={this.state}
-            onStateChange={this.handleStateChange}
-        />;
+        return <div style={{ width: 500, height: 500 }}>
+            <Floaty
+                floatyRenderers={this.floatyRenderers}
+                state={this.state}
+                onStateChange={this.handleStateChange}
+            />
+            <pre>
+                {JSON.stringify(this.state, null, 2)}
+            </pre>
+        </div>;
     }
 
     private handleStateChange = (state: State) => this.setState(state);

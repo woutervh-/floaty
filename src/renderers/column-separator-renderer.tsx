@@ -12,13 +12,18 @@ export class ColumnSeparatorRenderer extends React.PureComponent<RenderersModel.
     };
 
     public render() {
+        let top = 0;
+        if (this.state.dragging) {
+            top = this.state.dragging.current.y - this.state.dragging.start.y;
+        }
+
         return <Draggable
             style={{ position: 'relative' }}
             onDragStart={this.handleDragStart}
             onDragMove={this.handleDragMove}
             onDragEnd={this.handleDragEnd}
         >
-            <div style={{ backgroundColor: 'black', position: 'absolute', cursor: 'pointer', top: 0, left: 0, width: '100%', height: '100%' }} />
+            <div style={{ backgroundColor: 'black', position: 'absolute', cursor: 'pointer', top, left: 0, width: '100%', height: '100%' }} />
         </Draggable>;
     }
 

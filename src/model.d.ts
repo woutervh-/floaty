@@ -35,6 +35,6 @@ export type Layout = Column | Row | Stack;
 export type Item = ColumnOrRowItem | StackItem;
 
 export interface State {
-    layout: Layout;
+    layout: Layout | null;
     floating: StackItem | null;
 }

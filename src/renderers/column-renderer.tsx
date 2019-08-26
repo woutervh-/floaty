@@ -11,13 +11,26 @@ export class ColumnRenderer extends React.PureComponent<RenderersModel.ColumnRen
         for (let i = 0; i < this.props.column.items.length; i++) {
             if (i > 0) {
                 gridTemplateRows.push('6px');
-                elements.push(<this.props.floatyRenderers.columnSeparatorRenderer key={`${this.props.column.items[i].key}-seperator`} index={i - 1} onMove={this.handleMove} />);
+                elements.push(
+                    <this.props.floatyRenderers.columnSeparatorRenderer
+                        key={`${this.props.column.items[i].key}-seperator`}
+                        index={i - 1}
+                        onMove={this.handleMove}
+                    />
+                );
             }
             gridTemplateRows.push(`${this.props.column.items[i].fraction}fr`);
-            elements.push(<this.props.floatyRenderers.layoutRenderer key={this.props.column.items[i].key} floatyRenderers={this.props.floatyRenderers} stateManager={this.props.stateManager} layout={this.props.column.items[i].child} />);
+            elements.push(
+                <this.props.floatyRenderers.layoutRenderer
+                    key={this.props.column.items[i].key}
+                    floatyRenderers={this.props.floatyRenderers}
+                    stateManager={this.props.stateManager}
+                    layout={this.props.column.items[i].child}
+                />
+            );
         }
 
-        return <div ref={this.handleRef} style={{ display: 'grid', gridTemplateRows: gridTemplateRows.join(' ') }}>
+        return <div ref={this.handleRef} style={{ display: 'grid', gridTemplateRows: gridTemplateRows.join(' '), width: '100%' }}>
             {elements}
         </div>;
     }

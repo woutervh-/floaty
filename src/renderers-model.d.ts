@@ -24,12 +24,12 @@ export interface RowSeparatorRendererProps {
 }
 
 export interface TabRendererProps {
+    stateManager: StateManager;
     stackItem: Model.StackItem;
-    onActivate: (stackItem: Model.StackItem) => void;
-    onStartFloat: (stackItem: Model.StackItem) => void;
 }
 
 export interface ContentRendererProps {
+    stateManager: StateManager;
     stackItem: Model.StackItem;
 }
 
@@ -46,10 +46,12 @@ export interface LayoutRendererProps {
 }
 
 export interface FloatingTabRendererProps {
+    stateManager: StateManager;
     stackItem: Model.StackItem;
 }
 
 export interface FloatingContentRendererProps {
+    stateManager: StateManager;
     stackItem: Model.StackItem;
 }
 

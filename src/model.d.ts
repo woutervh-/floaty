@@ -1,7 +1,3 @@
-export interface ElementReference {
-    identifier: string;
-}
-
 export interface ColumnOrRowItem {
     key: string;
     fraction: number;
@@ -19,9 +15,7 @@ export interface Row {
 }
 
 export interface StackItem {
-    key: string;
-    tab: ElementReference;
-    content: ElementReference;
+    identifier: string;
 }
 
 export interface Stack {

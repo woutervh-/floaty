@@ -60,7 +60,7 @@ export class Floaty extends React.PureComponent<Props, never> implements StateMa
     public onActivate = (stackItem: Model.StackItem) => {
         const stack = this.findStack(stackItem, this.props.state.layout);
         if (!stack) {
-            throw new Error(`StackItem ${stackItem.key} not found.`);
+            throw new Error(`StackItem ${stackItem.identifier} not found.`);
         }
         const index = stack.items.indexOf(stackItem);
         const path = this.findPath(stack, this.props.state.layout);
@@ -76,7 +76,7 @@ export class Floaty extends React.PureComponent<Props, never> implements StateMa
     public onClose = (stackItem: Model.StackItem) => {
         const stack = this.findStack(stackItem, this.props.state.layout);
         if (!stack) {
-            throw new Error(`StackItem ${stackItem.key} not found.`);
+            throw new Error(`StackItem ${stackItem.identifier} not found.`);
         }
         const index = stack.items.indexOf(stackItem);
         const path = this.findPath(stack, this.props.state.layout);
@@ -97,7 +97,7 @@ export class Floaty extends React.PureComponent<Props, never> implements StateMa
         }
         const stack = this.findStack(stackItem, this.props.state.layout);
         if (!stack) {
-            throw new Error(`StackItem ${stackItem.key} not found.`);
+            throw new Error(`StackItem ${stackItem.identifier} not found.`);
         }
         const index = stack.items.indexOf(stackItem);
         const path = this.findPath(stack, this.props.state.layout);
@@ -220,7 +220,11 @@ export class Floaty extends React.PureComponent<Props, never> implements StateMa
                 }
             }
             case 'stack': {
-                return layout;
+                if (layout.items.length >= 1) {
+                    return layout;
+                } else {
+                    return null;
+                }
             }
         }
     }

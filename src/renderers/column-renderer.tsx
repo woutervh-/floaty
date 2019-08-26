@@ -29,8 +29,9 @@ export class ColumnRenderer extends React.PureComponent<RenderersModel.ColumnRen
     private handleMove = (index: number, deltaY: number) => {
         if (this.container) {
             const fractions = this.props.column.items.map((item) => item.fraction);
-            const totalFraction = fractions.reduce((sum, fraction) => sum + fraction);
             const totalHeight = this.container.getBoundingClientRect().height;
+            const separatorsHeight = (this.props.column.items.length - 1) * 6;
+            const totalFraction = fractions.reduce((sum, fraction) => sum + fraction) + separatorsHeight / totalHeight;
             const deltaF = totalFraction * (deltaY / totalHeight);
             this.props.stateManager.onColumnUpdateFractions(this.props.column, index, fractions[index] + deltaF, index + 1, fractions[index + 1] - deltaF);
         }

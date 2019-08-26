@@ -1,7 +1,7 @@
 import * as React from 'react';
+import { FloatyManager } from './floaty-manager';
 import * as Model from './model';
 import * as RenderersModel from './renderers-model';
-import { StateManager } from './state-manager';
 
 interface Props {
     state: Model.State;
@@ -9,17 +9,17 @@ interface Props {
     floatyRenderers: RenderersModel.FloatyRenderers;
 }
 
-export class Floaty extends React.PureComponent<Props, never> implements StateManager {
+export class Floaty extends React.PureComponent<Props, never> implements FloatyManager {
     public render() {
         return <React.Fragment>
             {this.renderLayout()}
-            <this.props.floatyRenderers.floatingRenderer floatyRenderers={this.props.floatyRenderers} stateManager={this} floating={this.props.state.floating} />
+            <this.props.floatyRenderers.floatingRenderer floatyRenderers={this.props.floatyRenderers} floatyManager={this} floating={this.props.state.floating} />
         </React.Fragment>;
     }
 
     private renderLayout() {
         if (this.props.state.layout) {
-            return <this.props.floatyRenderers.layoutRenderer floatyRenderers={this.props.floatyRenderers} stateManager={this} layout={this.props.state.layout} />;
+            return <this.props.floatyRenderers.layoutRenderer floatyRenderers={this.props.floatyRenderers} floatyManager={this} layout={this.props.state.layout} />;
         }
     }
 
@@ -117,6 +117,37 @@ export class Floaty extends React.PureComponent<Props, never> implements StateMa
         this.updateState(newState);
     }
 
+    public getLayout() {
+        return this.props.state.layout;
+    }
+
+    public findStack = (stackItem: Model.StackItem, from: Model.Layout | null): Model.Stack | null => {
+        if (from === null) {
+            return null;
+        }
+        switch (from.type) {
+            case 'column':
+            case 'row': {
+                for (const item of from.items) {
+                    const found = this.findStack(stackItem, item.child);
+                    if (found) {
+                        return found;
+                    }
+                }
+                break;
+            }
+            case 'stack': {
+                for (const item of from.items) {
+                    if (stackItem === item) {
+                        return from;
+                    }
+                }
+                break;
+            }
+        }
+        return null;
+    }
+
     private replaceInPath(target: Model.Layout, path: Model.Layout[]) {
         let previous = path[0];
         path[0] = target;
@@ -145,33 +176,6 @@ export class Floaty extends React.PureComponent<Props, never> implements StateMa
                     const found = this.findPath(target, item.child);
                     if (found) {
                         return [...found, from];
-                    }
-                }
-                break;
-            }
-        }
-        return null;
-    }
-
-    private findStack(stackItem: Model.StackItem, from: Model.Layout | null): Model.Stack | null {
-        if (from === null) {
-            return null;
-        }
-        switch (from.type) {
-            case 'column':
-            case 'row': {
-                for (const item of from.items) {
-                    const found = this.findStack(stackItem, item.child);
-                    if (found) {
-                        return found;
-                    }
-                }
-                break;
-            }
-            case 'stack': {
-                for (const item of from.items) {
-                    if (stackItem === item) {
-                        return from;
                     }
                 }
                 break;

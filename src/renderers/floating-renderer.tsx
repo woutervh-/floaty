@@ -8,8 +8,8 @@ export class FloatingRenderer extends React.PureComponent<RenderersModel.Floatin
         }
 
         return <div style={{ display: 'grid', gridTemplateRows: '20px 1fr' }}>
-            <this.props.floatyRenderers.floatingTabRenderer stateManager={this.props.stateManager} stackItem={this.props.floating} />
-            <this.props.floatyRenderers.floatingContentRenderer stateManager={this.props.stateManager} stackItem={this.props.floating} />
+            <this.props.floatyRenderers.floatingTabRenderer floatyManager={this.props.floatyManager} stackItem={this.props.floating} />
+            <this.props.floatyRenderers.floatingContentRenderer floatyManager={this.props.floatyManager} stackItem={this.props.floating} />
         </div>;
     }
 }

@@ -24,7 +24,7 @@ export class RowRenderer extends React.PureComponent<RenderersModel.RowRendererP
                 <this.props.floatyRenderers.layoutRenderer
                     key={this.props.row.items[i].key}
                     floatyRenderers={this.props.floatyRenderers}
-                    stateManager={this.props.stateManager}
+                    floatyManager={this.props.floatyManager}
                     layout={this.props.row.items[i].child}
                 />
             );
@@ -46,7 +46,7 @@ export class RowRenderer extends React.PureComponent<RenderersModel.RowRendererP
             const separatorsWidth = (this.props.row.items.length - 1) * 6;
             const totalFraction = fractions.reduce((sum, fraction) => sum + fraction) + separatorsWidth / totalWidth;
             const deltaF = totalFraction * (deltaX / totalWidth);
-            this.props.stateManager.onRowUpdateFractions(this.props.row, index, fractions[index] + deltaF, index + 1, fractions[index + 1] - deltaF);
+            this.props.floatyManager.onRowUpdateFractions(this.props.row, index, fractions[index] + deltaF, index + 1, fractions[index + 1] - deltaF);
         }
     }
 }

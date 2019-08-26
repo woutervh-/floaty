@@ -15,14 +15,14 @@ export class LayoutRenderer extends React.PureComponent<RenderersModel.LayoutRen
     }
 
     private renderColumn(column: Model.Column) {
-        return <this.props.floatyRenderers.columnRenderer floatyRenderers={this.props.floatyRenderers} stateManager={this.props.stateManager} column={column} />;
+        return <this.props.floatyRenderers.columnRenderer floatyRenderers={this.props.floatyRenderers} floatyManager={this.props.floatyManager} column={column} />;
     }
 
     private renderRow(row: Model.Row) {
-        return <this.props.floatyRenderers.rowRenderer floatyRenderers={this.props.floatyRenderers} stateManager={this.props.stateManager} row={row} />;
+        return <this.props.floatyRenderers.rowRenderer floatyRenderers={this.props.floatyRenderers} floatyManager={this.props.floatyManager} row={row} />;
     }
 
     private renderStack(stack: Model.Stack) {
-        return <this.props.floatyRenderers.stackRenderer floatyRenderers={this.props.floatyRenderers} stateManager={this.props.stateManager} stack={stack} />;
+        return <this.props.floatyRenderers.stackRenderer floatyRenderers={this.props.floatyRenderers} floatyManager={this.props.floatyManager} stack={stack} />;
     }
 }

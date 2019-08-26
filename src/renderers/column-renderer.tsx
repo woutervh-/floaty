@@ -24,7 +24,7 @@ export class ColumnRenderer extends React.PureComponent<RenderersModel.ColumnRen
                 <this.props.floatyRenderers.layoutRenderer
                     key={this.props.column.items[i].key}
                     floatyRenderers={this.props.floatyRenderers}
-                    stateManager={this.props.stateManager}
+                    floatyManager={this.props.floatyManager}
                     layout={this.props.column.items[i].child}
                 />
             );
@@ -46,7 +46,7 @@ export class ColumnRenderer extends React.PureComponent<RenderersModel.ColumnRen
             const separatorsHeight = (this.props.column.items.length - 1) * 6;
             const totalFraction = fractions.reduce((sum, fraction) => sum + fraction) + separatorsHeight / totalHeight;
             const deltaF = totalFraction * (deltaY / totalHeight);
-            this.props.stateManager.onColumnUpdateFractions(this.props.column, index, fractions[index] + deltaF, index + 1, fractions[index + 1] - deltaF);
+            this.props.floatyManager.onColumnUpdateFractions(this.props.column, index, fractions[index] + deltaF, index + 1, fractions[index + 1] - deltaF);
         }
     }
 }

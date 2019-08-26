@@ -62,8 +62,8 @@ export class App extends React.PureComponent<{}, State> {
         stackRenderer: Renderers.StackRenderer,
         tabRenderer: (props) => <div>
             Tab: {props.stackItem.identifier}
-            <button onClick={() => props.stateManager.onActivate(props.stackItem)}>•</button>
-            <button onClick={() => props.stateManager.onClose(props.stackItem)}>×</button>
+            <button onClick={() => props.floatyManager.onActivate(props.stackItem)} disabled={props.stack.items.length <= 1 || props.stack.active === props.stackIndex}>•</button>
+            <button onClick={() => props.floatyManager.onClose(props.stackItem)}>×</button>
         </div>
     };
 

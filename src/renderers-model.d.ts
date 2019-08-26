@@ -1,14 +1,14 @@
 import * as Model from './model';
-import { StateManager } from './state-manager';
+import { FloatyManager } from './floaty-manager';
 
 export interface ColumnRendererProps {
-    stateManager: StateManager;
+    floatyManager: FloatyManager;
     floatyRenderers: FloatyRenderers;
     column: Model.Column;
 }
 
 export interface RowRendererProps {
-    stateManager: StateManager;
+    floatyManager: FloatyManager;
     floatyRenderers: FloatyRenderers;
     row: Model.Row;
 }
@@ -24,39 +24,43 @@ export interface RowSeparatorRendererProps {
 }
 
 export interface TabRendererProps {
-    stateManager: StateManager;
+    floatyManager: FloatyManager;
+    stack: Model.Stack;
+    stackIndex: number;
     stackItem: Model.StackItem;
 }
 
 export interface ContentRendererProps {
-    stateManager: StateManager;
+    floatyManager: FloatyManager;
+    stack: Model.Stack;
+    stackIndex: number;
     stackItem: Model.StackItem;
 }
 
 export interface StackRendererProps {
-    stateManager: StateManager;
+    floatyManager: FloatyManager;
     floatyRenderers: FloatyRenderers;
     stack: Model.Stack;
 }
 
 export interface LayoutRendererProps {
-    stateManager: StateManager;
+    floatyManager: FloatyManager;
     floatyRenderers: FloatyRenderers;
     layout: Model.Layout;
 }
 
 export interface FloatingTabRendererProps {
-    stateManager: StateManager;
+    floatyManager: FloatyManager;
     stackItem: Model.StackItem;
 }
 
 export interface FloatingContentRendererProps {
-    stateManager: StateManager;
+    floatyManager: FloatyManager;
     stackItem: Model.StackItem;
 }
 
 export interface FloatingRendererProps {
-    stateManager: StateManager;
+    floatyManager: FloatyManager;
     floatyRenderers: FloatyRenderers;
     floating: Model.StackItem | null;
 }

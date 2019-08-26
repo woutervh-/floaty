@@ -5,15 +5,14 @@ import * as RenderersModel from './renderers/renderers-model';
 interface Props {
     state: Model.State;
     onStateChange: (state: Model.State) => void;
-    floatingRenderer: React.ComponentType<RenderersModel.FloatingRendererProps>;
-    layoutRenderer: React.ComponentType<RenderersModel.LayoutRendererProps>;
+    renderers: RenderersModel.Renderers;
 }
 
 export class Floaty extends React.PureComponent<Props, never> {
     public render() {
         return <React.Fragment>
-            <this.props.layoutRenderer layout={this.props.state.layout} />
-            <this.props.floatingRenderer floating={this.props.state.floating} />
+            <this.props.renderers.layoutRenderer renderers={this.props.renderers} layout={this.props.state.layout} />
+            <this.props.renderers.floatingRenderer floating={this.props.state.floating} />
         </React.Fragment>;
     }
 }

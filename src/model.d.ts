@@ -1,5 +1,5 @@
-export interface Element {
-    key: string;
+export interface ElementReference {
+    identifier: string;
 }
 
 export interface ColumnItem {
@@ -26,13 +26,14 @@ export interface Row {
 
 export interface StackItem {
     key: string;
-    title: Element;
-    content: Element;
+    tab: ElementReference;
+    content: ElementReference;
 }
 
 export interface Stack {
     type: 'stack';
     items: StackItem[];
+    active: number;
 }
 
 export type Layout = Column | Row | Stack;

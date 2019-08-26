@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Model from './model';
-import * as RenderersModel from './renderers/renderers-model';
+import * as RenderersModel from './renderers-model';
 import { StateManager } from './state-manager';
 
 interface Props {
@@ -13,7 +13,7 @@ export class Floaty extends React.PureComponent<Props, never> implements StateMa
     public render() {
         return <React.Fragment>
             <this.props.floatyRenderers.layoutRenderer floatyRenderers={this.props.floatyRenderers} stateManager={this} layout={this.props.state.layout} />
-            <this.props.floatyRenderers.floatingRenderer floating={this.props.state.floating} />
+            <this.props.floatyRenderers.floatingRenderer floatyRenderers={this.props.floatyRenderers} stateManager={this} floating={this.props.state.floating} />
         </React.Fragment>;
     }
 

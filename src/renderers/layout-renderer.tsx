@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Model from '../model';
-import * as RenderersModel from './renderers-model';
+import * as RenderersModel from '../renderers-model';
 
 export class LayoutRenderer extends React.PureComponent<RenderersModel.LayoutRendererProps, never> {
     public render() {

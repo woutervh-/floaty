@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Draggable, DragInformation } from 'react-managed-draggable';
-import * as RenderersModel from './renderers-model';
+import * as RenderersModel from '../renderers-model';
 
 interface State {
     dragging: DragInformation | null;

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Model from '../model';
-import * as RenderersModel from './renderers-model';
+import * as RenderersModel from '../renderers-model';
 
 export class StackRenderer extends React.PureComponent<RenderersModel.StackRendererProps, never> {
     public render() {

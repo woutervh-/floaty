@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as RenderersModel from './renderers-model';
+import * as RenderersModel from '../renderers-model';
 
 export class ColumnRenderer extends React.PureComponent<RenderersModel.ColumnRendererProps, never> {
     private container: HTMLDivElement | null = null;
@@ -11,9 +11,9 @@ export class ColumnRenderer extends React.PureComponent<RenderersModel.ColumnRen
         for (let i = 0; i < this.props.column.items.length; i++) {
             if (i > 0) {
                 gridTemplateRows.push('6px');
-                elements.push(<this.props.floatyRenderers.columnSeparatorRenderer key={`${this.props.column.items[i].key}-seperator`} index={i} onMove={this.handleMove} />);
+                elements.push(<this.props.floatyRenderers.columnSeparatorRenderer key={`${this.props.column.items[i].key}-seperator`} index={i - 1} onMove={this.handleMove} />);
             }
-            gridTemplateRows.push(`${this.props.column.items[i]}fr`);
+            gridTemplateRows.push(`${this.props.column.items[i].fraction}fr`);
             elements.push(<this.props.floatyRenderers.layoutRenderer key={this.props.column.items[i].key} floatyRenderers={this.props.floatyRenderers} stateManager={this.props.stateManager} layout={this.props.column.items[i].child} />);
         }
 

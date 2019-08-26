@@ -1,5 +1,5 @@
-import * as Model from '../model';
-import { StateManager } from '../state-manager';
+import * as Model from './model';
+import { StateManager } from './state-manager';
 
 export interface ColumnRendererProps {
     stateManager: StateManager;
@@ -45,7 +45,17 @@ export interface LayoutRendererProps {
     layout: Model.Layout;
 }
 
+export interface FloatingTabRendererProps {
+    stackItem: Model.StackItem;
+}
+
+export interface FloatingContentRendererProps {
+    stackItem: Model.StackItem;
+}
+
 export interface FloatingRendererProps {
+    stateManager: StateManager;
+    floatyRenderers: FloatyRenderers;
     floating: Model.StackItem | null;
 }
 
@@ -55,6 +65,8 @@ export interface FloatyRenderers {
     rowRenderer: React.ComponentType<RowRendererProps>;
     rowSeparatorRenderer: React.ComponentType<RowSeparatorRendererProps>;
     stackRenderer: React.ComponentType<StackRendererProps>;
+    floatingTabRenderer: React.ComponentType<FloatingTabRendererProps>;
+    floatingContentRenderer: React.ComponentType<FloatingContentRendererProps>;
     floatingRenderer: React.ComponentType<FloatingRendererProps>;
     layoutRenderer: React.ComponentType<LayoutRendererProps>;
     tabRenderer: React.ComponentType<TabRendererProps>;

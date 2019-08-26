@@ -58,7 +58,7 @@ export class Floaty extends React.PureComponent<Props, never> implements FloatyM
     public onRowUpdateFractions = this.onRowOrColumnUpdateFractions;
 
     public onActivate = (stackItem: Model.StackItem) => {
-        const stack = this.findStack(stackItem, this.props.state.layout);
+        const stack = this.findStack(stackItem);
         if (!stack) {
             throw new Error(`StackItem ${stackItem.identifier} not found.`);
         }
@@ -73,8 +73,8 @@ export class Floaty extends React.PureComponent<Props, never> implements FloatyM
         this.onLayoutChange(path[path.length - 1]);
     }
 
-    public onClose = (stackItem: Model.StackItem) => {
-        const stack = this.findStack(stackItem, this.props.state.layout);
+    public onCloseTab = (stackItem: Model.StackItem) => {
+        const stack = this.findStack(stackItem);
         if (!stack) {
             throw new Error(`StackItem ${stackItem.identifier} not found.`);
         }
@@ -95,7 +95,7 @@ export class Floaty extends React.PureComponent<Props, never> implements FloatyM
         if (this.props.state.floating) {
             return;
         }
-        const stack = this.findStack(stackItem, this.props.state.layout);
+        const stack = this.findStack(stackItem);
         if (!stack) {
             throw new Error(`StackItem ${stackItem.identifier} not found.`);
         }
@@ -121,31 +121,8 @@ export class Floaty extends React.PureComponent<Props, never> implements FloatyM
         return this.props.state.layout;
     }
 
-    public findStack = (stackItem: Model.StackItem, from: Model.Layout | null): Model.Stack | null => {
-        if (from === null) {
-            return null;
-        }
-        switch (from.type) {
-            case 'column':
-            case 'row': {
-                for (const item of from.items) {
-                    const found = this.findStack(stackItem, item.child);
-                    if (found) {
-                        return found;
-                    }
-                }
-                break;
-            }
-            case 'stack': {
-                for (const item of from.items) {
-                    if (stackItem === item) {
-                        return from;
-                    }
-                }
-                break;
-            }
-        }
-        return null;
+    public findStack = (stackItem: Model.StackItem): Model.Stack | null => {
+        return Floaty.findStack(stackItem, this.getLayout());
     }
 
     private replaceInPath(target: Model.Layout, path: Model.Layout[]) {
@@ -231,5 +208,32 @@ export class Floaty extends React.PureComponent<Props, never> implements FloatyM
                 }
             }
         }
+    }
+
+    private static findStack(stackItem: Model.StackItem, from: Model.Layout | null): Model.Stack | null {
+        if (from === null) {
+            return null;
+        }
+        switch (from.type) {
+            case 'column':
+            case 'row': {
+                for (const item of from.items) {
+                    const found = Floaty.findStack(stackItem, item.child);
+                    if (found) {
+                        return found;
+                    }
+                }
+                break;
+            }
+            case 'stack': {
+                for (const item of from.items) {
+                    if (stackItem === item) {
+                        return from;
+                    }
+                }
+                break;
+            }
+        }
+        return null;
     }
 }

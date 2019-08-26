@@ -62,19 +62,31 @@ export class App extends React.PureComponent<{}, State> {
     private floatyRenderers: FloatyRenderers = {
         columnRenderer: Renderers.ColumnRenderer,
         columnSeparatorRenderer: Renderers.ColumnSeparatorRenderer,
-        contentRenderer: (props) => <div>Content: {props.stackItem.identifier}</div>,
+        contentRenderer: React.memo((props) =>
+            <div>Content: {props.stackItem.identifier}</div>
+        ),
         floatingRenderer: Renderers.FloatingRenderer,
-        floatingContentRenderer: (props) => <div>Preview of: {props.stackItem.identifier}</div>,
-        floatingTabRenderer: (props) => <div>Floating tab: {props.stackItem.identifier}</div>,
+        floatingContentRenderer: React.memo((props) =>
+            <div>Preview of: {props.stackItem.identifier}</div>
+        ),
+        floatingTabRenderer: React.memo((props) =>
+            <div>Floating tab: {props.stackItem.identifier}</div>
+        ),
         layoutRenderer: Renderers.LayoutRenderer,
         rowRenderer: Renderers.RowRenderer,
         rowSeparatorRenderer: Renderers.RowSeparatorRenderer,
         stackRenderer: Renderers.StackRenderer,
-        tabRenderer: (props) => <div>
-            Tab: {props.stackItem.identifier}
-            <button onClick={() => props.floatyManager.onActivate(props.stackItem)} disabled={props.stack.items.length <= 1 || props.stack.active === props.stackIndex}>•</button>
-            <button onClick={() => props.floatyManager.onClose(props.stackItem)}>×</button>
-        </div>
+        tabRenderer: React.memo((props) =>
+            <div>
+                Tab: {props.stackItem.identifier}
+                <button onClick={() => props.floatyManager.onActivate(props.stackItem)} disabled={props.stack.items.length <= 1 || props.stack.active === props.stackIndex}>
+                    •
+                </button>
+                <button onClick={() => props.floatyManager.onCloseTab(props.stackItem)}>
+                    ×
+                </button>
+            </div>
+        )
     };
 
     public render() {

@@ -46,9 +46,10 @@
     "webpack-dev-server": "^3.8.0"
   },
   "peerDependencies": {
-    "react": ">=15.3"
+    "react": ">=15.3",
+    "react-dom": ">=15.3"
   },
   "dependencies": {
-    "react-managed-draggable": "^1.0.1"
+    "react-managed-draggable": "^1.0.7"
   }
 }

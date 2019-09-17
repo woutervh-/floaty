@@ -56,7 +56,7 @@ export class App extends React.PureComponent<{}, State> {
                 }
             }]
         },
-        floating: null
+        floating: { identifier: 'F1' }
     };
 
     private floatyRenderers: FloatyRenderers = {
@@ -84,6 +84,9 @@ export class App extends React.PureComponent<{}, State> {
                 </button>
                 <button onClick={() => props.floatyManager.onCloseTab(props.stackItem)}>
                     ×
+                </button>
+                <button onClick={() => props.floatyManager.onStartFloat(props.stackItem)}>
+                    ↗
                 </button>
             </div>
         )

@@ -1,4 +1,6 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import * as ReactManagedDragable from 'react-managed-draggable';
 import { FloatyManager } from './floaty-manager';
 import * as Model from './model';
 import * as RenderersModel from './renderers-model';
@@ -9,17 +11,64 @@ interface Props {
     floatyRenderers: RenderersModel.FloatyRenderers;
 }
 
-export class Floaty extends React.PureComponent<Props, never> implements FloatyManager {
+interface State {
+    currentMousePosition: ReactManagedDragable.XY | null;
+}
+
+export class Floaty extends React.PureComponent<Props, State> implements FloatyManager {
+    public state: State = {
+        currentMousePosition: null
+    };
+
+    private lastMousePosition: ReactManagedDragable.XY | null = null;
+
+    private portal = document.createElement('div');
+
+    public componentDidMount() {
+        document.addEventListener('mousemove', this.handleMove);
+        document.addEventListener('touchmove', this.handleMove);
+        document.addEventListener('mouseup', this.handleUp);
+        document.addEventListener('touchend', this.handleUp);
+        document.body.appendChild(this.portal);
+    }
+
+    public componentWillUnmount() {
+        document.body.removeChild(this.portal);
+        document.removeEventListener('mousemove', this.handleMove);
+        document.removeEventListener('touchmove', this.handleMove);
+        document.removeEventListener('mouseup', this.handleUp);
+        document.removeEventListener('touchend', this.handleUp);
+    }
+
     public render() {
         return <React.Fragment>
             {this.renderLayout()}
-            <this.props.floatyRenderers.floatingRenderer floatyRenderers={this.props.floatyRenderers} floatyManager={this} floating={this.props.state.floating} />
+            {this.renderFloating()}
         </React.Fragment>;
     }
 
     private renderLayout() {
         if (this.props.state.layout) {
-            return <this.props.floatyRenderers.layoutRenderer floatyRenderers={this.props.floatyRenderers} floatyManager={this} layout={this.props.state.layout} />;
+            return <this.props.floatyRenderers.layoutRenderer
+                floatyRenderers={this.props.floatyRenderers}
+                floatyManager={this}
+                layout={this.props.state.layout}
+            />;
+        }
+    }
+
+    private renderFloating() {
+        if (this.props.state.floating && this.state.currentMousePosition) {
+            return ReactDOM.createPortal(
+                <div style={{ position: 'fixed', top: this.state.currentMousePosition.y, left: this.state.currentMousePosition.x }}>
+                    <this.props.floatyRenderers.floatingRenderer
+                        floatyRenderers={this.props.floatyRenderers}
+                        floatyManager={this}
+                        floating={this.props.state.floating}
+                    />
+                </div>,
+                this.portal
+            );
         }
     }
 
@@ -91,6 +140,25 @@ export class Floaty extends React.PureComponent<Props, never> implements FloatyM
         this.onLayoutChange(path[path.length - 1]);
     }
 
+    private handleMove = (event: MouseEvent | TouchEvent) => {
+        const position = ReactManagedDragable.getPosition(event);
+        if (this.props.state.floating) {
+            this.setState({ currentMousePosition: position });
+        } else {
+            this.lastMousePosition = position;
+        }
+    }
+
+    private handleUp = () => {
+        if (this.props.state.floating) {
+            console.log('stop floating');
+            // TODO: resolve drop area
+            // Option 1: this.layout.resolveDropArea(...)
+            // Option 2: this.registeredDropAreas.find((area) => ...)
+            // Option 3: ...?
+        }
+    }
+
     public onStartFloat = (stackItem: Model.StackItem) => {
         if (this.props.state.floating) {
             return;
@@ -110,6 +178,10 @@ export class Floaty extends React.PureComponent<Props, never> implements FloatyM
         const newStack = { ...stack, items, active: Math.min(items.length - 1, stack.active) };
         this.replaceInPath(newStack, path);
 
+        // Update floating position.
+        this.setState({ currentMousePosition: this.lastMousePosition });
+
+        // Update controlled state.
         const newState: Model.State = {
             layout: path[path.length - 1],
             floating: stack.items[index]

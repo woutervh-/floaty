@@ -64,7 +64,7 @@ export interface FloatingContentRendererProps {
 export interface FloatingRendererProps {
     floatyManager: FloatyManager;
     floatyRenderers: FloatyRenderers;
-    floating: Model.StackItem | null;
+    floating: Model.StackItem;
 }
 
 export interface FloatyRenderers {

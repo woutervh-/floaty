@@ -49,6 +49,6 @@
     "react": ">=15.3"
   },
   "dependencies": {
-    "react-managed-draggable": "^0.2.0"
+    "react-managed-draggable": "^1.0.0"
   }
 }

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as ReactManagedDragable from 'react-managed-draggable';
+import * as DropModel from './drop-model';
 import { FloatyManager } from './floaty-manager';
 import * as Model from './model';
 import * as RenderersModel from './renderers-model';
@@ -13,16 +14,17 @@ interface Props {
 
 interface State {
     currentMousePosition: ReactManagedDragable.XY | null;
+    dropResolutions: DropModel.DropResolution[];
 }
 
 export class Floaty extends React.PureComponent<Props, State> implements FloatyManager {
     public state: State = {
-        currentMousePosition: null
+        currentMousePosition: null,
+        dropResolutions: []
     };
-
     private lastMousePosition: ReactManagedDragable.XY | null = null;
-
     private portal = document.createElement('div');
+    private dropResolutions: Map<unknown, DropModel.DropResolution[]> = new Map();
 
     public componentDidMount() {
         document.addEventListener('mousemove', this.handleMove);
@@ -60,19 +62,31 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
     private renderFloating() {
         if (this.props.state.floating && this.state.currentMousePosition) {
             return ReactDOM.createPortal(
-                <div style={{ position: 'fixed', top: this.state.currentMousePosition.y, left: this.state.currentMousePosition.x }}>
-                    <this.props.floatyRenderers.floatingRenderer
-                        floatyRenderers={this.props.floatyRenderers}
-                        floatyManager={this}
-                        floating={this.props.state.floating}
-                    />
-                </div>,
+                <React.Fragment>
+                    <div style={{ position: 'fixed', top: this.state.currentMousePosition.y, left: this.state.currentMousePosition.x }}>
+                        <this.props.floatyRenderers.floatingRenderer
+                            floatyRenderers={this.props.floatyRenderers}
+                            floatyManager={this}
+                            floating={this.props.state.floating}
+                        />
+                    </div>
+                    {this.state.dropResolutions.map((dropResolution, index) => {
+                        return <div style={{
+                            position: 'fixed',
+                            top: dropResolution.dropArea.top,
+                            left: dropResolution.dropArea.left,
+                            width: dropResolution.dropArea.width,
+                            height: dropResolution.dropArea.height,
+                            backgroundColor: 'rgba(0, 0, 0, 0.5)'
+                        }}>{index} - {dropResolution.type}</div>;
+                    })}
+                </React.Fragment>,
                 this.portal
             );
         }
     }
 
-    private updateState = (state: Model.State) => {
+    private updateState(state: Model.State) {
         this.props.onStateChange({ ...state, layout: Floaty.minimizeLayout(state.layout) });
     }
 
@@ -100,6 +114,24 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
         const newRowOrColumn = { ...rowOrColumn, items };
         this.replaceInPath(newRowOrColumn, path);
         this.onLayoutChange(path[path.length - 1]);
+    }
+
+    public registerDropResolutions = (key: unknown, dropResolutions: DropModel.DropResolution[]) => {
+        this.dropResolutions.set(key, dropResolutions);
+        this.updateDropResolutions();
+    }
+
+    public unregisterDropResolutions = (key: unknown) => {
+        this.dropResolutions.delete(key);
+        this.updateDropResolutions();
+    }
+
+    private updateDropResolutions() {
+        const dropResolutions: DropModel.DropResolution[] = [];
+        for (const dropResolution of this.dropResolutions.values()) {
+            dropResolutions.push(...dropResolution);
+        }
+        this.setState({ dropResolutions });
     }
 
     public onColumnUpdateFractions = this.onRowOrColumnUpdateFractions;
@@ -155,7 +187,7 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
             // TODO: resolve drop area
             // Option 1: this.layout.resolveDropArea(...)
             // Option 2: this.registeredDropAreas.find((area) => ...)
-            // Option 3: ...?
+            // Option 3: pass props to components: isFloating, registerDropArea, mousePosition
         }
     }
 
@@ -189,7 +221,7 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
         this.updateState(newState);
     }
 
-    public getLayout() {
+    public getLayout = () => {
         return this.props.state.layout;
     }
 

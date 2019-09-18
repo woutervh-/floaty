@@ -1,4 +1,5 @@
 import * as Model from './model';
+import * as DropModel from './drop-model';
 import { FloatyManager } from './floaty-manager';
 
 export interface ColumnRendererProps {
@@ -67,6 +68,11 @@ export interface FloatingRendererProps {
     floating: Model.StackItem;
 }
 
+export interface DropAreaRendererProps {
+    floatyManager: FloatyManager;
+    dropArea: DropModel.DropArea;
+}
+
 export interface FloatyRenderers {
     columnRenderer: React.ComponentType<ColumnRendererProps>;
     columnSeparatorRenderer: React.ComponentType<ColumnSeparatorRendererProps>;
@@ -76,6 +82,7 @@ export interface FloatyRenderers {
     floatingTabRenderer: React.ComponentType<FloatingTabRendererProps>;
     floatingContentRenderer: React.ComponentType<FloatingContentRendererProps>;
     floatingRenderer: React.ComponentType<FloatingRendererProps>;
+    dropAreaRenderer: React.ComponentType<DropAreaRendererProps>;
     layoutRenderer: React.ComponentType<LayoutRendererProps>;
     tabRenderer: React.ComponentType<TabRendererProps>;
     contentRenderer: React.ComponentType<ContentRendererProps>;

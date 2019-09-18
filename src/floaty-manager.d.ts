@@ -1,4 +1,5 @@
 import * as Model from './model';
+import * as DropModel from './drop-model';
 
 export interface FloatyManager {
     onColumnUpdateFractions: (column: Model.Column, index1: number, fraction1: number, index2: number, fraction2: number) => void;
@@ -8,4 +9,6 @@ export interface FloatyManager {
     onCloseTab: (stackItem: Model.StackItem) => void;
     getLayout: () => Model.Layout | null;
     findStack: (stackItem: Model.StackItem) => Model.Stack | null;
+    registerDropResolutions: (key: unknown, dropResolutions: DropModel.DropResolution[]) => void;
+    unregisterDropResolutions: (key: unknown) => void;
 }

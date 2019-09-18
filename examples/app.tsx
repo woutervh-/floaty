@@ -72,6 +72,7 @@ export class App extends React.PureComponent<{}, State> {
         floatingTabRenderer: React.memo((props) =>
             <div>Floating tab: {props.stackItem.identifier}</div>
         ),
+        dropAreaRenderer: Renderers.DropAreaRenderer,
         layoutRenderer: Renderers.LayoutRenderer,
         rowRenderer: Renderers.RowRenderer,
         rowSeparatorRenderer: Renderers.RowSeparatorRenderer,

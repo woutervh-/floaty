@@ -59,8 +59,16 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
         }
     }
 
+    private renderDropResolution() {
+        const resolution = this.getSelectedDropResolution();
+        if (resolution) {
+            return <this.props.floatyRenderers.dropAreaRenderer floatyManager={this} dropArea={resolution.dropArea} />;
+        }
+    }
+
     private renderFloating() {
         if (this.props.state.floating && this.state.currentMousePosition) {
+
             return ReactDOM.createPortal(
                 <React.Fragment>
                     <div style={{ position: 'fixed', top: this.state.currentMousePosition.y, left: this.state.currentMousePosition.x }}>
@@ -70,20 +78,25 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
                             floating={this.props.state.floating}
                         />
                     </div>
-                    {this.state.dropResolutions.map((dropResolution, index) => {
-                        return <div style={{
-                            position: 'fixed',
-                            top: dropResolution.dropArea.top,
-                            left: dropResolution.dropArea.left,
-                            width: dropResolution.dropArea.width,
-                            height: dropResolution.dropArea.height,
-                            backgroundColor: 'rgba(0, 0, 0, 0.5)'
-                        }}>{index} - {dropResolution.type}</div>;
-                    })}
+                    {this.renderDropResolution()}
                 </React.Fragment>,
                 this.portal
             );
         }
+    }
+
+    private getSelectedDropResolution() {
+        if (this.props.state.floating && this.state.currentMousePosition) {
+            for (const resolution of this.state.dropResolutions) {
+                if (resolution.dropArea.top <= this.state.currentMousePosition.y
+                    && this.state.currentMousePosition.y <= resolution.dropArea.top + resolution.dropArea.height
+                    && resolution.dropArea.left <= this.state.currentMousePosition.x
+                    && this.state.currentMousePosition.x <= resolution.dropArea.left + resolution.dropArea.width) {
+                    return resolution;
+                }
+            }
+        }
+        return null;
     }
 
     private updateState(state: Model.State) {

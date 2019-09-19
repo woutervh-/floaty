@@ -74,6 +74,7 @@ export class Basic extends React.PureComponent<{}, State> {
         rowSeparatorHandleRenderer: Renderers.RowSeperatorHandleRenderer,
         rowSeparatorRenderer: Renderers.RowSeparatorRenderer,
         stackRenderer: Renderers.StackRenderer,
+        stackTabsRenderer: Renderers.StackTabsRenderer,
         tabRenderer: React.memo((props) =>
             <div>
                 Tab: {props.stackItem.identifier}

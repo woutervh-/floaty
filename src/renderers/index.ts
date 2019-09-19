@@ -8,4 +8,5 @@ export { RowRenderer } from './row-renderer';
 export { RowSeperatorHandleRenderer } from './row-separator-handle-renderer';
 export { RowSeparatorRenderer } from './row-separator-renderer';
 export { StackRenderer } from './stack-renderer';
+export { StackTabsRenderer } from './stack-tabs-renderer';
 export { TabFillerRenderer } from './tab-filler-renderer';

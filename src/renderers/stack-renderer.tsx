@@ -117,6 +117,42 @@ export class StackRenderer extends React.PureComponent<RenderersModel.StackRende
             ref={this.handleContainerRef}
             style={{
                 display: 'grid',
+                gridTemplateRows: 'max-content 1fr',
+                width: '100%',
+                height: '100%'
+            }}
+        >
+            <this.props.floatyRenderers.stackTabsRenderer floatyManager={this.props.floatyManager} floatyRenderers={this.props.floatyRenderers} stack={this.props.stack}>
+                {this.props.stack.items.map((stackItem, index) => {
+                    return <div
+                        key={stackItem.identifier}
+                        ref={this.handleTabRef(stackItem.identifier)}
+                    >
+                        <this.props.floatyRenderers.tabRenderer
+                            floatyManager={this.props.floatyManager}
+                            stack={this.props.stack}
+                            stackItemIndex={index}
+                            stackItem={stackItem}
+                        />
+                    </div>;
+                })}
+                <div ref={this.handleTabFillerRef}>
+                    <this.props.floatyRenderers.tabFillerRenderer floatyManager={this.props.floatyManager} stack={this.props.stack} />
+                </div>
+            </this.props.floatyRenderers.stackTabsRenderer>
+            <this.props.floatyRenderers.contentRenderer
+                key={this.props.stack.items[this.props.stack.active].identifier}
+                floatyManager={this.props.floatyManager}
+                stack={this.props.stack}
+                stackIndex={this.props.stack.active}
+                stackItem={this.props.stack.items[this.props.stack.active]}
+            />
+        </div>;
+
+        return <div
+            ref={this.handleContainerRef}
+            style={{
+                display: 'grid',
                 gridTemplateColumns: `${this.props.stack.items.map(() => 'minmax(min-content, max-content)').join(' ')} 1fr`,
                 gridTemplateRows: 'max-content 1fr',
                 width: '100%',

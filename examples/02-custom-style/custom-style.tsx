@@ -49,6 +49,7 @@ export class CustomStyle extends React.PureComponent<{}, State> {
         ),
         rowSeparatorRenderer: Renderers.RowSeparatorRenderer,
         stackRenderer: Renderers.StackRenderer,
+        stackTabsRenderer: Renderers.StackTabsRenderer,
         tabRenderer: React.memo((props) =>
             <div className="example02-tab">
                 <button className={classNames('example02-button', { active: props.stack.active === props.stackItemIndex })} onClick={() => props.floatyManager.onActivate(props.stackItem)}>

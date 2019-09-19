@@ -60,15 +60,25 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
     }
 
     private renderDropResolution() {
-        const resolution = this.getSelectedDropResolution();
-        if (resolution) {
-            return <this.props.floatyRenderers.dropAreaRenderer floatyManager={this} dropArea={resolution.dropArea} />;
+        const resolution = this.getCandidateDropResolution();
+        if (resolution && this.state.currentMousePosition) {
+            if (resolution.type === 'container') {
+                const side = Floaty.getContentResolutionSide(resolution, this.state.currentMousePosition);
+                const sideDropArea: DropModel.DropArea = {
+                    left: side === 'right' ? resolution.dropArea.left + resolution.dropArea.width * 0.8 : resolution.dropArea.left,
+                    top: side === 'bottom' ? resolution.dropArea.top + resolution.dropArea.height * 0.5 : resolution.dropArea.top,
+                    width: side === 'left' || side === 'right' ? resolution.dropArea.width * 0.5 : resolution.dropArea.width,
+                    height: side === 'top' || side === 'bottom' ? resolution.dropArea.height * 0.5 : resolution.dropArea.height
+                };
+                return <this.props.floatyRenderers.dropAreaRenderer floatyManager={this} dropArea={sideDropArea} />;
+            } else {
+                return <this.props.floatyRenderers.dropAreaRenderer floatyManager={this} dropArea={resolution.dropArea} />;
+            }
         }
     }
 
     private renderFloating() {
         if (this.props.state.floating && this.state.currentMousePosition) {
-
             return ReactDOM.createPortal(
                 <React.Fragment>
                     <div style={{ position: 'fixed', top: this.state.currentMousePosition.y, left: this.state.currentMousePosition.x }}>
@@ -85,7 +95,7 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
         }
     }
 
-    private getSelectedDropResolution() {
+    private getCandidateDropResolution() {
         if (this.props.state.floating && this.state.currentMousePosition) {
             for (const resolution of this.state.dropResolutions) {
                 if (resolution.dropArea.top <= this.state.currentMousePosition.y
@@ -162,7 +172,7 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
             throw new Error('Stack not found.');
         }
 
-        const newStack = { ...stack, active: index };
+        const newStack: Model.Stack = { ...stack, active: index };
         this.replaceInPath(newStack, path);
         this.onLayoutChange(path[path.length - 1]);
     }
@@ -180,7 +190,7 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
 
         const items = stack.items.slice();
         items.splice(index, 1);
-        const newStack = { ...stack, items, active: Math.min(items.length - 1, stack.active) };
+        const newStack: Model.Stack = { ...stack, items, active: Math.min(items.length - 1, stack.active) };
         this.replaceInPath(newStack, path);
         this.onLayoutChange(path[path.length - 1]);
     }
@@ -195,12 +205,41 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
     }
 
     private handleUp = () => {
-        if (this.props.state.floating) {
-            console.log('stop floating');
-            // TODO: resolve drop area
-            // Option 1: this.layout.resolveDropArea(...)
-            // Option 2: this.registeredDropAreas.find((area) => ...)
-            // Option 3: pass props to components: isFloating, registerDropArea, mousePosition
+        const resolution = this.getCandidateDropResolution();
+        if (this.props.state.floating && this.state.currentMousePosition && resolution) {
+            const path = this.findPath(resolution.stack, this.props.state.layout);
+            if (!path) {
+                throw new Error('Stack not found.');
+            }
+
+            if (resolution.type === 'container') {
+                const side = Floaty.getContentResolutionSide(resolution, this.state.currentMousePosition);
+                const stackFloating: Model.Stack = { type: 'stack', items: [this.props.state.floating], active: 0 };
+                const childFloating: Model.ColumnOrRowItem = { child: stackFloating, fraction: 0.5 };
+                const childOriginal: Model.ColumnOrRowItem = { child: resolution.stack, fraction: 0.5 };
+                let newLayout: Model.Layout;
+                if (side === 'left') {
+                    newLayout = { type: 'row', items: [childFloating, childOriginal] };
+                } else if (side === 'right') {
+                    newLayout = { type: 'row', items: [childOriginal, childFloating] };
+                } else if (side === 'top') {
+                    newLayout = { type: 'column', items: [childFloating, childOriginal] };
+                } else {
+                    newLayout = { type: 'column', items: [childOriginal, childFloating] };
+                }
+                this.replaceInPath(newLayout, path);
+            } else {
+                const items = resolution.stack.items.slice();
+                items.splice(resolution.index, 0, this.props.state.floating);
+                const newStack: Model.Stack = { ...resolution.stack, items, active: resolution.index };
+                this.replaceInPath(newStack, path);
+            }
+
+            const newState: Model.State = {
+                layout: path[path.length - 1],
+                floating: null
+            };
+            this.updateState(newState);
         }
     }
 
@@ -220,7 +259,7 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
 
         const items = stack.items.slice();
         items.splice(index, 1);
-        const newStack = { ...stack, items, active: Math.min(items.length - 1, stack.active) };
+        const newStack: Model.Stack = { ...stack, items, active: Math.min(items.length - 1, stack.active) };
         this.replaceInPath(newStack, path);
 
         // Update floating position.
@@ -352,5 +391,17 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
             }
         }
         return null;
+    }
+
+    private static getContentResolutionSide(resolution: DropModel.DropResolutionContainer, mousePosition: ReactManagedDragable.XY): 'left' | 'right' | 'top' | 'bottom' {
+        if (mousePosition.x <= resolution.dropArea.left + resolution.dropArea.width * 0.2) {
+            return 'left';
+        } else if (mousePosition.x >= resolution.dropArea.left + resolution.dropArea.width * 0.8) {
+            return 'right';
+        } else if (mousePosition.y <= resolution.dropArea.top + resolution.dropArea.height * 0.5) {
+            return 'top';
+        } else {
+            return 'bottom';
+        }
     }
 }

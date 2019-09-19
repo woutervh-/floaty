@@ -6,10 +6,10 @@ export class StackRenderer extends React.PureComponent<RenderersModel.StackRende
     private raf: number | undefined = undefined;
     private tabRefs: Map<string, HTMLDivElement> = new Map();
     private tabFillerRef: HTMLDivElement | null = null;
-    private contentRef: HTMLDivElement | null = null;
+    private containerRef: HTMLDivElement | null = null;
     private tabDropAreas: Map<string, DropModel.DropArea> = new Map();
     private tabFillerDropArea: DropModel.DropArea | null = null;
-    private contentDropArea: DropModel.DropArea | null = null;
+    private containerDropArea: DropModel.DropArea | null = null;
 
     public componentDidMount() {
         this.updateDropAreas();
@@ -26,8 +26,8 @@ export class StackRenderer extends React.PureComponent<RenderersModel.StackRende
         this.tabFillerRef = element;
     }
 
-    private handleContentRef = (element: HTMLDivElement | null) => {
-        this.contentRef = element;
+    private handleContainerRef = (element: HTMLDivElement | null) => {
+        this.containerRef = element;
     }
 
     private handleTabRef = (identifier: string) => (element: HTMLDivElement | null) => {
@@ -59,17 +59,22 @@ export class StackRenderer extends React.PureComponent<RenderersModel.StackRende
         const dropResolutions: DropModel.DropResolution[] = [];
         let changed = false;
 
-        for (const stackItem of this.props.stack.items) {
+        for (let i = 0; i < this.props.stack.items.length; i++) {
+            const stackItem = this.props.stack.items[i];
+
             if (!this.tabRefs.has(stackItem.identifier)) {
                 continue;
             }
 
             const newDropArea = this.computeDropArea(this.tabRefs.get(stackItem.identifier)!);
+
             dropResolutions.push({
                 type: 'tab',
                 dropArea: newDropArea,
-                stackItem
+                stack: this.props.stack,
+                index: i
             });
+
             if (!this.tabDropAreas.has(stackItem.identifier) || !this.dropAreasEqual(this.tabDropAreas.get(stackItem.identifier)!, newDropArea)) {
                 changed = true;
             }
@@ -80,20 +85,22 @@ export class StackRenderer extends React.PureComponent<RenderersModel.StackRende
             dropResolutions.push({
                 type: 'tab',
                 dropArea: newDropArea,
-                stackItem: null
+                stack: this.props.stack,
+                index: this.props.stack.items.length
             });
             if (this.tabFillerDropArea === null || !this.dropAreasEqual(this.tabFillerDropArea, newDropArea)) {
                 changed = true;
             }
         }
 
-        if (this.contentRef !== null) {
-            const newDropArea = this.computeDropArea(this.contentRef);
+        if (this.containerRef !== null) {
+            const newDropArea = this.computeDropArea(this.containerRef);
             dropResolutions.push({
-                type: 'content',
-                dropArea: newDropArea
+                type: 'container',
+                dropArea: newDropArea,
+                stack: this.props.stack
             });
-            if (this.contentDropArea === null || !this.dropAreasEqual(this.contentDropArea, newDropArea)) {
+            if (this.containerDropArea === null || !this.dropAreasEqual(this.containerDropArea, newDropArea)) {
                 changed = true;
             }
         }
@@ -106,11 +113,16 @@ export class StackRenderer extends React.PureComponent<RenderersModel.StackRende
     }
 
     public render() {
-        return <div style={{
-            display: 'grid',
-            gridTemplateColumns: `${this.props.stack.items.map(() => 'minmax(min-content, max-content)').join(' ')} 1fr`,
-            gridTemplateRows: 'max-content 1fr'
-        }}>
+        return <div
+            ref={this.handleContainerRef}
+            style={{
+                display: 'grid',
+                gridTemplateColumns: `${this.props.stack.items.map(() => 'minmax(min-content, max-content)').join(' ')} 1fr`,
+                gridTemplateRows: 'max-content 1fr',
+                width: '100%',
+                height: '100%'
+            }}
+        >
             {this.props.stack.items.map((stackItem, index) => {
                 return <div
                     key={stackItem.identifier}
@@ -125,7 +137,7 @@ export class StackRenderer extends React.PureComponent<RenderersModel.StackRende
                 </div>;
             })}
             <div ref={this.handleTabFillerRef} />
-            <div ref={this.handleContentRef} style={{ gridColumn: `1 / span ${this.props.stack.items.length + 1}` }}>
+            <div style={{ gridColumn: `1 / span ${this.props.stack.items.length + 1}` }}>
                 <this.props.floatyRenderers.contentRenderer
                     key={this.props.stack.items[this.props.stack.active].identifier}
                     floatyManager={this.props.floatyManager}

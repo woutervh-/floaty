@@ -6,7 +6,6 @@ export class App extends React.PureComponent<{}, State> {
         layout: {
             type: 'row',
             items: [{
-                key: 'A',
                 fraction: 0.5,
                 child: {
                     type: 'stack',
@@ -16,12 +15,10 @@ export class App extends React.PureComponent<{}, State> {
                     }]
                 }
             }, {
-                key: 'B',
                 fraction: 0.5,
                 child: {
                     type: 'column',
                     items: [{
-                        key: 'B1',
                         fraction: 0.5,
                         child: {
                             type: 'stack',
@@ -31,7 +28,6 @@ export class App extends React.PureComponent<{}, State> {
                             }]
                         }
                     }, {
-                        key: 'B2',
                         fraction: 0.5,
                         child: {
                             type: 'stack',
@@ -45,7 +41,6 @@ export class App extends React.PureComponent<{}, State> {
                     }]
                 }
             }, {
-                key: 'C',
                 fraction: 0.5,
                 child: {
                     type: 'stack',

@@ -13,7 +13,7 @@ export class RowRenderer extends React.PureComponent<RenderersModel.RowRendererP
                 gridTemplateColumns.push('6px');
                 elements.push(
                     <this.props.floatyRenderers.rowSeparatorRenderer
-                        key={`${this.props.row.items[i].key}-seperator`}
+                        key={`${i}-seperator`}
                         index={i - 1}
                         onMove={this.handleMove}
                         clamp={this.clamp}
@@ -23,7 +23,7 @@ export class RowRenderer extends React.PureComponent<RenderersModel.RowRendererP
             gridTemplateColumns.push(`minmax(0, ${this.props.row.items[i].fraction}fr)`);
             elements.push(
                 <this.props.floatyRenderers.layoutRenderer
-                    key={this.props.row.items[i].key}
+                    key={i}
                     floatyRenderers={this.props.floatyRenderers}
                     floatyManager={this.props.floatyManager}
                     layout={this.props.row.items[i].child}

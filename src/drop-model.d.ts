@@ -10,12 +10,14 @@ export interface DropArea {
 export interface DropResolutionTab {
     type: 'tab';
     dropArea: DropArea;
-    stackItem: Model.StackItem | null;
+    stack: Model.Stack;
+    index: number;
 }
 
-export interface DropResolutionContent {
-    type: 'content';
+export interface DropResolutionContainer {
+    type: 'container';
     dropArea: DropArea;
+    stack: Model.Stack;
 }
 
-export type DropResolution = DropResolutionTab | DropResolutionContent;
+export type DropResolution = DropResolutionTab | DropResolutionContainer;

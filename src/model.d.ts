@@ -1,5 +1,4 @@
 export interface ColumnOrRowItem {
-    key: string;
     fraction: number;
     child: Layout;
 }

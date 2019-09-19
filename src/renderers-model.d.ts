@@ -15,22 +15,37 @@ export interface RowRendererProps {
 }
 
 export interface ColumnSeparatorRendererProps {
+    floatyRenderers: FloatyRenderers;
     index: number;
     onMove: (index: number, deltaY: number) => void;
     clamp: (index: number, deltaY: number) => number;
 }
 
 export interface RowSeparatorRendererProps {
+    floatyRenderers: FloatyRenderers;
     index: number;
     onMove: (index: number, deltaX: number) => void;
     clamp: (index: number, deltaX: number) => number;
 }
 
+export interface ColumnSeparatorHandleRendererProps {
+    offset: number;
+}
+
+export interface RowSeparatorHandleRendererProps {
+    offset: number;
+}
+
 export interface TabRendererProps {
     floatyManager: FloatyManager;
     stack: Model.Stack;
-    stackIndex: number;
+    stackItemIndex: number;
     stackItem: Model.StackItem;
+}
+
+export interface TabFillerRendererProps {
+    floatyManager: FloatyManager;
+    stack: Model.Stack;
 }
 
 export interface ContentRendererProps {
@@ -76,8 +91,10 @@ export interface DropAreaRendererProps {
 export interface FloatyRenderers {
     columnRenderer: React.ComponentType<ColumnRendererProps>;
     columnSeparatorRenderer: React.ComponentType<ColumnSeparatorRendererProps>;
+    columnSeparatorHandleRenderer: React.ComponentType<ColumnSeparatorHandleRendererProps>;
     rowRenderer: React.ComponentType<RowRendererProps>;
     rowSeparatorRenderer: React.ComponentType<RowSeparatorRendererProps>;
+    rowSeparatorHandleRenderer: React.ComponentType<RowSeparatorHandleRendererProps>;
     stackRenderer: React.ComponentType<StackRendererProps>;
     floatingTabRenderer: React.ComponentType<FloatingTabRendererProps>;
     floatingContentRenderer: React.ComponentType<FloatingContentRendererProps>;
@@ -85,5 +102,6 @@ export interface FloatyRenderers {
     dropAreaRenderer: React.ComponentType<DropAreaRendererProps>;
     layoutRenderer: React.ComponentType<LayoutRendererProps>;
     tabRenderer: React.ComponentType<TabRendererProps>;
+    tabFillerRenderer: React.ComponentType<TabFillerRendererProps>;
     contentRenderer: React.ComponentType<ContentRendererProps>;
 }

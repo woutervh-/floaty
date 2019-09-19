@@ -14,6 +14,7 @@ export class ColumnRenderer extends React.PureComponent<RenderersModel.ColumnRen
                 elements.push(
                     <this.props.floatyRenderers.columnSeparatorRenderer
                         key={`${i}-seperator`}
+                        floatyRenderers={this.props.floatyRenderers}
                         index={i - 1}
                         onMove={this.handleMove}
                         clamp={this.clamp}

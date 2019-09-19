@@ -131,12 +131,14 @@ export class StackRenderer extends React.PureComponent<RenderersModel.StackRende
                     <this.props.floatyRenderers.tabRenderer
                         floatyManager={this.props.floatyManager}
                         stack={this.props.stack}
-                        stackIndex={index}
+                        stackItemIndex={index}
                         stackItem={stackItem}
                     />
                 </div>;
             })}
-            <div ref={this.handleTabFillerRef} />
+            <div ref={this.handleTabFillerRef}>
+                <this.props.floatyRenderers.tabFillerRenderer floatyManager={this.props.floatyManager} stack={this.props.stack} />
+            </div>
             <div style={{ gridColumn: `1 / span ${this.props.stack.items.length + 1}` }}>
                 <this.props.floatyRenderers.contentRenderer
                     key={this.props.stack.items[this.props.stack.active].identifier}

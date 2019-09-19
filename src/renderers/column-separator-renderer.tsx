@@ -23,7 +23,7 @@ export class ColumnSeparatorRenderer extends React.PureComponent<RenderersModel.
             onDragMove={this.handleDragMove}
             onDragEnd={this.handleDragEnd}
         >
-            <div style={{ backgroundColor: 'black', position: 'absolute', cursor: 'pointer', top, left: 0, width: '100%', height: '100%' }} />
+            <this.props.floatyRenderers.columnSeparatorHandleRenderer offset={top} />
         </Draggable>;
     }
 

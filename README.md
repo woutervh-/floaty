@@ -1,4 +1,16 @@
 # floaty
-Dock panels in React
+Rearrangeable panels in React.
 
-TODO
+## Installation
+
+**Node.js**
+
+```shell
+npm install --save floaty
+```
+
+## Examples
+
+```shell
+npm run start:dev
+```

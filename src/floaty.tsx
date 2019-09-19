@@ -65,7 +65,7 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
             if (resolution.type === 'container') {
                 const side = Floaty.getContentResolutionSide(resolution, this.state.currentMousePosition);
                 const sideDropArea: DropModel.DropArea = {
-                    left: side === 'right' ? resolution.dropArea.left + resolution.dropArea.width * 0.8 : resolution.dropArea.left,
+                    left: side === 'right' ? resolution.dropArea.left + resolution.dropArea.width * 0.5 : resolution.dropArea.left,
                     top: side === 'bottom' ? resolution.dropArea.top + resolution.dropArea.height * 0.5 : resolution.dropArea.top,
                     width: side === 'left' || side === 'right' ? resolution.dropArea.width * 0.5 : resolution.dropArea.width,
                     height: side === 'top' || side === 'bottom' ? resolution.dropArea.height * 0.5 : resolution.dropArea.height
@@ -334,11 +334,12 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
                     }
                     if (result) {
                         if (result.type === type) {
-                            const sumFractions = result.items.map((item) => item.fraction).reduce((sum, fraction) => sum + fraction);
-                            const normalizedFractions = result.items.map((item) => item.fraction / sumFractions);
+                            const childSumFractions = result.items.map((item) => item.fraction).reduce((sum, fraction) => sum + fraction);
+                            const normalizedChildFractions = result.items.map((item) => item.fraction / childSumFractions);
                             for (let i = 0; i < result.items.length; i++) {
-                                items.push({ ...result.items[i], fraction: normalizedFractions[i] });
+                                items.push({ ...result.items[i], fraction: normalizedChildFractions[i] * item.fraction });
                             }
+                            changed = true;
                         } else {
                             items.push({ ...item, child: result });
                         }
@@ -346,7 +347,15 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
                 }
                 if (items.length >= 2) {
                     if (changed) {
-                        return { ...layout, items };
+                        // Normalize fractions.
+                        const fractionSum = items.reduce((sum, item) => sum + item.fraction, 0);
+                        const normalizedItems = items.map((item) => {
+                            return {
+                                ...item,
+                                fraction: item.fraction / fractionSum
+                            };
+                        });
+                        return { ...layout, items: normalizedItems };
                     } else {
                         return layout;
                     }

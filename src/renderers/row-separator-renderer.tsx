@@ -23,7 +23,7 @@ export class RowSeparatorRenderer extends React.PureComponent<RenderersModel.Row
             onDragMove={this.handleDragMove}
             onDragEnd={this.handleDragEnd}
         >
-            <div style={{ backgroundColor: 'black', position: 'absolute', cursor: 'pointer', top: 0, left, width: '100%', height: '100%' }} />
+            <this.props.floatyRenderers.rowSeparatorHandleRenderer offset={left} />
         </Draggable>;
     }
 

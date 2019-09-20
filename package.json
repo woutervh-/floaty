@@ -15,7 +15,9 @@
   "scripts": {
     "start:dev": "webpack-dev-server",
     "lint": "tslint \"src/**/*.ts\" \"test/**/*.ts\"",
-    "build": "rimraf lib/ && tsc && copy-cli \"src/**/*.d.ts\" \"lib/es6/\"",
+    "build": "rimraf lib/ && tsc && copy-cli \"src/**/*.d.ts\" \"lib/es6/\" && npm run build:browser && npm run build:browser:min",
+    "build:browser": "cross-env ROLLUP_UGLIFY=false rollup --config --output.file lib/browser/bundle.js",
+    "build:browser:min": "cross-env ROLLUP_UGLIFY=true rollup --config --output.file lib/browser/bundle.min.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": {
@@ -40,11 +42,15 @@
     "@types/react-dom": "^16.9.0",
     "classnames": "^2.2.6",
     "copy": "^0.3.2",
+    "cross-env": "^6.0.0",
     "css-loader": "^3.2.0",
     "html-webpack-plugin": "^3.2.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "rimraf": "^3.0.0",
+    "rollup": "^1.21.4",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-uglify": "^6.0.3",
     "style-loader": "^1.0.0",
     "ts-loader": "^6.0.4",
     "tslint": "^5.19.0",

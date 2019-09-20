@@ -51,7 +51,7 @@ export class Basic extends React.PureComponent<{}, State> {
                 }
             }]
         },
-        floating: null
+        floating: { identifier: 'F1' }
     };
 
     private floatyRenderers: FloatyRenderers = {

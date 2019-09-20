@@ -14,6 +14,6 @@ export class Fruit extends React.PureComponent<Props, never> {
             case 'Cherries':
                 return '🍒';
         }
-        return null;
+        return '💣';
     }
 }

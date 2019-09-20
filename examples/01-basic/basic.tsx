@@ -74,6 +74,7 @@ export class Basic extends React.PureComponent<{}, State> {
         rowSeparatorHandleRenderer: Renderers.RowSeperatorHandleRenderer,
         rowSeparatorRenderer: Renderers.RowSeparatorRenderer,
         stackRenderer: Renderers.StackRenderer,
+        stackContainerRenderer: Renderers.StackContainerRenderer,
         stackTabsRenderer: Renderers.StackTabsRenderer,
         tabRenderer: React.memo((props) =>
             <div>
@@ -84,7 +85,7 @@ export class Basic extends React.PureComponent<{}, State> {
                 <button onClick={() => props.floatyManager.onCloseTab(props.stackItem)}>
                     ×
                 </button>
-                <button onClick={() => props.floatyManager.onStartFloat(props.stackItem)}>
+                <button onClick={(event) => props.floatyManager.onStartFloat(props.stackItem, { event: event.nativeEvent, eventTarget: document.body })}>
                     ↗
                 </button>
             </div>

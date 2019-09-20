@@ -7,6 +7,7 @@ export { LayoutRenderer } from './layout-renderer';
 export { RowRenderer } from './row-renderer';
 export { RowSeperatorHandleRenderer } from './row-separator-handle-renderer';
 export { RowSeparatorRenderer } from './row-separator-renderer';
+export { StackContainerRenderer } from './stack-container-renderer';
 export { StackRenderer } from './stack-renderer';
 export { StackTabsRenderer } from './stack-tabs-renderer';
 export { TabFillerRenderer } from './tab-filler-renderer';

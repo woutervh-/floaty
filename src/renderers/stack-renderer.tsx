@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import * as DropModel from '../drop-model';
 import * as RenderersModel from '../renderers-model';
 
@@ -6,12 +7,16 @@ export class StackRenderer extends React.PureComponent<RenderersModel.StackRende
     private raf: number | undefined = undefined;
     private tabRefs: Map<string, HTMLDivElement> = new Map();
     private tabFillerRef: HTMLDivElement | null = null;
-    private containerRef: HTMLDivElement | null = null;
+    private containerRef: Element | null = null;
     private tabDropAreas: Map<string, DropModel.DropArea> = new Map();
     private tabFillerDropArea: DropModel.DropArea | null = null;
     private containerDropArea: DropModel.DropArea | null = null;
 
     public componentDidMount() {
+        const container = ReactDOM.findDOMNode(this);
+        if (container instanceof Element) {
+            this.containerRef = container;
+        }
         this.updateDropAreas();
     }
 
@@ -20,14 +25,11 @@ export class StackRenderer extends React.PureComponent<RenderersModel.StackRende
             window.cancelAnimationFrame(this.raf);
         }
         this.props.floatyManager.unregisterDropResolutions(this);
+        this.containerRef = null;
     }
 
     private handleTabFillerRef = (element: HTMLDivElement | null) => {
         this.tabFillerRef = element;
-    }
-
-    private handleContainerRef = (element: HTMLDivElement | null) => {
-        this.containerRef = element;
     }
 
     private handleTabRef = (identifier: string) => (element: HTMLDivElement | null) => {
@@ -38,7 +40,7 @@ export class StackRenderer extends React.PureComponent<RenderersModel.StackRende
         }
     }
 
-    private computeDropArea(element: HTMLDivElement): DropModel.DropArea {
+    private computeDropArea(element: Element): DropModel.DropArea {
         const clientRect = element.getBoundingClientRect();
         return {
             top: clientRect.top,
@@ -113,16 +115,8 @@ export class StackRenderer extends React.PureComponent<RenderersModel.StackRende
     }
 
     public render() {
-        return <div
-            ref={this.handleContainerRef}
-            style={{
-                display: 'grid',
-                gridTemplateRows: 'max-content 1fr',
-                width: '100%',
-                height: '100%'
-            }}
-        >
-            <this.props.floatyRenderers.stackTabsRenderer floatyManager={this.props.floatyManager} floatyRenderers={this.props.floatyRenderers} stack={this.props.stack}>
+        return <this.props.floatyRenderers.stackContainerRenderer floatyManager={this.props.floatyManager} stack={this.props.stack}>
+            <this.props.floatyRenderers.stackTabsRenderer floatyManager={this.props.floatyManager} stack={this.props.stack}>
                 {this.props.stack.items.map((stackItem, index) => {
                     return <div
                         key={stackItem.identifier}
@@ -147,43 +141,6 @@ export class StackRenderer extends React.PureComponent<RenderersModel.StackRende
                 stackIndex={this.props.stack.active}
                 stackItem={this.props.stack.items[this.props.stack.active]}
             />
-        </div>;
-
-        return <div
-            ref={this.handleContainerRef}
-            style={{
-                display: 'grid',
-                gridTemplateColumns: `${this.props.stack.items.map(() => 'minmax(min-content, max-content)').join(' ')} 1fr`,
-                gridTemplateRows: 'max-content 1fr',
-                width: '100%',
-                height: '100%'
-            }}
-        >
-            {this.props.stack.items.map((stackItem, index) => {
-                return <div
-                    key={stackItem.identifier}
-                    ref={this.handleTabRef(stackItem.identifier)}
-                >
-                    <this.props.floatyRenderers.tabRenderer
-                        floatyManager={this.props.floatyManager}
-                        stack={this.props.stack}
-                        stackItemIndex={index}
-                        stackItem={stackItem}
-                    />
-                </div>;
-            })}
-            <div ref={this.handleTabFillerRef}>
-                <this.props.floatyRenderers.tabFillerRenderer floatyManager={this.props.floatyManager} stack={this.props.stack} />
-            </div>
-            <div style={{ gridColumn: `1 / span ${this.props.stack.items.length + 1}` }}>
-                <this.props.floatyRenderers.contentRenderer
-                    key={this.props.stack.items[this.props.stack.active].identifier}
-                    floatyManager={this.props.floatyManager}
-                    stack={this.props.stack}
-                    stackIndex={this.props.stack.active}
-                    stackItem={this.props.stack.items[this.props.stack.active]}
-                />
-            </div>
-        </div>;
+        </this.props.floatyRenderers.stackContainerRenderer>;
     }
 }

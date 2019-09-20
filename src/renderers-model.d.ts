@@ -61,9 +61,13 @@ export interface StackRendererProps {
     stack: Model.Stack;
 }
 
+export interface StackContainerRendererProps {
+    floatyManager: FloatyManager;
+    stack: Model.Stack;
+}
+
 export interface StackTabsRendererProps {
     floatyManager: FloatyManager;
-    floatyRenderers: FloatyRenderers;
     stack: Model.Stack;
 }
 
@@ -102,6 +106,7 @@ export interface FloatyRenderers {
     rowSeparatorRenderer: React.ComponentType<RowSeparatorRendererProps>;
     rowSeparatorHandleRenderer: React.ComponentType<RowSeparatorHandleRendererProps>;
     stackRenderer: React.ComponentType<StackRendererProps>;
+    stackContainerRenderer: React.ComponentType<StackContainerRendererProps>;
     stackTabsRenderer: React.ComponentType<StackTabsRendererProps>;
     floatingTabRenderer: React.ComponentType<FloatingTabRendererProps>;
     floatingContentRenderer: React.ComponentType<FloatingContentRendererProps>;

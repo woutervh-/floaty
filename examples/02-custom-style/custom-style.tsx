@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import * as React from 'react';
-import { Floaty, FloatyRenderers, Renderers, State } from '../../src';
+import { ContentRendererProps, Floaty, FloatyRenderers, Renderers, State } from '../../src';
 import { Fruit } from './fruit';
 import './style.css';
 
@@ -24,13 +24,37 @@ export class CustomStyle extends React.PureComponent<{}, State> {
             <div className={classNames('example02-resize-handle', 'example02-resize-handle-column')} style={{ top: props.offset, left: 0 }} />
         ),
         columnSeparatorRenderer: Renderers.ColumnSeparatorRenderer,
-        contentRenderer: React.memo((props) =>
-            <div className="example02-content">
-                <div className="example02-fruit" onMouseDown={(event) => event.button === 0 && props.floatyManager.onStartFloat(props.stackItem)}>
-                    <Fruit fruit={props.stackItem.identifier} />
-                </div>
-            </div>
-        ),
+        contentRenderer:
+            // tslint:disable-next-line:max-classes-per-file
+            class ContentRenderer extends React.PureComponent<ContentRendererProps, never> {
+                private fruitElement: HTMLDivElement | null = null;
+
+                private handleDown = (event: MouseEvent | TouchEvent) => {
+                    if (!(event instanceof MouseEvent) || event.button === 0) {
+                        this.props.floatyManager.onStartFloat(this.props.stackItem, { event });
+                    }
+                }
+
+                private handleFruitRef = (element: HTMLDivElement | null) => {
+                    if (this.fruitElement) {
+                        this.fruitElement.removeEventListener('mousedown', this.handleDown);
+                        this.fruitElement.removeEventListener('touchstart', this.handleDown);
+                    }
+                    if (element) {
+                        element.addEventListener('mousedown', this.handleDown);
+                        element.addEventListener('touchstart', this.handleDown);
+                    }
+                    this.fruitElement = element;
+                }
+
+                public render() {
+                    return <div className="example02-content">
+                        <div className="example02-fruit" ref={this.handleFruitRef}>
+                            <Fruit fruit={this.props.stackItem.identifier} />
+                        </div>
+                    </div>;
+                }
+            },
         floatingRenderer: Renderers.FloatingRenderer,
         floatingContentRenderer: React.memo((props) =>
             <React.Fragment>
@@ -49,6 +73,9 @@ export class CustomStyle extends React.PureComponent<{}, State> {
         ),
         rowSeparatorRenderer: Renderers.RowSeparatorRenderer,
         stackRenderer: Renderers.StackRenderer,
+        stackContainerRenderer: React.memo((props) =>
+            <div className="example02-stack-container">{props.children}</div>
+        ),
         stackTabsRenderer: Renderers.StackTabsRenderer,
         tabRenderer: React.memo((props) =>
             <div className="example02-tab">
@@ -67,15 +94,20 @@ export class CustomStyle extends React.PureComponent<{}, State> {
     };
 
     public render() {
-        return <React.Fragment>
-            <div className="example02-container">
-                <Floaty
+        return <div className="example02-container">
+            {this.state.layout === null
+                ? <div className="example02-content">
+                    <div className="example02-bomb">
+                        <Fruit fruit="Bomb" />
+                    </div>
+                </div>
+                : <Floaty
                     floatyRenderers={this.floatyRenderers}
                     state={this.state}
                     onStateChange={this.handleStateChange}
                 />
-            </div>
-        </React.Fragment>;
+            }
+        </div>;
     }
 
     private handleStateChange = (state: State) => this.setState(state);

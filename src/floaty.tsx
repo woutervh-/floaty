@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as ReactManagedDragable from 'react-managed-draggable';
 import * as DropModel from './drop-model';
-import { FloatyManager } from './floaty-manager';
+import { FloatingStartOptions, FloatyManager } from './floaty-manager';
 import * as Model from './model';
 import * as RenderersModel from './renderers-model';
 
@@ -22,24 +22,20 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
         currentMousePosition: null,
         dropResolutions: []
     };
-    private lastMousePosition: ReactManagedDragable.XY | null = null;
     private portal = document.createElement('div');
     private dropResolutions: Map<unknown, DropModel.DropResolution[]> = new Map();
+    private eventTarget: HTMLElement | null = null;
 
     public componentDidMount() {
-        document.addEventListener('mousemove', this.handleMove);
-        document.addEventListener('touchmove', this.handleMove);
-        document.addEventListener('mouseup', this.handleUp);
-        document.addEventListener('touchend', this.handleUp);
+        if (this.props.state.floating) {
+            this.registerFloatHandlers(document.body);
+        }
         document.body.appendChild(this.portal);
     }
 
     public componentWillUnmount() {
         document.body.removeChild(this.portal);
-        document.removeEventListener('mousemove', this.handleMove);
-        document.removeEventListener('touchmove', this.handleMove);
-        document.removeEventListener('mouseup', this.handleUp);
-        document.removeEventListener('touchend', this.handleUp);
+        this.unregisterFloatHandlers();
     }
 
     public render() {
@@ -60,20 +56,24 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
     }
 
     private renderDropResolution() {
-        const resolution = this.getCandidateDropResolution();
-        if (resolution && this.state.currentMousePosition) {
-            if (resolution.type === 'container') {
-                const side = Floaty.getContentResolutionSide(resolution, this.state.currentMousePosition);
-                const sideDropArea: DropModel.DropArea = {
-                    left: side === 'right' ? resolution.dropArea.left + resolution.dropArea.width * 0.5 : resolution.dropArea.left,
-                    top: side === 'bottom' ? resolution.dropArea.top + resolution.dropArea.height * 0.5 : resolution.dropArea.top,
-                    width: side === 'left' || side === 'right' ? resolution.dropArea.width * 0.5 : resolution.dropArea.width,
-                    height: side === 'top' || side === 'bottom' ? resolution.dropArea.height * 0.5 : resolution.dropArea.height
-                };
-                return <this.props.floatyRenderers.dropAreaRenderer floatyManager={this} dropArea={sideDropArea} />;
-            } else {
-                return <this.props.floatyRenderers.dropAreaRenderer floatyManager={this} dropArea={resolution.dropArea} />;
-            }
+        if (!this.state.currentMousePosition) {
+            return;
+        }
+        const resolution = this.getCandidateDropResolution(this.state.currentMousePosition);
+        if (!resolution) {
+            return;
+        }
+        if (resolution.type === 'container') {
+            const side = Floaty.getContentResolutionSide(resolution, this.state.currentMousePosition);
+            const sideDropArea: DropModel.DropArea = {
+                left: side === 'right' ? resolution.dropArea.left + resolution.dropArea.width * 0.5 : resolution.dropArea.left,
+                top: side === 'bottom' ? resolution.dropArea.top + resolution.dropArea.height * 0.5 : resolution.dropArea.top,
+                width: side === 'left' || side === 'right' ? resolution.dropArea.width * 0.5 : resolution.dropArea.width,
+                height: side === 'top' || side === 'bottom' ? resolution.dropArea.height * 0.5 : resolution.dropArea.height
+            };
+            return <this.props.floatyRenderers.dropAreaRenderer floatyManager={this} dropArea={sideDropArea} />;
+        } else {
+            return <this.props.floatyRenderers.dropAreaRenderer floatyManager={this} dropArea={resolution.dropArea} />;
         }
     }
 
@@ -95,18 +95,40 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
         }
     }
 
-    private getCandidateDropResolution() {
-        if (this.props.state.floating && this.state.currentMousePosition) {
+    private getCandidateDropResolution(position: ReactManagedDragable.XY) {
+        if (this.props.state.floating) {
             for (const resolution of this.state.dropResolutions) {
-                if (resolution.dropArea.top <= this.state.currentMousePosition.y
-                    && this.state.currentMousePosition.y <= resolution.dropArea.top + resolution.dropArea.height
-                    && resolution.dropArea.left <= this.state.currentMousePosition.x
-                    && this.state.currentMousePosition.x <= resolution.dropArea.left + resolution.dropArea.width) {
+                if (resolution.dropArea.top <= position.y
+                    && position.y <= resolution.dropArea.top + resolution.dropArea.height
+                    && resolution.dropArea.left <= position.x
+                    && position.x <= resolution.dropArea.left + resolution.dropArea.width) {
                     return resolution;
                 }
             }
         }
         return null;
+    }
+
+    private registerFloatHandlers(eventTarget: HTMLElement) {
+        if (this.eventTarget) {
+            return;
+        }
+        eventTarget.addEventListener('mousemove', this.handleMove, { passive: false });
+        eventTarget.addEventListener('touchmove', this.handleMove, { passive: false });
+        eventTarget.addEventListener('mouseup', this.handleUp, { passive: false });
+        eventTarget.addEventListener('touchend', this.handleUp, { passive: false });
+        this.eventTarget = eventTarget;
+    }
+
+    private unregisterFloatHandlers() {
+        if (!this.eventTarget) {
+            return;
+        }
+        this.eventTarget.removeEventListener('mousemove', this.handleMove);
+        this.eventTarget.removeEventListener('touchmove', this.handleMove);
+        this.eventTarget.removeEventListener('mouseup', this.handleUp);
+        this.eventTarget.removeEventListener('touchend', this.handleUp);
+        this.eventTarget = null;
     }
 
     private updateState(state: Model.State) {
@@ -196,54 +218,67 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
     }
 
     private handleMove = (event: MouseEvent | TouchEvent) => {
-        const position = ReactManagedDragable.getPosition(event);
         if (this.props.state.floating) {
+            event.preventDefault();
+            const position = ReactManagedDragable.getPosition(event);
             this.setState({ currentMousePosition: position });
-        } else {
-            this.lastMousePosition = position;
         }
     }
 
-    private handleUp = () => {
-        const resolution = this.getCandidateDropResolution();
-        if (this.props.state.floating && this.state.currentMousePosition && resolution) {
-            const path = this.findPath(resolution.stack, this.props.state.layout);
-            if (!path) {
-                throw new Error('Stack not found.');
-            }
+    private handleUp = (event: MouseEvent | TouchEvent) => {
+        if (!this.props.state.floating) {
+            return;
+        }
 
-            if (resolution.type === 'container') {
-                const side = Floaty.getContentResolutionSide(resolution, this.state.currentMousePosition);
-                const stackFloating: Model.Stack = { type: 'stack', items: [this.props.state.floating], active: 0 };
-                const childFloating: Model.ColumnOrRowItem = { child: stackFloating, fraction: 0.5 };
-                const childOriginal: Model.ColumnOrRowItem = { child: resolution.stack, fraction: 0.5 };
-                let newLayout: Model.Layout;
-                if (side === 'left') {
-                    newLayout = { type: 'row', items: [childFloating, childOriginal] };
-                } else if (side === 'right') {
-                    newLayout = { type: 'row', items: [childOriginal, childFloating] };
-                } else if (side === 'top') {
-                    newLayout = { type: 'column', items: [childFloating, childOriginal] };
-                } else {
-                    newLayout = { type: 'column', items: [childOriginal, childFloating] };
-                }
-                this.replaceInPath(newLayout, path);
+        const position = event instanceof MouseEvent
+            ? ReactManagedDragable.getPosition(event)
+            : this.state.currentMousePosition;
+        if (!position) {
+            return;
+        }
+
+        const resolution = this.getCandidateDropResolution(position);
+        if (!resolution) {
+            return;
+        }
+
+        const path = this.findPath(resolution.stack, this.props.state.layout);
+        if (!path) {
+            throw new Error('Stack not found.');
+        }
+
+        if (resolution.type === 'container') {
+            const side = Floaty.getContentResolutionSide(resolution, position);
+            const stackFloating: Model.Stack = { type: 'stack', items: [this.props.state.floating], active: 0 };
+            const childFloating: Model.ColumnOrRowItem = { child: stackFloating, fraction: 0.5 };
+            const childOriginal: Model.ColumnOrRowItem = { child: resolution.stack, fraction: 0.5 };
+            let newLayout: Model.Layout;
+            if (side === 'left') {
+                newLayout = { type: 'row', items: [childFloating, childOriginal] };
+            } else if (side === 'right') {
+                newLayout = { type: 'row', items: [childOriginal, childFloating] };
+            } else if (side === 'top') {
+                newLayout = { type: 'column', items: [childFloating, childOriginal] };
             } else {
-                const items = resolution.stack.items.slice();
-                items.splice(resolution.index, 0, this.props.state.floating);
-                const newStack: Model.Stack = { ...resolution.stack, items, active: resolution.index };
-                this.replaceInPath(newStack, path);
+                newLayout = { type: 'column', items: [childOriginal, childFloating] };
             }
-
-            const newState: Model.State = {
-                layout: path[path.length - 1],
-                floating: null
-            };
-            this.updateState(newState);
+            this.replaceInPath(newLayout, path);
+        } else {
+            const items = resolution.stack.items.slice();
+            items.splice(resolution.index, 0, this.props.state.floating);
+            const newStack: Model.Stack = { ...resolution.stack, items, active: resolution.index };
+            this.replaceInPath(newStack, path);
         }
+
+        const newState: Model.State = {
+            layout: path[path.length - 1],
+            floating: null
+        };
+        this.updateState(newState);
+        this.unregisterFloatHandlers();
     }
 
-    public onStartFloat = (stackItem: Model.StackItem) => {
+    public onStartFloat = (stackItem: Model.StackItem, options: FloatingStartOptions) => {
         if (this.props.state.floating) {
             return;
         }
@@ -263,7 +298,11 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
         this.replaceInPath(newStack, path);
 
         // Update floating position.
-        this.setState({ currentMousePosition: this.lastMousePosition });
+        if ('initialPosition' in options) {
+            this.setState({ currentMousePosition: options.initialPosition });
+        } else {
+            this.setState({ currentMousePosition: ReactManagedDragable.getPosition(options.event) });
+        }
 
         // Update controlled state.
         const newState: Model.State = {
@@ -271,6 +310,20 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
             floating: stack.items[index]
         };
         this.updateState(newState);
+
+        if ('eventTarget' in options) {
+            this.registerFloatHandlers(options.eventTarget);
+        } else if ('event' in options) {
+            if (options.event instanceof TouchEvent && options.event.target && options.event.target instanceof HTMLElement) {
+                // Touch events should be re-registered with their event target, otherwise the touchmove and touchup events will not fire.
+                this.registerFloatHandlers(options.event.target);
+            } else {
+                // Mouse events can happily be attached to the body.
+                this.registerFloatHandlers(document.body);
+            }
+        } else {
+            this.registerFloatHandlers(document.body);
+        }
     }
 
     public getLayout = () => {

@@ -12,21 +12,25 @@ interface Props<T> {
     renderers: RenderersModel.FloatyRenderers<T>;
 }
 
-interface State {
+interface State<T> {
     currentMousePosition: ReactManagedDragable.XY | null;
-    dropResolutions: DropModel.DropResolution[];
+    dropResolutions: DropModel.DropResolution<T>[];
+    rootDropArea: DropModel.DropArea | null;
 }
 
-export class Floaty<T> extends React.PureComponent<Props<T>, State> implements FloatyManager {
-    public state: State = {
+export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implements FloatyManager {
+    public state: State<T> = {
         currentMousePosition: null,
-        dropResolutions: []
+        dropResolutions: [],
+        rootDropArea: null
     };
     private portal = document.createElement('div');
-    private dropResolutions: Map<unknown, DropModel.DropResolution[]> = new Map();
+    private dropResolutions: Map<unknown, DropModel.DropResolution<T>[]> = new Map();
     private eventTarget: HTMLElement | null = null;
+    private raf: number | undefined = undefined;
 
     public componentDidMount() {
+        this.updateDropAreas();
         if (this.props.state.floating) {
             this.registerFloatHandlers(document.body);
         }
@@ -34,8 +38,11 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State> implements F
     }
 
     public componentWillUnmount() {
-        document.body.removeChild(this.portal);
+        if (this.raf !== undefined) {
+            window.cancelAnimationFrame(this.raf);
+        }
         this.unregisterFloatHandlers();
+        document.body.removeChild(this.portal);
     }
 
     public render() {
@@ -52,6 +59,8 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State> implements F
                 floatyManager={this}
                 layout={this.props.state.layout}
             />;
+        } else {
+            return <div style={{ width: '100%', height: '100%' }} />;
         }
     }
 
@@ -95,15 +104,15 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State> implements F
         }
     }
 
-    private getCandidateDropResolution(position: ReactManagedDragable.XY) {
+    private getCandidateDropResolution(position: ReactManagedDragable.XY): DropModel.DropResolution<T> | DropModel.DropResolutionRoot | null {
         if (this.props.state.floating) {
             for (const resolution of this.state.dropResolutions) {
-                if (resolution.dropArea.top <= position.y
-                    && position.y <= resolution.dropArea.top + resolution.dropArea.height
-                    && resolution.dropArea.left <= position.x
-                    && position.x <= resolution.dropArea.left + resolution.dropArea.width) {
+                if (DropModel.pointInDropArea(resolution.dropArea, position)) {
                     return resolution;
                 }
+            }
+            if (this.state.rootDropArea && DropModel.pointInDropArea(this.state.rootDropArea, position)) {
+                return { type: 'root', dropArea: this.state.rootDropArea };
             }
         }
         return null;
@@ -129,6 +138,17 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State> implements F
         this.eventTarget.removeEventListener('mouseup', this.handleUp);
         this.eventTarget.removeEventListener('touchend', this.handleUp);
         this.eventTarget = null;
+    }
+
+    private updateDropAreas = () => {
+        const node = ReactDOM.findDOMNode(this);
+        if (node instanceof Element) {
+            const dropArea = DropModel.computeDropArea(node);
+            if (!this.state.rootDropArea || !DropModel.dropAreasEqual(this.state.rootDropArea, dropArea)) {
+                this.setState({ rootDropArea: dropArea });
+            }
+        }
+        this.raf = window.requestAnimationFrame(this.updateDropAreas);
     }
 
     private updateState(state: Model.State<T>) {
@@ -161,7 +181,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State> implements F
         this.onLayoutChange(path[path.length - 1]);
     }
 
-    public registerDropResolutions = (key: unknown, dropResolutions: DropModel.DropResolution[]) => {
+    public registerDropResolutions = (key: unknown, dropResolutions: DropModel.DropResolution<T>[]) => {
         this.dropResolutions.set(key, dropResolutions);
         this.updateDropResolutions();
     }
@@ -172,7 +192,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State> implements F
     }
 
     private updateDropResolutions() {
-        const dropResolutions: DropModel.DropResolution[] = [];
+        const dropResolutions: DropModel.DropResolution<T>[] = [];
         for (const dropResolution of this.dropResolutions.values()) {
             dropResolutions.push(...dropResolution);
         }
@@ -242,32 +262,37 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State> implements F
             return;
         }
 
-        const path = this.findPath(resolution.stack, this.props.state.layout);
-        if (!path) {
-            throw new Error('Stack not found.');
-        }
-
-        if (resolution.type === 'container') {
-            const side = Floaty.getContentResolutionSide(resolution, position);
-            const stackFloating: Model.Stack<T> = { type: 'stack', items: [this.props.state.floating], active: 0 };
-            const childFloating: Model.ColumnOrRowItem<T> = { child: stackFloating, fraction: 0.5 };
-            const childOriginal: Model.ColumnOrRowItem<T> = { child: resolution.stack, fraction: 0.5 };
-            let newLayout: Model.Layout<T>;
-            if (side === 'left') {
-                newLayout = { type: 'row', items: [childFloating, childOriginal] };
-            } else if (side === 'right') {
-                newLayout = { type: 'row', items: [childOriginal, childFloating] };
-            } else if (side === 'top') {
-                newLayout = { type: 'column', items: [childFloating, childOriginal] };
-            } else {
-                newLayout = { type: 'column', items: [childOriginal, childFloating] };
-            }
-            this.replaceInPath(newLayout, path);
+        let path: Model.Layout<T>[] | null;
+        if (resolution.type === 'root') {
+            path = [{ type: 'stack', active: 0, items: [this.props.state.floating] }];
         } else {
-            const items = resolution.stack.items.slice();
-            items.splice(resolution.index, 0, this.props.state.floating);
-            const newStack: Model.Stack<T> = { ...resolution.stack, items, active: resolution.index };
-            this.replaceInPath(newStack, path);
+            path = this.findPath(resolution.stack, this.props.state.layout);
+            if (!path) {
+                throw new Error('Stack not found.');
+            }
+
+            if (resolution.type === 'container') {
+                const side = Floaty.getContentResolutionSide(resolution, position);
+                const stackFloating: Model.Stack<T> = { type: 'stack', items: [this.props.state.floating], active: 0 };
+                const childFloating: Model.ColumnOrRowItem<T> = { child: stackFloating, fraction: 0.5 };
+                const childOriginal: Model.ColumnOrRowItem<T> = { child: resolution.stack, fraction: 0.5 };
+                let newLayout: Model.Layout<T>;
+                if (side === 'left') {
+                    newLayout = { type: 'row', items: [childFloating, childOriginal] };
+                } else if (side === 'right') {
+                    newLayout = { type: 'row', items: [childOriginal, childFloating] };
+                } else if (side === 'top') {
+                    newLayout = { type: 'column', items: [childFloating, childOriginal] };
+                } else {
+                    newLayout = { type: 'column', items: [childOriginal, childFloating] };
+                }
+                this.replaceInPath(newLayout, path);
+            } else {
+                const items = resolution.stack.items.slice();
+                items.splice(resolution.index, 0, this.props.state.floating);
+                const newStack: Model.Stack<T> = { ...resolution.stack, items, active: resolution.index };
+                this.replaceInPath(newStack, path);
+            }
         }
 
         const newState: Model.State<T> = {
@@ -455,7 +480,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State> implements F
         return null;
     }
 
-    private static getContentResolutionSide(resolution: DropModel.DropResolutionContainer, mousePosition: ReactManagedDragable.XY): 'left' | 'right' | 'top' | 'bottom' {
+    private static getContentResolutionSide(resolution: DropModel.DropResolutionContainer<unknown>, mousePosition: ReactManagedDragable.XY): 'left' | 'right' | 'top' | 'bottom' {
         if (mousePosition.x <= resolution.dropArea.left + resolution.dropArea.width * 0.2) {
             return 'left';
         } else if (mousePosition.x >= resolution.dropArea.left + resolution.dropArea.width * 0.8) {

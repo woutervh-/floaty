@@ -91,7 +91,7 @@ export class CustomStyle extends React.PureComponent<{}, State<string>> {
 
     public render() {
         return <div className="example02-container">
-            {this.state.layout === null
+            {this.state.layout === null && this.state.floating === null
                 ? <div className="example02-content">
                     <div className="example02-bomb">
                         <Fruit fruit="Bomb" />

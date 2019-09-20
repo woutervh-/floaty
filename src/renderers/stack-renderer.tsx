@@ -40,25 +40,8 @@ export class StackRenderer<T> extends React.PureComponent<RenderersModel.StackRe
         }
     }
 
-    private computeDropArea(element: Element): DropModel.DropArea {
-        const clientRect = element.getBoundingClientRect();
-        return {
-            top: clientRect.top,
-            left: clientRect.left,
-            width: clientRect.width,
-            height: clientRect.height
-        };
-    }
-
-    private dropAreasEqual(dropAreaA: DropModel.DropArea, dropAreaB: DropModel.DropArea) {
-        return dropAreaA.top === dropAreaB.top
-            && dropAreaA.left === dropAreaB.left
-            && dropAreaA.width === dropAreaB.width
-            && dropAreaA.height === dropAreaB.height;
-    }
-
     private updateDropAreas = () => {
-        const dropResolutions: DropModel.DropResolution[] = [];
+        const dropResolutions: DropModel.DropResolution<T>[] = [];
         let changed = false;
 
         for (let i = 0; i < this.props.stack.items.length; i++) {
@@ -68,7 +51,7 @@ export class StackRenderer<T> extends React.PureComponent<RenderersModel.StackRe
                 continue;
             }
 
-            const newDropArea = this.computeDropArea(this.tabRefs.get(stackItem.key)!);
+            const newDropArea = DropModel.computeDropArea(this.tabRefs.get(stackItem.key)!);
 
             dropResolutions.push({
                 type: 'tab',
@@ -77,32 +60,32 @@ export class StackRenderer<T> extends React.PureComponent<RenderersModel.StackRe
                 index: i
             });
 
-            if (!this.tabDropAreas.has(stackItem.key) || !this.dropAreasEqual(this.tabDropAreas.get(stackItem.key)!, newDropArea)) {
+            if (!this.tabDropAreas.has(stackItem.key) || !DropModel.dropAreasEqual(this.tabDropAreas.get(stackItem.key)!, newDropArea)) {
                 changed = true;
             }
         }
 
         if (this.tabFillerRef !== null) {
-            const newDropArea = this.computeDropArea(this.tabFillerRef);
+            const newDropArea = DropModel.computeDropArea(this.tabFillerRef);
             dropResolutions.push({
                 type: 'tab',
                 dropArea: newDropArea,
                 stack: this.props.stack,
                 index: this.props.stack.items.length
             });
-            if (this.tabFillerDropArea === null || !this.dropAreasEqual(this.tabFillerDropArea, newDropArea)) {
+            if (this.tabFillerDropArea === null || !DropModel.dropAreasEqual(this.tabFillerDropArea, newDropArea)) {
                 changed = true;
             }
         }
 
         if (this.containerRef !== null) {
-            const newDropArea = this.computeDropArea(this.containerRef);
+            const newDropArea = DropModel.computeDropArea(this.containerRef);
             dropResolutions.push({
                 type: 'container',
                 dropArea: newDropArea,
                 stack: this.props.stack
             });
-            if (this.containerDropArea === null || !this.dropAreasEqual(this.containerDropArea, newDropArea)) {
+            if (this.containerDropArea === null || !DropModel.dropAreasEqual(this.containerDropArea, newDropArea)) {
                 changed = true;
             }
         }

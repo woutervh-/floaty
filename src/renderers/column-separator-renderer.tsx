@@ -18,7 +18,6 @@ export class ColumnSeparatorRenderer<T> extends React.PureComponent<RenderersMod
         }
 
         return <Draggable
-            style={{ position: 'relative' }}
             onDragStart={this.handleDragStart}
             onDragMove={this.handleDragMove}
             onDragEnd={this.handleDragEnd}

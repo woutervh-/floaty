@@ -24,7 +24,9 @@ export class CustomStyle extends React.PureComponent<{}, State<string>> {
     private floatyRenderers: FloatyRenderers<string> = {
         ...defaultRenderers,
         columnSeparatorHandleRenderer: React.memo((props) =>
-            <div className={classNames('example02-resize-handle', 'example02-resize-handle-column')} style={{ top: props.offset, left: 0 }} />
+            <div className="example02-resize-separator-column">
+                <div className={classNames('example02-resize-handle', 'example02-resize-handle-column')} style={{ top: props.offset, left: 0 }} />
+            </div >
         ),
         contentRenderer:
             // tslint:disable-next-line:max-classes-per-file
@@ -68,7 +70,9 @@ export class CustomStyle extends React.PureComponent<{}, State<string>> {
             <div className="example02-drop-area" style={{ top: props.dropArea.top, left: props.dropArea.left, width: props.dropArea.width, height: props.dropArea.height }} />
         ),
         rowSeparatorHandleRenderer: React.memo((props) =>
-            <div className={classNames('example02-resize-handle', 'example02-resize-handle-row')} style={{ top: 0, left: props.offset }} />
+            <div className="example02-resize-separator-row">
+                <div className={classNames('example02-resize-handle', 'example02-resize-handle-row')} style={{ top: 0, left: props.offset }} />
+            </div>
         ),
         stackContainerRenderer: React.memo((props) =>
             <div className="example02-stack-container">{props.children}</div>

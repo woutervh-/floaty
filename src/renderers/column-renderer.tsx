@@ -10,7 +10,7 @@ export class ColumnRenderer<T> extends React.PureComponent<RenderersModel.Column
 
         for (let i = 0; i < this.props.column.items.length; i++) {
             if (i > 0) {
-                gridTemplateRows.push('6px');
+                gridTemplateRows.push('max-content');
                 elements.push(
                     <this.props.floatyRenderers.columnSeparatorRenderer
                         key={`${i}-seperator`}

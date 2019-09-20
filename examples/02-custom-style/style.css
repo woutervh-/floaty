@@ -32,6 +32,21 @@
   background-color: steelblue;
 }
 
+.example02-resize-separator-column,
+.example02-resize-separator-row {
+  position: relative;
+}
+
+.example02-resize-separator-column {
+  width: 100%;
+  height: 1px;
+}
+
+.example02-resize-separator-row {
+  width: 1px;
+  height: 100%;
+}
+
 .example02-resize-handle {
   background-color: steelblue;
   position: absolute;
@@ -60,16 +75,16 @@
 
 .example02-resize-handle-column::after {
   left: 0;
-  top: -6px;
-  height: 18px;
+  top: -9px;
+  height: 19px;
   width: 100%;
 }
 
 .example02-resize-handle-row::after {
-  left: -6px;
+  left: -9px;
   top: 0;
   height: 100%;
-  width: 18px;
+  width: 19px;
 }
 
 .example02-content {

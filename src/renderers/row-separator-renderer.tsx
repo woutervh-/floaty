@@ -18,7 +18,6 @@ export class RowSeparatorRenderer<T> extends React.PureComponent<RenderersModel.
         }
 
         return <Draggable
-            style={{ position: 'relative' }}
             onDragStart={this.handleDragStart}
             onDragMove={this.handleDragMove}
             onDragEnd={this.handleDragEnd}

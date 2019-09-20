@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as RenderersModel from '../renderers-model';
 
-export class DropAreaRenderer extends React.PureComponent<RenderersModel.DropAreaRendererProps, never> {
+export class DropAreaRenderer<T> extends React.PureComponent<RenderersModel.DropAreaRendererProps<T>, never> {
     public render() {
         return <div style={{
             position: 'fixed',

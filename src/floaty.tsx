@@ -18,7 +18,7 @@ interface State<T> {
     rootDropArea: DropModel.DropArea | null;
 }
 
-export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implements FloatyManager {
+export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implements FloatyManager<T> {
     public state: State<T> = {
         currentMousePosition: null,
         dropResolutions: [],

@@ -27,14 +27,14 @@ interface FloatingStartEventAndPosition {
 
 export type FloatingStartOptions = FloatingStartPosition | FloatingStartEvent | FloatingStartEventAndTarget | FloatingStartEventTargetAndPosition | FloatingStartEventAndPosition;
 
-export interface FloatyManager {
-    onColumnUpdateFractions: (column: Model.Column, index1: number, fraction1: number, index2: number, fraction2: number) => void;
-    onRowUpdateFractions: (row: Model.Row, index1: number, fraction1: number, index2: number, fraction2: number) => void;
-    onActivate: (stackItem: Model.StackItem) => void;
-    onStartFloat: (stackItem: Model.StackItem, options: FloatingStartOptions) => void;
-    onCloseTab: (stackItem: Model.StackItem) => void;
-    getLayout: () => Model.Layout | null;
-    findStack: (stackItem: Model.StackItem) => Model.Stack | null;
-    registerDropResolutions: (key: unknown, dropResolutions: DropModel.DropResolution[]) => void;
+export interface FloatyManager<T> {
+    onColumnUpdateFractions: (column: Model.Column<T>, index1: number, fraction1: number, index2: number, fraction2: number) => void;
+    onRowUpdateFractions: (row: Model.Row<T>, index1: number, fraction1: number, index2: number, fraction2: number) => void;
+    onActivate: (stackItem: Model.StackItem<T>) => void;
+    onStartFloat: (stackItem: Model.StackItem<T>, options: FloatingStartOptions) => void;
+    onCloseTab: (stackItem: Model.StackItem<T>) => void;
+    getLayout: () => Model.Layout<T> | null;
+    findStack: (stackItem: Model.StackItem<T>) => Model.Stack<T> | null;
+    registerDropResolutions: (key: unknown, dropResolutions: DropModel.DropResolution<T>[]) => void;
     unregisterDropResolutions: (key: unknown) => void;
 }

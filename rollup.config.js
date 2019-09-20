@@ -3,6 +3,8 @@ import { uglify } from 'rollup-plugin-uglify';
 
 // TODO:
 // Look at: https://medium.com/js-imaginea/comparing-bundlers-webpack-rollup-parcel-f8f5dc609cfd
+// OR:
+// https://www.npmjs.com/package/rollup-plugin-uglify-es
 
 const plugins = [resolve()];
 

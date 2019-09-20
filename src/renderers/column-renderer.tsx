@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as RenderersModel from '../renderers-model';
 
-export class ColumnRenderer extends React.PureComponent<RenderersModel.ColumnRendererProps, never> {
+export class ColumnRenderer<T> extends React.PureComponent<RenderersModel.ColumnRendererProps<T>, never> {
     private container: HTMLDivElement | null = null;
 
     public render() {

@@ -6,7 +6,7 @@ interface State {
     deltaY: number | null;
 }
 
-export class ColumnSeparatorRenderer extends React.PureComponent<RenderersModel.ColumnSeparatorRendererProps, State> {
+export class ColumnSeparatorRenderer<T> extends React.PureComponent<RenderersModel.ColumnSeparatorRendererProps<T>, State> {
     public state: State = {
         deltaY: null
     };

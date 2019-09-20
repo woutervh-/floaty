@@ -6,10 +6,10 @@ import { FloatingStartOptions, FloatyManager } from './floaty-manager';
 import * as Model from './model';
 import * as RenderersModel from './renderers-model';
 
-interface Props {
-    state: Model.State;
-    onStateChange: (state: Model.State) => void;
-    renderers: RenderersModel.FloatyRenderers;
+interface Props<T> {
+    state: Model.State<T>;
+    onStateChange: (state: Model.State<T>) => void;
+    renderers: RenderersModel.FloatyRenderers<T>;
 }
 
 interface State {
@@ -17,7 +17,7 @@ interface State {
     dropResolutions: DropModel.DropResolution[];
 }
 
-export class Floaty extends React.PureComponent<Props, State> implements FloatyManager {
+export class Floaty<T> extends React.PureComponent<Props<T>, State> implements FloatyManager {
     public state: State = {
         currentMousePosition: null,
         dropResolutions: []
@@ -131,19 +131,19 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
         this.eventTarget = null;
     }
 
-    private updateState(state: Model.State) {
+    private updateState(state: Model.State<T>) {
         this.props.onStateChange({ ...state, layout: Floaty.minimizeLayout(state.layout) });
     }
 
-    private onLayoutChange(layout: Model.Layout) {
-        const newState: Model.State = {
+    private onLayoutChange(layout: Model.Layout<T>) {
+        const newState: Model.State<T> = {
             ...this.props.state,
             layout
         };
         this.updateState(newState);
     }
 
-    private onRowOrColumnUpdateFractions = (rowOrColumn: Model.Column | Model.Row, index1: number, fraction1: number, index2: number, fraction2: number) => {
+    private onRowOrColumnUpdateFractions = (rowOrColumn: Model.Column<T> | Model.Row<T>, index1: number, fraction1: number, index2: number, fraction2: number) => {
         const path = this.findPath(rowOrColumn, this.props.state.layout);
         if (!path) {
             if (rowOrColumn.type === 'column') {
@@ -183,10 +183,10 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
 
     public onRowUpdateFractions = this.onRowOrColumnUpdateFractions;
 
-    public onActivate = (stackItem: Model.StackItem) => {
+    public onActivate = (stackItem: Model.StackItem<T>) => {
         const stack = this.findStack(stackItem);
         if (!stack) {
-            throw new Error(`StackItem ${stackItem.identifier} not found.`);
+            throw new Error(`StackItem ${stackItem.key} not found.`);
         }
         const index = stack.items.indexOf(stackItem);
         const path = this.findPath(stack, this.props.state.layout);
@@ -194,15 +194,15 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
             throw new Error('Stack not found.');
         }
 
-        const newStack: Model.Stack = { ...stack, active: index };
+        const newStack: Model.Stack<T> = { ...stack, active: index };
         this.replaceInPath(newStack, path);
         this.onLayoutChange(path[path.length - 1]);
     }
 
-    public onCloseTab = (stackItem: Model.StackItem) => {
+    public onCloseTab = (stackItem: Model.StackItem<T>) => {
         const stack = this.findStack(stackItem);
         if (!stack) {
-            throw new Error(`StackItem ${stackItem.identifier} not found.`);
+            throw new Error(`StackItem ${stackItem.key} not found.`);
         }
         const index = stack.items.indexOf(stackItem);
         const path = this.findPath(stack, this.props.state.layout);
@@ -212,7 +212,7 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
 
         const items = stack.items.slice();
         items.splice(index, 1);
-        const newStack: Model.Stack = { ...stack, items, active: Math.min(items.length - 1, stack.active) };
+        const newStack: Model.Stack<T> = { ...stack, items, active: Math.min(items.length - 1, stack.active) };
         this.replaceInPath(newStack, path);
         this.onLayoutChange(path[path.length - 1]);
     }
@@ -249,10 +249,10 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
 
         if (resolution.type === 'container') {
             const side = Floaty.getContentResolutionSide(resolution, position);
-            const stackFloating: Model.Stack = { type: 'stack', items: [this.props.state.floating], active: 0 };
-            const childFloating: Model.ColumnOrRowItem = { child: stackFloating, fraction: 0.5 };
-            const childOriginal: Model.ColumnOrRowItem = { child: resolution.stack, fraction: 0.5 };
-            let newLayout: Model.Layout;
+            const stackFloating: Model.Stack<T> = { type: 'stack', items: [this.props.state.floating], active: 0 };
+            const childFloating: Model.ColumnOrRowItem<T> = { child: stackFloating, fraction: 0.5 };
+            const childOriginal: Model.ColumnOrRowItem<T> = { child: resolution.stack, fraction: 0.5 };
+            let newLayout: Model.Layout<T>;
             if (side === 'left') {
                 newLayout = { type: 'row', items: [childFloating, childOriginal] };
             } else if (side === 'right') {
@@ -266,11 +266,11 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
         } else {
             const items = resolution.stack.items.slice();
             items.splice(resolution.index, 0, this.props.state.floating);
-            const newStack: Model.Stack = { ...resolution.stack, items, active: resolution.index };
+            const newStack: Model.Stack<T> = { ...resolution.stack, items, active: resolution.index };
             this.replaceInPath(newStack, path);
         }
 
-        const newState: Model.State = {
+        const newState: Model.State<T> = {
             layout: path[path.length - 1],
             floating: null
         };
@@ -278,13 +278,13 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
         this.unregisterFloatHandlers();
     }
 
-    public onStartFloat = (stackItem: Model.StackItem, options: FloatingStartOptions) => {
+    public onStartFloat = (stackItem: Model.StackItem<T>, options: FloatingStartOptions) => {
         if (this.props.state.floating) {
             return;
         }
         const stack = this.findStack(stackItem);
         if (!stack) {
-            throw new Error(`StackItem ${stackItem.identifier} not found.`);
+            throw new Error(`StackItem ${stackItem.key} not found.`);
         }
         const index = stack.items.indexOf(stackItem);
         const path = this.findPath(stack, this.props.state.layout);
@@ -294,7 +294,7 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
 
         const items = stack.items.slice();
         items.splice(index, 1);
-        const newStack: Model.Stack = { ...stack, items, active: Math.min(items.length - 1, stack.active) };
+        const newStack: Model.Stack<T> = { ...stack, items, active: Math.min(items.length - 1, stack.active) };
         this.replaceInPath(newStack, path);
 
         // Update floating position.
@@ -305,7 +305,7 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
         }
 
         // Update controlled state.
-        const newState: Model.State = {
+        const newState: Model.State<T> = {
             layout: path[path.length - 1],
             floating: stack.items[index]
         };
@@ -330,16 +330,16 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
         return this.props.state.layout;
     }
 
-    public findStack = (stackItem: Model.StackItem): Model.Stack | null => {
+    public findStack = (stackItem: Model.StackItem<T>): Model.Stack<T> | null => {
         return Floaty.findStack(stackItem, this.getLayout());
     }
 
-    private replaceInPath(target: Model.Layout, path: Model.Layout[]) {
+    private replaceInPath(target: Model.Layout<T>, path: Model.Layout<T>[]) {
         let previous = path[0];
         path[0] = target;
         for (let i = 1; i < path.length; i++) {
             // The first item of the path can be a Stack, but the rest are always Columns and Rows.
-            const node = path[i] as Model.Column | Model.Row;
+            const node = path[i] as Model.Column<T> | Model.Row<T>;
             const index = node.items.findIndex((item) => item.child === previous);
             const items = node.items.slice();
             items[index] = { ...items[index], child: path[i - 1] };
@@ -348,7 +348,7 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
         }
     }
 
-    private findPath(target: Model.Layout, from: Model.Layout | null): Model.Layout[] | null {
+    private findPath(target: Model.Layout<T>, from: Model.Layout<T> | null): Model.Layout<T>[] | null {
         if (from === null) {
             return null;
         }
@@ -370,7 +370,7 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
         return null;
     }
 
-    private static minimizeLayout(layout: Model.Layout | null): Model.Layout | null {
+    private static minimizeLayout<T>(layout: Model.Layout<T> | null): Model.Layout<T> | null {
         if (layout === null) {
             return null;
         }
@@ -378,7 +378,7 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
             case 'column':
             case 'row': {
                 const type = layout.type;
-                const items: Model.ColumnOrRowItem[] = [];
+                const items: Model.ColumnOrRowItem<T>[] = [];
                 let changed = false;
                 for (const item of layout.items) {
                     const result = this.minimizeLayout(item.child);
@@ -428,7 +428,7 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
         }
     }
 
-    private static findStack(stackItem: Model.StackItem, from: Model.Layout | null): Model.Stack | null {
+    private static findStack<T>(stackItem: Model.StackItem<T>, from: Model.Layout<T> | null): Model.Stack<T> | null {
         if (from === null) {
             return null;
         }

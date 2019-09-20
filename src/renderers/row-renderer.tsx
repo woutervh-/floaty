@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as RenderersModel from '../renderers-model';
 
-export class RowRenderer extends React.PureComponent<RenderersModel.RowRendererProps, never> {
+export class RowRenderer<T> extends React.PureComponent<RenderersModel.RowRendererProps<T>, never> {
     private container: HTMLDivElement | null = null;
 
     public render() {

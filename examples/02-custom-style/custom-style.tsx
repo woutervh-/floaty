@@ -4,28 +4,31 @@ import { ContentRendererProps, defaultRenderers, Floaty, FloatyRenderers, State 
 import { Fruit } from './fruit';
 import './style.css';
 
-export class CustomStyle extends React.PureComponent<{}, State> {
-    public state: State = {
+export class CustomStyle extends React.PureComponent<{}, State<string>> {
+    public state: State<string> = {
         layout: {
             type: 'stack',
             active: 0,
             items: [
-                { identifier: 'Apple' },
-                { identifier: 'Banana' },
-                { identifier: 'Cherries' }
+                { key: 'a1', item: 'Apple' },
+                { key: 'a2', item: 'Apple' },
+                { key: 'b1', item: 'Banana' },
+                { key: 'b2', item: 'Banana' },
+                { key: 'c1', item: 'Cherries' },
+                { key: 'c2', item: 'Cherries' }
             ]
         },
         floating: null
     };
 
-    private floatyRenderers: FloatyRenderers = {
+    private floatyRenderers: FloatyRenderers<string> = {
         ...defaultRenderers,
         columnSeparatorHandleRenderer: React.memo((props) =>
             <div className={classNames('example02-resize-handle', 'example02-resize-handle-column')} style={{ top: props.offset, left: 0 }} />
         ),
         contentRenderer:
             // tslint:disable-next-line:max-classes-per-file
-            class ContentRenderer extends React.PureComponent<ContentRendererProps, never> {
+            class ContentRenderer extends React.PureComponent<ContentRendererProps<string>, never> {
                 private fruitElement: HTMLDivElement | null = null;
 
                 private handleDown = (event: MouseEvent | TouchEvent) => {
@@ -49,14 +52,14 @@ export class CustomStyle extends React.PureComponent<{}, State> {
                 public render() {
                     return <div className="example02-content">
                         <div className="example02-fruit" ref={this.handleFruitRef}>
-                            <Fruit fruit={this.props.stackItem.identifier} />
+                            <Fruit fruit={this.props.stackItem.item} />
                         </div>
                     </div>;
                 }
             },
         floatingContentRenderer: React.memo((props) =>
             <React.Fragment>
-                <div>You've got: <Fruit fruit={props.stackItem.identifier} /></div>
+                <div>You've got: <Fruit fruit={props.stackItem.item} /></div>
                 <div>Drop it somewhere!</div>
             </React.Fragment>
         ),
@@ -73,7 +76,7 @@ export class CustomStyle extends React.PureComponent<{}, State> {
         tabRenderer: React.memo((props) =>
             <div className="example02-tab">
                 <button className={classNames('example02-button', { active: props.stack.active === props.stackItemIndex })} onClick={() => props.floatyManager.onActivate(props.stackItem)}>
-                    {props.stackItem.identifier}
+                    {props.stackItem.item}
                 </button>
             </div>
         ),
@@ -103,5 +106,5 @@ export class CustomStyle extends React.PureComponent<{}, State> {
         </div>;
     }
 
-    private handleStateChange = (state: State) => this.setState(state);
+    private handleStateChange = (state: State<string>) => this.setState(state);
 }

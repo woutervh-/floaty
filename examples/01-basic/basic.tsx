@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { defaultRenderers, Floaty, FloatyRenderers, State } from '../../src';
 
-export class Basic extends React.PureComponent<{}, State> {
-    public state: State = {
+export class Basic extends React.PureComponent<{}, State<string>> {
+    public state: State<string> = {
         layout: {
             type: 'row',
             items: [{
@@ -11,7 +11,8 @@ export class Basic extends React.PureComponent<{}, State> {
                     type: 'stack',
                     active: 0,
                     items: [{
-                        identifier: 'A1'
+                        key: 'a',
+                        item: 'a'
                     }]
                 }
             }, {
@@ -24,7 +25,8 @@ export class Basic extends React.PureComponent<{}, State> {
                             type: 'stack',
                             active: 0,
                             items: [{
-                                identifier: 'B1'
+                                key: 'b',
+                                item: 'b'
                             }]
                         }
                     }, {
@@ -33,9 +35,11 @@ export class Basic extends React.PureComponent<{}, State> {
                             type: 'stack',
                             active: 0,
                             items: [{
-                                identifier: 'B2'
+                                key: 'c',
+                                item: 'c'
                             }, {
-                                identifier: 'B3'
+                                key: 'd',
+                                item: 'd'
                             }]
                         }
                     }]
@@ -46,28 +50,32 @@ export class Basic extends React.PureComponent<{}, State> {
                     type: 'stack',
                     active: 0,
                     items: [{
-                        identifier: 'C1'
+                        key: 'e',
+                        item: 'e'
                     }]
                 }
             }]
         },
-        floating: { identifier: 'F1' }
+        floating: {
+            key: 'f',
+            item: 'f'
+        }
     };
 
-    private floatyRenderers: FloatyRenderers = {
+    private floatyRenderers: FloatyRenderers<string> = {
         ...defaultRenderers,
         contentRenderer: React.memo((props) =>
-            <div>Content: {props.stackItem.identifier}</div>
+            <div>Content: {props.stackItem.item}</div>
         ),
         floatingContentRenderer: React.memo((props) =>
-            <div>Preview of: {props.stackItem.identifier}</div>
+            <div>Preview of: {props.stackItem.item}</div>
         ),
         floatingTabRenderer: React.memo((props) =>
-            <div>Floating tab: {props.stackItem.identifier}</div>
+            <div>Floating tab: {props.stackItem.item}</div>
         ),
         tabRenderer: React.memo((props) =>
             <div>
-                Tab: {props.stackItem.identifier}
+                Tab: {props.stackItem.item}
                 <button onClick={() => props.floatyManager.onActivate(props.stackItem)} disabled={props.stack.items.length <= 1 || props.stack.active === props.stackItemIndex}>
                     •
                 </button>
@@ -96,5 +104,5 @@ export class Basic extends React.PureComponent<{}, State> {
         </React.Fragment>;
     }
 
-    private handleStateChange = (state: State) => this.setState(state);
+    private handleStateChange = (state: State<string>) => this.setState(state);
 }

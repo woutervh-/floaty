@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 import * as DropModel from '../drop-model';
 import * as RenderersModel from '../renderers-model';
 
-export class StackRenderer extends React.PureComponent<RenderersModel.StackRendererProps, never> {
+export class StackRenderer<T> extends React.PureComponent<RenderersModel.StackRendererProps<T>, never> {
     private raf: number | undefined = undefined;
     private tabRefs: Map<string, HTMLDivElement> = new Map();
     private tabFillerRef: HTMLDivElement | null = null;
@@ -64,11 +64,11 @@ export class StackRenderer extends React.PureComponent<RenderersModel.StackRende
         for (let i = 0; i < this.props.stack.items.length; i++) {
             const stackItem = this.props.stack.items[i];
 
-            if (!this.tabRefs.has(stackItem.identifier)) {
+            if (!this.tabRefs.has(stackItem.key)) {
                 continue;
             }
 
-            const newDropArea = this.computeDropArea(this.tabRefs.get(stackItem.identifier)!);
+            const newDropArea = this.computeDropArea(this.tabRefs.get(stackItem.key)!);
 
             dropResolutions.push({
                 type: 'tab',
@@ -77,7 +77,7 @@ export class StackRenderer extends React.PureComponent<RenderersModel.StackRende
                 index: i
             });
 
-            if (!this.tabDropAreas.has(stackItem.identifier) || !this.dropAreasEqual(this.tabDropAreas.get(stackItem.identifier)!, newDropArea)) {
+            if (!this.tabDropAreas.has(stackItem.key) || !this.dropAreasEqual(this.tabDropAreas.get(stackItem.key)!, newDropArea)) {
                 changed = true;
             }
         }
@@ -119,8 +119,8 @@ export class StackRenderer extends React.PureComponent<RenderersModel.StackRende
             <this.props.floatyRenderers.stackTabsRenderer floatyManager={this.props.floatyManager} stack={this.props.stack}>
                 {this.props.stack.items.map((stackItem, index) => {
                     return <div
-                        key={stackItem.identifier}
-                        ref={this.handleTabRef(stackItem.identifier)}
+                        key={stackItem.key}
+                        ref={this.handleTabRef(stackItem.key)}
                     >
                         <this.props.floatyRenderers.tabRenderer
                             floatyManager={this.props.floatyManager}
@@ -135,7 +135,7 @@ export class StackRenderer extends React.PureComponent<RenderersModel.StackRende
                 </div>
             </this.props.floatyRenderers.stackTabsRenderer>
             <this.props.floatyRenderers.contentRenderer
-                key={this.props.stack.items[this.props.stack.active].identifier}
+                key={this.props.stack.items[this.props.stack.active].key}
                 floatyManager={this.props.floatyManager}
                 stack={this.props.stack}
                 stackIndex={this.props.stack.active}

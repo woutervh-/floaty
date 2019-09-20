@@ -6,7 +6,7 @@ interface State {
     deltaX: number | null;
 }
 
-export class RowSeparatorRenderer extends React.PureComponent<RenderersModel.RowSeparatorRendererProps, State> {
+export class RowSeparatorRenderer<T> extends React.PureComponent<RenderersModel.RowSeparatorRendererProps<T>, State> {
     public state: State = {
         deltaX: null
     };

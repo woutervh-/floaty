@@ -2,27 +2,27 @@ import * as Model from './model';
 import * as DropModel from './drop-model';
 import { FloatyManager } from './floaty-manager';
 
-export interface ColumnRendererProps {
+export interface ColumnRendererProps<T> {
     floatyManager: FloatyManager;
-    floatyRenderers: FloatyRenderers;
-    column: Model.Column;
+    floatyRenderers: FloatyRenderers<T>;
+    column: Model.Column<T>;
 }
 
-export interface RowRendererProps {
+export interface RowRendererProps<T> {
     floatyManager: FloatyManager;
-    floatyRenderers: FloatyRenderers;
-    row: Model.Row;
+    floatyRenderers: FloatyRenderers<T>;
+    row: Model.Row<T>;
 }
 
-export interface ColumnSeparatorRendererProps {
-    floatyRenderers: FloatyRenderers;
+export interface ColumnSeparatorRendererProps<T> {
+    floatyRenderers: FloatyRenderers<T>;
     index: number;
     onMove: (index: number, deltaY: number) => void;
     clamp: (index: number, deltaY: number) => number;
 }
 
-export interface RowSeparatorRendererProps {
-    floatyRenderers: FloatyRenderers;
+export interface RowSeparatorRendererProps<T> {
+    floatyRenderers: FloatyRenderers<T>;
     index: number;
     onMove: (index: number, deltaX: number) => void;
     clamp: (index: number, deltaX: number) => number;
@@ -36,61 +36,61 @@ export interface RowSeparatorHandleRendererProps {
     offset: number;
 }
 
-export interface TabRendererProps {
+export interface TabRendererProps<T> {
     floatyManager: FloatyManager;
-    stack: Model.Stack;
+    stack: Model.Stack<T>;
     stackItemIndex: number;
-    stackItem: Model.StackItem;
+    stackItem: Model.StackItem<T>;
 }
 
-export interface TabFillerRendererProps {
+export interface TabFillerRendererProps<T> {
     floatyManager: FloatyManager;
-    stack: Model.Stack;
+    stack: Model.Stack<T>;
 }
 
-export interface ContentRendererProps {
+export interface ContentRendererProps<T> {
     floatyManager: FloatyManager;
-    stack: Model.Stack;
+    stack: Model.Stack<T>;
     stackIndex: number;
-    stackItem: Model.StackItem;
+    stackItem: Model.StackItem<T>;
 }
 
-export interface StackRendererProps {
+export interface StackRendererProps<T> {
     floatyManager: FloatyManager;
-    floatyRenderers: FloatyRenderers;
-    stack: Model.Stack;
+    floatyRenderers: FloatyRenderers<T>;
+    stack: Model.Stack<T>;
 }
 
-export interface StackContainerRendererProps {
+export interface StackContainerRendererProps<T> {
     floatyManager: FloatyManager;
-    stack: Model.Stack;
+    stack: Model.Stack<T>;
 }
 
-export interface StackTabsRendererProps {
+export interface StackTabsRendererProps<T> {
     floatyManager: FloatyManager;
-    stack: Model.Stack;
+    stack: Model.Stack<T>;
 }
 
-export interface LayoutRendererProps {
+export interface LayoutRendererProps<T> {
     floatyManager: FloatyManager;
-    floatyRenderers: FloatyRenderers;
-    layout: Model.Layout;
+    floatyRenderers: FloatyRenderers<T>;
+    layout: Model.Layout<T>;
 }
 
-export interface FloatingTabRendererProps {
+export interface FloatingTabRendererProps<T> {
     floatyManager: FloatyManager;
-    stackItem: Model.StackItem;
+    stackItem: Model.StackItem<T>;
 }
 
-export interface FloatingContentRendererProps {
+export interface FloatingContentRendererProps<T> {
     floatyManager: FloatyManager;
-    stackItem: Model.StackItem;
+    stackItem: Model.StackItem<T>;
 }
 
-export interface FloatingRendererProps {
+export interface FloatingRendererProps<T> {
     floatyManager: FloatyManager;
-    floatyRenderers: FloatyRenderers;
-    floating: Model.StackItem;
+    floatyRenderers: FloatyRenderers<T>;
+    floating: Model.StackItem<T>;
 }
 
 export interface DropAreaRendererProps {
@@ -98,42 +98,22 @@ export interface DropAreaRendererProps {
     dropArea: DropModel.DropArea;
 }
 
-export interface FloatyRenderers {
-    columnRenderer: React.ComponentType<ColumnRendererProps>;
+export interface FloatyRenderers<T> {
+    columnRenderer: React.ComponentType<ColumnRendererProps<T>>;
     columnSeparatorHandleRenderer: React.ComponentType<ColumnSeparatorHandleRendererProps>;
-    columnSeparatorRenderer: React.ComponentType<ColumnSeparatorRendererProps>;
-    contentRenderer: React.ComponentType<ContentRendererProps>;
+    columnSeparatorRenderer: React.ComponentType<ColumnSeparatorRendererProps<T>>;
+    contentRenderer: React.ComponentType<ContentRendererProps<T>>;
     dropAreaRenderer: React.ComponentType<DropAreaRendererProps>;
-    floatingContentRenderer: React.ComponentType<FloatingContentRendererProps>;
-    floatingRenderer: React.ComponentType<FloatingRendererProps>;
-    floatingTabRenderer: React.ComponentType<FloatingTabRendererProps>;
-    layoutRenderer: React.ComponentType<LayoutRendererProps>;
-    rowRenderer: React.ComponentType<RowRendererProps>;
+    floatingContentRenderer: React.ComponentType<FloatingContentRendererProps<T>>;
+    floatingRenderer: React.ComponentType<FloatingRendererProps<T>>;
+    floatingTabRenderer: React.ComponentType<FloatingTabRendererProps<T>>;
+    layoutRenderer: React.ComponentType<LayoutRendererProps<T>>;
+    rowRenderer: React.ComponentType<RowRendererProps<T>>;
     rowSeparatorHandleRenderer: React.ComponentType<RowSeparatorHandleRendererProps>;
-    rowSeparatorRenderer: React.ComponentType<RowSeparatorRendererProps>;
-    stackContainerRenderer: React.ComponentType<StackContainerRendererProps>;
-    stackRenderer: React.ComponentType<StackRendererProps>;
-    stackTabsRenderer: React.ComponentType<StackTabsRendererProps>;
-    tabFillerRenderer: React.ComponentType<TabFillerRendererProps>;
-    tabRenderer: React.ComponentType<TabRendererProps>;
+    rowSeparatorRenderer: React.ComponentType<RowSeparatorRendererProps<T>>;
+    stackContainerRenderer: React.ComponentType<StackContainerRendererProps<T>>;
+    stackRenderer: React.ComponentType<StackRendererProps<T>>;
+    stackTabsRenderer: React.ComponentType<StackTabsRendererProps<T>>;
+    tabFillerRenderer: React.ComponentType<TabFillerRendererProps<T>>;
+    tabRenderer: React.ComponentType<TabRendererProps<T>>;
 }
-
-// export interface OptionalRenderers {
-//     columnRenderer?: React.ComponentType<ColumnRendererProps>;
-//     columnSeparatorHandleRenderer?: React.ComponentType<ColumnSeparatorHandleRendererProps>;
-//     columnSeparatorRenderer?: React.ComponentType<ColumnSeparatorRendererProps>;
-//     contentRenderer: React.ComponentType<ContentRendererProps>;
-//     dropAreaRenderer?: React.ComponentType<DropAreaRendererProps>;
-//     floatingContentRenderer: React.ComponentType<FloatingContentRendererProps>;
-//     floatingRenderer?: React.ComponentType<FloatingRendererProps>;
-//     floatingTabRenderer: React.ComponentType<FloatingTabRendererProps>;
-//     layoutRenderer?: React.ComponentType<LayoutRendererProps>;
-//     rowRenderer?: React.ComponentType<RowRendererProps>;
-//     rowSeparatorHandleRenderer?: React.ComponentType<RowSeparatorHandleRendererProps>;
-//     rowSeparatorRenderer?: React.ComponentType<RowSeparatorRendererProps>;
-//     stackContainerRenderer?: React.ComponentType<StackContainerRendererProps>;
-//     stackRenderer?: React.ComponentType<StackRendererProps>;
-//     stackTabsRenderer?: React.ComponentType<StackTabsRendererProps>;
-//     tabFillerRenderer?: React.ComponentType<TabFillerRendererProps>;
-//     tabRenderer: React.ComponentType<TabRendererProps>;
-// }

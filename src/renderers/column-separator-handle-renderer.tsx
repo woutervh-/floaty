@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as RenderersModel from '../renderers-model';
 
-export class ColumnSeperatorHandleRenderer extends React.PureComponent<RenderersModel.ColumnSeparatorHandleRendererProps, never> {
+export class ColumnSeparatorHandleRenderer extends React.PureComponent<RenderersModel.ColumnSeparatorHandleRendererProps, never> {
     public render() {
         return <div style={{
             backgroundColor: 'black',

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import * as React from 'react';
-import { ContentRendererProps, Floaty, FloatyRenderers, Renderers, State } from '../../src';
+import { ContentRendererProps, defaultRenderers, Floaty, FloatyRenderers, State } from '../../src';
 import { Fruit } from './fruit';
 import './style.css';
 
@@ -19,11 +19,10 @@ export class CustomStyle extends React.PureComponent<{}, State> {
     };
 
     private floatyRenderers: FloatyRenderers = {
-        columnRenderer: Renderers.ColumnRenderer,
+        ...defaultRenderers,
         columnSeparatorHandleRenderer: React.memo((props) =>
             <div className={classNames('example02-resize-handle', 'example02-resize-handle-column')} style={{ top: props.offset, left: 0 }} />
         ),
-        columnSeparatorRenderer: Renderers.ColumnSeparatorRenderer,
         contentRenderer:
             // tslint:disable-next-line:max-classes-per-file
             class ContentRenderer extends React.PureComponent<ContentRendererProps, never> {
@@ -55,7 +54,6 @@ export class CustomStyle extends React.PureComponent<{}, State> {
                     </div>;
                 }
             },
-        floatingRenderer: Renderers.FloatingRenderer,
         floatingContentRenderer: React.memo((props) =>
             <React.Fragment>
                 <div>You've got: <Fruit fruit={props.stackItem.identifier} /></div>
@@ -66,17 +64,12 @@ export class CustomStyle extends React.PureComponent<{}, State> {
         dropAreaRenderer: React.memo((props) =>
             <div className="example02-drop-area" style={{ top: props.dropArea.top, left: props.dropArea.left, width: props.dropArea.width, height: props.dropArea.height }} />
         ),
-        layoutRenderer: Renderers.LayoutRenderer,
-        rowRenderer: Renderers.RowRenderer,
         rowSeparatorHandleRenderer: React.memo((props) =>
             <div className={classNames('example02-resize-handle', 'example02-resize-handle-row')} style={{ top: 0, left: props.offset }} />
         ),
-        rowSeparatorRenderer: Renderers.RowSeparatorRenderer,
-        stackRenderer: Renderers.StackRenderer,
         stackContainerRenderer: React.memo((props) =>
             <div className="example02-stack-container">{props.children}</div>
         ),
-        stackTabsRenderer: Renderers.StackTabsRenderer,
         tabRenderer: React.memo((props) =>
             <div className="example02-tab">
                 <button className={classNames('example02-button', { active: props.stack.active === props.stackItemIndex })} onClick={() => props.floatyManager.onActivate(props.stackItem)}>
@@ -102,7 +95,7 @@ export class CustomStyle extends React.PureComponent<{}, State> {
                     </div>
                 </div>
                 : <Floaty
-                    floatyRenderers={this.floatyRenderers}
+                    renderers={this.floatyRenderers}
                     state={this.state}
                     onStateChange={this.handleStateChange}
                 />

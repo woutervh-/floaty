@@ -1,11 +1,11 @@
 export { ColumnRenderer } from './column-renderer';
-export { ColumnSeperatorHandleRenderer } from './column-separator-handle-renderer';
+export { ColumnSeparatorHandleRenderer } from './column-separator-handle-renderer';
 export { ColumnSeparatorRenderer } from './column-separator-renderer';
 export { DropAreaRenderer } from './drop-area-renderer';
 export { FloatingRenderer } from './floating-renderer';
 export { LayoutRenderer } from './layout-renderer';
 export { RowRenderer } from './row-renderer';
-export { RowSeperatorHandleRenderer } from './row-separator-handle-renderer';
+export { RowSeparatorHandleRenderer } from './row-separator-handle-renderer';
 export { RowSeparatorRenderer } from './row-separator-renderer';
 export { StackContainerRenderer } from './stack-container-renderer';
 export { StackRenderer } from './stack-renderer';

@@ -9,7 +9,7 @@ import * as RenderersModel from './renderers-model';
 interface Props {
     state: Model.State;
     onStateChange: (state: Model.State) => void;
-    floatyRenderers: RenderersModel.FloatyRenderers;
+    renderers: RenderersModel.FloatyRenderers;
 }
 
 interface State {
@@ -47,8 +47,8 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
 
     private renderLayout() {
         if (this.props.state.layout) {
-            return <this.props.floatyRenderers.layoutRenderer
-                floatyRenderers={this.props.floatyRenderers}
+            return <this.props.renderers.layoutRenderer
+                floatyRenderers={this.props.renderers}
                 floatyManager={this}
                 layout={this.props.state.layout}
             />;
@@ -71,9 +71,9 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
                 width: side === 'left' || side === 'right' ? resolution.dropArea.width * 0.5 : resolution.dropArea.width,
                 height: side === 'top' || side === 'bottom' ? resolution.dropArea.height * 0.5 : resolution.dropArea.height
             };
-            return <this.props.floatyRenderers.dropAreaRenderer floatyManager={this} dropArea={sideDropArea} />;
+            return <this.props.renderers.dropAreaRenderer floatyManager={this} dropArea={sideDropArea} />;
         } else {
-            return <this.props.floatyRenderers.dropAreaRenderer floatyManager={this} dropArea={resolution.dropArea} />;
+            return <this.props.renderers.dropAreaRenderer floatyManager={this} dropArea={resolution.dropArea} />;
         }
     }
 
@@ -82,8 +82,8 @@ export class Floaty extends React.PureComponent<Props, State> implements FloatyM
             return ReactDOM.createPortal(
                 <React.Fragment>
                     <div style={{ position: 'fixed', top: this.state.currentMousePosition.y, left: this.state.currentMousePosition.x }}>
-                        <this.props.floatyRenderers.floatingRenderer
-                            floatyRenderers={this.props.floatyRenderers}
+                        <this.props.renderers.floatingRenderer
+                            floatyRenderers={this.props.renderers}
                             floatyManager={this}
                             floating={this.props.state.floating}
                         />

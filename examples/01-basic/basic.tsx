@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Floaty, FloatyRenderers, Renderers, State } from '../../src';
+import { defaultRenderers, Floaty, FloatyRenderers, State } from '../../src';
 
 export class Basic extends React.PureComponent<{}, State> {
     public state: State = {
@@ -55,27 +55,16 @@ export class Basic extends React.PureComponent<{}, State> {
     };
 
     private floatyRenderers: FloatyRenderers = {
-        columnRenderer: Renderers.ColumnRenderer,
-        columnSeparatorHandleRenderer: Renderers.ColumnSeperatorHandleRenderer,
-        columnSeparatorRenderer: Renderers.ColumnSeparatorRenderer,
+        ...defaultRenderers,
         contentRenderer: React.memo((props) =>
             <div>Content: {props.stackItem.identifier}</div>
         ),
-        floatingRenderer: Renderers.FloatingRenderer,
         floatingContentRenderer: React.memo((props) =>
             <div>Preview of: {props.stackItem.identifier}</div>
         ),
         floatingTabRenderer: React.memo((props) =>
             <div>Floating tab: {props.stackItem.identifier}</div>
         ),
-        dropAreaRenderer: Renderers.DropAreaRenderer,
-        layoutRenderer: Renderers.LayoutRenderer,
-        rowRenderer: Renderers.RowRenderer,
-        rowSeparatorHandleRenderer: Renderers.RowSeperatorHandleRenderer,
-        rowSeparatorRenderer: Renderers.RowSeparatorRenderer,
-        stackRenderer: Renderers.StackRenderer,
-        stackContainerRenderer: Renderers.StackContainerRenderer,
-        stackTabsRenderer: Renderers.StackTabsRenderer,
         tabRenderer: React.memo((props) =>
             <div>
                 Tab: {props.stackItem.identifier}
@@ -89,15 +78,14 @@ export class Basic extends React.PureComponent<{}, State> {
                     ↗
                 </button>
             </div>
-        ),
-        tabFillerRenderer: Renderers.TabFillerRenderer
+        )
     };
 
     public render() {
         return <React.Fragment>
             <div style={{ width: 500, height: 500 }}>
                 <Floaty
-                    floatyRenderers={this.floatyRenderers}
+                    renderers={this.floatyRenderers}
                     state={this.state}
                     onStateChange={this.handleStateChange}
                 />

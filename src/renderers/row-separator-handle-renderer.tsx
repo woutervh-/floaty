@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as RenderersModel from '../renderers-model';
 
-export class RowSeperatorHandleRenderer extends React.PureComponent<RenderersModel.RowSeparatorHandleRendererProps, never> {
+export class RowSeparatorHandleRenderer extends React.PureComponent<RenderersModel.RowSeparatorHandleRendererProps, never> {
     public render() {
         return <div style={{
             backgroundColor: 'black',

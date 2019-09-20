@@ -13,7 +13,7 @@ interface State {
 
 export class App extends React.PureComponent<{}, State> {
     public state: State = {
-        example: 1
+        example: 0
     };
 
     public renderExample() {

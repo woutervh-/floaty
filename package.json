@@ -4,6 +4,10 @@
   "description": "Floatable dockable panels in React",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "files": [
+    "src/",
+    "lib/"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/woutervh-/floaty.git"

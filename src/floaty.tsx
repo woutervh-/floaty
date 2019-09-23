@@ -308,19 +308,30 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
             return;
         }
         const stack = this.findStack(stackItem);
-        if (!stack) {
-            throw new Error(`StackItem ${stackItem.key} not found.`);
-        }
-        const index = stack.items.indexOf(stackItem);
-        const path = this.findPath(stack, this.props.state.layout);
-        if (!path) {
-            throw new Error('Stack not found.');
-        }
 
-        const items = stack.items.slice();
-        items.splice(index, 1);
-        const newStack: Model.Stack<T> = { ...stack, items, active: Math.min(items.length - 1, stack.active) };
-        this.replaceInPath(newStack, path);
+        let newState: Model.State<T>;
+        if (stack) {
+            const index = stack.items.indexOf(stackItem);
+            const path = this.findPath(stack, this.props.state.layout);
+            if (!path) {
+                throw new Error('Stack not found.');
+            }
+
+            const items = stack.items.slice();
+            items.splice(index, 1);
+            const newStack: Model.Stack<T> = { ...stack, items, active: Math.min(items.length - 1, stack.active) };
+            this.replaceInPath(newStack, path);
+
+            newState = {
+                layout: path[path.length - 1],
+                floating: stack.items[index]
+            };
+        } else {
+            newState = {
+                layout: this.props.state.layout,
+                floating: stackItem
+            };
+        }
 
         // Update floating position.
         if ('initialPosition' in options) {
@@ -330,10 +341,6 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
         }
 
         // Update controlled state.
-        const newState: Model.State<T> = {
-            layout: path[path.length - 1],
-            floating: stack.items[index]
-        };
         this.updateState(newState);
 
         if ('eventTarget' in options) {

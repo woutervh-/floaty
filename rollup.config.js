@@ -1,28 +1,33 @@
 import resolve from 'rollup-plugin-node-resolve';
-import { uglify } from 'rollup-plugin-uglify';
+import { terser } from 'rollup-plugin-terser';
+import pkg from './package.json';
 
-// TODO:
-// Look at: https://medium.com/js-imaginea/comparing-bundlers-webpack-rollup-parcel-f8f5dc609cfd
-// OR:
-// https://www.npmjs.com/package/rollup-plugin-uglify-es
-
-const plugins = [resolve()];
-
-if (process.env.ROLLUP_UGLIFY === 'true') {
-    plugins.push(uglify());
-}
-
-export default {
+export default [{
     input: 'lib/es6/index.js',
     output: {
         name: 'Floaty',
+        file: pkg.browser,
         format: 'umd',
+        sourcemap: true,
         globals: {
             'react': 'React',
             'react-dom': 'ReactDOM'
-        },
-        exports: 'named'
+        }
     },
     external: ['react', 'react-dom'],
-    plugins
-};
+    plugins: [resolve()]
+}, {
+    input: 'lib/es6/index.js',
+    output: {
+        name: 'Floaty',
+        file: pkg['browser.minified'],
+        format: 'umd',
+        sourcemap: true,
+        globals: {
+            'react': 'React',
+            'react-dom': 'ReactDOM'
+        }
+    },
+    external: ['react', 'react-dom'],
+    plugins: [resolve(), terser()]
+}];

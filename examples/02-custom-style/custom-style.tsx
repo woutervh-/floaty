@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import * as React from 'react';
-import { ContentRendererProps, Floaty, FloatyRenderers, State } from '../../src';
-import { defaultRenderers } from '../../src/default-renderers';
+import { ContentRendererProps, defaultRenderers, Floaty, FloatyRenderers, State } from '../../src';
 import { Fruit } from './fruit';
 import './style.css';
 

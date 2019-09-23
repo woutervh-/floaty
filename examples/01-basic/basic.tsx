@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Floaty, FloatyRenderers, State } from '../../src';
-import { defaultRenderers } from '../../src/default-renderers';
+import { defaultRenderers, Floaty, FloatyRenderers, State } from '../../src';
 
 export class Basic extends React.PureComponent<{}, State<string>> {
     public state: State<string> = {

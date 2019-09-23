@@ -16,6 +16,8 @@ npm install --save floaty
 npm run start:dev
 ```
 
+[Live example on CodePen.](https://codepen.io/woutervh/pen/dybwLpR)
+
 ## Introduction
 
 This part will introduce the concepts and capabilities of `floaty`.

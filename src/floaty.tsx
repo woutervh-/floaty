@@ -402,7 +402,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
         return null;
     }
 
-    private static minimizeLayout<T>(layout: Model.Layout<T> | null): Model.Layout<T> | null {
+    public static minimizeLayout<T>(layout: Model.Layout<T> | null): Model.Layout<T> | null {
         if (layout === null) {
             return null;
         }

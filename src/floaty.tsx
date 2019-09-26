@@ -199,11 +199,11 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
         this.setState({ dropResolutions });
     }
 
-    public onColumnUpdateFractions = this.onRowOrColumnUpdateFractions;
+    public updateColumnFractions = this.onRowOrColumnUpdateFractions;
 
-    public onRowUpdateFractions = this.onRowOrColumnUpdateFractions;
+    public updateRowFractions = this.onRowOrColumnUpdateFractions;
 
-    public onActivate = (stackItem: StateModel.StackItem<T>) => {
+    public activateStackItem = (stackItem: StateModel.StackItem<T>) => {
         const stack = this.findStack(stackItem);
         if (!stack) {
             throw new Error(`StackItem ${stackItem.key} not found.`);
@@ -219,7 +219,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
         this.onLayoutChange(path[path.length - 1]);
     }
 
-    public onCloseTab = (stackItem: StateModel.StackItem<T>) => {
+    public closeTab = (stackItem: StateModel.StackItem<T>) => {
         const stack = this.findStack(stackItem);
         if (!stack) {
             throw new Error(`StackItem ${stackItem.key} not found.`);
@@ -321,7 +321,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
         this.unregisterFloatHandlers();
     }
 
-    public onStartFloat = (stackItem: StateModel.StackItem<T>, options: FloatingStartOptions) => {
+    public startFloat = (stackItem: StateModel.StackItem<T>, options: FloatingStartOptions) => {
         if (this.props.state.floating) {
             return;
         }

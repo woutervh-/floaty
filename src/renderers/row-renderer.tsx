@@ -64,7 +64,7 @@ export class RowRenderer<T> extends React.PureComponent<RenderersModel.RowRender
             const fractionOriginal = this.props.row.items[index].fraction + this.props.row.items[index + 1].fraction;
             const normalizer = fractionOriginal / (fractionA + fractionB);
 
-            this.props.floatyManager.onRowUpdateFractions(
+            this.props.floatyManager.updateRowFractions(
                 this.props.row,
                 index,
                 normalizer * (fractionA + deltaF),

@@ -64,7 +64,7 @@ export class ColumnRenderer<T> extends React.PureComponent<RenderersModel.Column
             const fractionOriginal = this.props.column.items[index].fraction + this.props.column.items[index + 1].fraction;
             const normalizer = fractionOriginal / (fractionA + fractionB);
 
-            this.props.floatyManager.onColumnUpdateFractions(
+            this.props.floatyManager.updateColumnFractions(
                 this.props.column,
                 index,
                 normalizer * (fractionA + deltaF),

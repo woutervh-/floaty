@@ -26,7 +26,7 @@ export class CustomStyle extends React.PureComponent<{}, State<string>> {
         columnSeparatorHandleRenderer: React.memo((props) =>
             <div className="example02-resize-separator-column">
                 <div className={classNames('example02-resize-handle', 'example02-resize-handle-column')} style={{ top: props.offset, left: 0 }} />
-            </div >
+            </div>
         ),
         contentRenderer:
             // tslint:disable-next-line:max-classes-per-file

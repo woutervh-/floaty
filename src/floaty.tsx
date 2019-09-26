@@ -90,6 +90,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
         if (this.props.state.floating && this.state.currentMousePosition) {
             return ReactDOM.createPortal(
                 <React.Fragment>
+                    {this.renderDropResolution()}
                     <div style={{ position: 'fixed', top: this.state.currentMousePosition.y, left: this.state.currentMousePosition.x }}>
                         <this.props.renderers.floatingRenderer
                             floatyRenderers={this.props.renderers}
@@ -97,7 +98,6 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
                             floating={this.props.state.floating}
                         />
                     </div>
-                    {this.renderDropResolution()}
                 </React.Fragment>,
                 this.portal
             );

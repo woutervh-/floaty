@@ -1,17 +1,17 @@
-import * as Model from './model';
+import * as StateModel from './state-model';
 import * as DropModel from './drop-model';
 import { FloatyManager } from './floaty-manager';
 
 export interface ColumnRendererProps<T> {
     floatyManager: FloatyManager<T>;
     floatyRenderers: FloatyRenderers<T>;
-    column: Model.Column<T>;
+    column: StateModel.Column<T>;
 }
 
 export interface RowRendererProps<T> {
     floatyManager: FloatyManager<T>;
     floatyRenderers: FloatyRenderers<T>;
-    row: Model.Row<T>;
+    row: StateModel.Row<T>;
 }
 
 export interface ColumnSeparatorRendererProps<T> {
@@ -38,59 +38,59 @@ export interface RowSeparatorHandleRendererProps {
 
 export interface TabRendererProps<T> {
     floatyManager: FloatyManager<T>;
-    stack: Model.Stack<T>;
+    stack: StateModel.Stack<T>;
     stackItemIndex: number;
-    stackItem: Model.StackItem<T>;
+    stackItem: StateModel.StackItem<T>;
 }
 
 export interface TabFillerRendererProps<T> {
     floatyManager: FloatyManager<T>;
-    stack: Model.Stack<T>;
+    stack: StateModel.Stack<T>;
 }
 
 export interface ContentRendererProps<T> {
     floatyManager: FloatyManager<T>;
-    stack: Model.Stack<T>;
+    stack: StateModel.Stack<T>;
     stackIndex: number;
-    stackItem: Model.StackItem<T>;
+    stackItem: StateModel.StackItem<T>;
 }
 
 export interface StackRendererProps<T> {
     floatyManager: FloatyManager<T>;
     floatyRenderers: FloatyRenderers<T>;
-    stack: Model.Stack<T>;
+    stack: StateModel.Stack<T>;
 }
 
 export interface StackContainerRendererProps<T> {
     floatyManager: FloatyManager<T>;
-    stack: Model.Stack<T>;
+    stack: StateModel.Stack<T>;
 }
 
 export interface StackTabsRendererProps<T> {
     floatyManager: FloatyManager<T>;
-    stack: Model.Stack<T>;
+    stack: StateModel.Stack<T>;
 }
 
 export interface LayoutRendererProps<T> {
     floatyManager: FloatyManager<T>;
     floatyRenderers: FloatyRenderers<T>;
-    layout: Model.Layout<T>;
+    layout: StateModel.Layout<T>;
 }
 
 export interface FloatingTabRendererProps<T> {
     floatyManager: FloatyManager<T>;
-    stackItem: Model.StackItem<T>;
+    stackItem: StateModel.StackItem<T>;
 }
 
 export interface FloatingContentRendererProps<T> {
     floatyManager: FloatyManager<T>;
-    stackItem: Model.StackItem<T>;
+    stackItem: StateModel.StackItem<T>;
 }
 
 export interface FloatingRendererProps<T> {
     floatyManager: FloatyManager<T>;
     floatyRenderers: FloatyRenderers<T>;
-    floating: Model.StackItem<T>;
+    floating: StateModel.StackItem<T>;
 }
 
 export interface DropAreaRendererProps<T> {

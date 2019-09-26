@@ -1,5 +1,5 @@
 import * as ReactManagedDraggable from 'react-managed-draggable';
-import * as Model from './model';
+import * as StateModel from './state-model';
 
 export interface DropArea {
     top: number;
@@ -11,14 +11,14 @@ export interface DropArea {
 export interface DropResolutionTab<T> {
     type: 'tab';
     dropArea: DropArea;
-    stack: Model.Stack<T>;
+    stack: StateModel.Stack<T>;
     index: number;
 }
 
 export interface DropResolutionContainer<T> {
     type: 'container';
     dropArea: DropArea;
-    stack: Model.Stack<T>;
+    stack: StateModel.Stack<T>;
 }
 
 export interface DropResolutionRoot {

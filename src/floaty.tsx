@@ -5,6 +5,7 @@ import * as DropModel from './drop-model';
 import { FloatingStartOptions, FloatyManager } from './floaty-manager';
 import * as RenderersModel from './renderers-model';
 import * as StateModel from './state-model';
+import { StaticUtilities } from './static-utilities';
 
 interface Props<T> {
     state: StateModel.State<T>;
@@ -73,7 +74,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
             return;
         }
         if (resolution.type === 'container') {
-            const side = Floaty.getContentResolutionSide(resolution, this.state.currentMousePosition);
+            const side = StaticUtilities.getContentResolutionSide(resolution, this.state.currentMousePosition);
             const sideDropArea: DropModel.DropArea = {
                 left: side === 'right' ? resolution.dropArea.left + resolution.dropArea.width * 0.5 : resolution.dropArea.left,
                 top: side === 'bottom' ? resolution.dropArea.top + resolution.dropArea.height * 0.5 : resolution.dropArea.top,
@@ -152,7 +153,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
     }
 
     private updateState(state: StateModel.State<T>) {
-        this.props.onStateChange({ ...state, layout: Floaty.minimizeLayout(state.layout) });
+        this.props.onStateChange({ ...state, layout: StaticUtilities.minimizeLayout(state.layout) });
     }
 
     private onLayoutChange(layout: StateModel.Layout<T>) {
@@ -290,7 +291,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
             }
 
             if (resolution.type === 'container') {
-                const side = Floaty.getContentResolutionSide(resolution, position);
+                const side = StaticUtilities.getContentResolutionSide(resolution, position);
                 const stackFloating: StateModel.Stack<T> = { type: 'stack', items: [this.props.state.floating], active: 0 };
                 const childFloating: StateModel.ColumnOrRowItem<T> = { child: stackFloating, fraction: 0.5 };
                 const childOriginal: StateModel.ColumnOrRowItem<T> = { child: resolution.stack, fraction: 0.5 };
@@ -381,7 +382,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
     }
 
     public findStack = (stackItem: StateModel.StackItem<T>): StateModel.Stack<T> | null => {
-        return Floaty.findStack(stackItem, this.getLayout());
+        return StaticUtilities.findStack(stackItem, this.getLayout());
     }
 
     private replaceInPath(target: StateModel.Layout<T>, path: StateModel.Layout<T>[]) {
@@ -418,102 +419,5 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
             }
         }
         return null;
-    }
-
-    public static minimizeLayout<T>(layout: StateModel.Layout<T> | null): StateModel.Layout<T> | null {
-        if (layout === null) {
-            return null;
-        }
-        switch (layout.type) {
-            case 'column':
-            case 'row': {
-                const type = layout.type;
-                const items: StateModel.ColumnOrRowItem<T>[] = [];
-                let changed = false;
-                for (const item of layout.items) {
-                    const result = this.minimizeLayout(item.child);
-                    if (result !== item.child) {
-                        changed = true;
-                    }
-                    if (result) {
-                        if (result.type === type) {
-                            const childSumFractions = result.items.map((item) => item.fraction).reduce((sum, fraction) => sum + fraction);
-                            const normalizedChildFractions = result.items.map((item) => item.fraction / childSumFractions);
-                            for (let i = 0; i < result.items.length; i++) {
-                                items.push({ ...result.items[i], fraction: normalizedChildFractions[i] * item.fraction });
-                            }
-                            changed = true;
-                        } else {
-                            items.push({ ...item, child: result });
-                        }
-                    }
-                }
-                if (items.length >= 2) {
-                    if (changed) {
-                        // Normalize fractions.
-                        const fractionSum = items.reduce((sum, item) => sum + item.fraction, 0);
-                        const normalizedItems = items.map((item) => {
-                            return {
-                                ...item,
-                                fraction: item.fraction / fractionSum
-                            };
-                        });
-                        return { ...layout, items: normalizedItems };
-                    } else {
-                        return layout;
-                    }
-                } else if (items.length === 1) {
-                    return items[0].child;
-                } else {
-                    return null;
-                }
-            }
-            case 'stack': {
-                if (layout.items.length >= 1) {
-                    return layout;
-                } else {
-                    return null;
-                }
-            }
-        }
-    }
-
-    private static findStack<T>(stackItem: StateModel.StackItem<T>, from: StateModel.Layout<T> | null): StateModel.Stack<T> | null {
-        if (from === null) {
-            return null;
-        }
-        switch (from.type) {
-            case 'column':
-            case 'row': {
-                for (const item of from.items) {
-                    const found = Floaty.findStack(stackItem, item.child);
-                    if (found) {
-                        return found;
-                    }
-                }
-                break;
-            }
-            case 'stack': {
-                for (const item of from.items) {
-                    if (stackItem === item) {
-                        return from;
-                    }
-                }
-                break;
-            }
-        }
-        return null;
-    }
-
-    private static getContentResolutionSide(resolution: DropModel.DropResolutionContainer<unknown>, mousePosition: ReactManagedDragable.XY): 'left' | 'right' | 'top' | 'bottom' {
-        if (mousePosition.x <= resolution.dropArea.left + resolution.dropArea.width * 0.2) {
-            return 'left';
-        } else if (mousePosition.x >= resolution.dropArea.left + resolution.dropArea.width * 0.8) {
-            return 'right';
-        } else if (mousePosition.y <= resolution.dropArea.top + resolution.dropArea.height * 0.5) {
-            return 'top';
-        } else {
-            return 'bottom';
-        }
     }
 }

@@ -3,6 +3,7 @@ export * from './state-model';
 export * from './floaty-manager';
 export * from './renderers-model';
 export * from './drop-model';
+export * from './static-utilities';
 import * as Renderers from './renderers';
 
 export { Renderers };

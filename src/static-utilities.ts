@@ -5,7 +5,10 @@ import * as StateModel from './state-model';
 type TraverseOrder = 'pre-order' | 'post-order';
 
 export class StaticUtilities {
-    public static traverseLayoutTree<T>(layout: StateModel.Layout<T>, callback: (node: StateModel.Layout<T>) => void, order: TraverseOrder) {
+    public static traverseLayoutTree<T>(layout: StateModel.Layout<T> | null, callback: (node: StateModel.Layout<T>) => void, order: TraverseOrder) {
+        if (layout === null) {
+            return;
+        }
         if (order === 'pre-order') {
             callback(layout);
         }
@@ -77,7 +80,10 @@ export class StaticUtilities {
         }
     }
 
-    public static findStackItem<T>(predicate: (item: T) => boolean, layout: StateModel.Layout<T>): StateModel.StackItem<T> | null {
+    public static findStackItem<T>(predicate: (item: T) => boolean, layout: StateModel.Layout<T> | null): StateModel.StackItem<T> | null {
+        if (layout === null) {
+            return null;
+        }
         if (layout.type === 'stack') {
             for (const item of layout.items) {
                 if (predicate(item.item)) {

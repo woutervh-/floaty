@@ -238,7 +238,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
         this.onLayoutChange(path[path.length - 1]);
     }
 
-    public replaceItem = (stackItem: StateModel.StackItem<T>, item: T) => {
+    public replaceItem = (stackItem: StateModel.StackItem<T>, item: T, key?: string) => {
         const stack = this.findStack(stackItem);
         if (!stack) {
             throw new Error(`StackItem ${stackItem.key} not found.`);
@@ -250,7 +250,10 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
         }
 
         const newItems = stack.items.slice();
-        newItems[index].item = item;
+        newItems[index] = {
+            key: key === undefined ? newItems[index].key : key,
+            item
+        };
         const newStack: StateModel.Stack<T> = { ...stack, items: newItems };
         this.replaceInPath(newStack, path);
         this.onLayoutChange(path[path.length - 1]);

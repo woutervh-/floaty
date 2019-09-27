@@ -35,7 +35,7 @@ export interface FloatyManager<T> {
     closeTab: (stackItem: StateModel.StackItem<T>) => void;
     getLayout: () => StateModel.Layout<T> | null;
     findStack: (stackItem: StateModel.StackItem<T>) => StateModel.Stack<T> | null;
-    replaceItem: (stackItem: StateModel.StackItem<T>, item: T) => void;
+    replaceItem: (stackItem: StateModel.StackItem<T>, item: T, key?: string) => void;
     registerDropResolutions: (key: unknown, dropResolutions: DropModel.DropResolution<T>[]) => void;
     unregisterDropResolutions: (key: unknown) => void;
 }

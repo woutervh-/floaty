@@ -32,7 +32,7 @@ export class ColumnRenderer<T> extends React.PureComponent<RenderersModel.Column
             );
         }
 
-        return <div ref={this.handleRef} style={{ display: 'grid', gridTemplateRows: gridTemplateRows.join(' '), width: '100%', height: '100%' }}>
+        return <div ref={this.handleRef} style={{ display: 'grid', gridTemplateRows: gridTemplateRows.join(' '), gridTemplateColumns: 'minmax(0, 100%)' }}>
             {elements}
         </div>;
     }

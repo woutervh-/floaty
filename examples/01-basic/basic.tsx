@@ -76,13 +76,13 @@ export class Basic extends React.PureComponent<{}, State<string>> {
         tabRenderer: React.memo((props) =>
             <div>
                 Tab: {props.stackItem.item}
-                <button onClick={() => props.floatyManager.onActivate(props.stackItem)} disabled={props.stack.items.length <= 1 || props.stack.active === props.stackItemIndex}>
+                <button onClick={() => props.floatyManager.activateStackItem(props.stackItem)} disabled={props.stack.items.length <= 1 || props.stack.active === props.stackItemIndex}>
                     •
                 </button>
-                <button onClick={() => props.floatyManager.onCloseTab(props.stackItem)}>
+                <button onClick={() => props.floatyManager.closeTab(props.stackItem)}>
                     ×
                 </button>
-                <button onClick={(event) => props.floatyManager.onStartFloat(props.stackItem, { event: event.nativeEvent, eventTarget: document.body })}>
+                <button onClick={(event) => props.floatyManager.startFloat(props.stackItem, { event: event.nativeEvent, eventTarget: document.body })}>
                     ↗
                 </button>
             </div>
@@ -91,7 +91,7 @@ export class Basic extends React.PureComponent<{}, State<string>> {
 
     public render() {
         return <React.Fragment>
-            <div style={{ width: 500, height: 500 }}>
+            <div style={{ width: 500, height: 500, display: 'grid' }}>
                 <Floaty
                     renderers={this.floatyRenderers}
                     state={this.state}

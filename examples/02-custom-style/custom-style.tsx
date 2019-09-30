@@ -35,7 +35,7 @@ export class CustomStyle extends React.PureComponent<{}, State<string>> {
 
                 private handleDown = (event: MouseEvent | TouchEvent) => {
                     if (!(event instanceof MouseEvent) || event.button === 0) {
-                        this.props.floatyManager.onStartFloat(this.props.stackItem, { event });
+                        this.props.floatyManager.startFloat(this.props.stackItem, { event });
                     }
                 }
 
@@ -79,14 +79,14 @@ export class CustomStyle extends React.PureComponent<{}, State<string>> {
         ),
         tabRenderer: React.memo((props) =>
             <div className="example02-tab">
-                <button className={classNames('example02-button', { active: props.stack.active === props.stackItemIndex })} onClick={() => props.floatyManager.onActivate(props.stackItem)}>
+                <button className={classNames('example02-button', { active: props.stack.active === props.stackItemIndex })} onClick={() => props.floatyManager.activateStackItem(props.stackItem)}>
                     {props.stackItem.item}
                 </button>
             </div>
         ),
         tabFillerRenderer: React.memo((props) =>
             <div className="example02-tab" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <button className="example02-button" onClick={() => props.floatyManager.onCloseTab(props.stack.items[props.stack.active])}>
+                <button className="example02-button" onClick={() => props.floatyManager.closeTab(props.stack.items[props.stack.active])}>
                     Close
                 </button>
             </div>

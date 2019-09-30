@@ -61,7 +61,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
                 layout={this.props.state.layout}
             />;
         } else {
-            return <div style={{ width: '100%', height: '100%' }} />;
+            return <div />;
         }
     }
 

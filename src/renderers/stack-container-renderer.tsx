@@ -5,9 +5,7 @@ export class StackContainerRenderer<T> extends React.PureComponent<RenderersMode
     public render() {
         return <div style={{
             display: 'grid',
-            gridTemplateRows: 'max-content 1fr',
-            width: '100%',
-            height: '100%'
+            gridTemplateRows: 'max-content 1fr'
         }}>
             {this.props.children}
         </div>;

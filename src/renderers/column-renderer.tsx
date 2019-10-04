@@ -43,9 +43,10 @@ export class ColumnRenderer<T> extends React.PureComponent<RenderersModel.Column
 
     private clamp = (index: number, deltaY: number) => {
         if (this.container) {
+            const minHeight = this.props.floatyManager.getColumnMinHeight();
             const heightA = this.container.children[index * 2].getBoundingClientRect().height;
             const heightB = this.container.children[index * 2 + 2].getBoundingClientRect().height;
-            return Math.min(heightB, Math.max(-heightA, deltaY));
+            return Math.min(heightB - minHeight, Math.max(minHeight - heightA, deltaY));
         }
         return Number.NaN;
     }

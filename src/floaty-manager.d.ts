@@ -38,4 +38,6 @@ export interface FloatyManager<T> {
     replaceItem: (stackItem: StateModel.StackItem<T>, item: T, key?: string) => void;
     registerDropResolutions: (key: unknown, dropResolutions: DropModel.DropResolution<T>[]) => void;
     unregisterDropResolutions: (key: unknown) => void;
+    getRowMinWidth: () => number;
+    getColumnMinHeight: () => number;
 }

@@ -43,9 +43,10 @@ export class RowRenderer<T> extends React.PureComponent<RenderersModel.RowRender
 
     private clamp = (index: number, deltaX: number) => {
         if (this.container) {
+            const minWidth = this.props.floatyManager.getRowMinWidth();
             const widthA = this.container.children[index * 2].getBoundingClientRect().width;
             const widthB = this.container.children[index * 2 + 2].getBoundingClientRect().width;
-            return Math.min(widthB, Math.max(-widthA, deltaX));
+            return Math.min(widthB - minWidth, Math.max(minWidth - widthA, deltaX));
         }
         return Number.NaN;
     }

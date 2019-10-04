@@ -11,6 +11,8 @@ interface Props<T> {
     state: StateModel.State<T>;
     onStateChange: (state: StateModel.State<T>) => void;
     renderers: RenderersModel.FloatyRenderers<T>;
+    rowMinWidth?: number;
+    columnMinHeight?: number;
 }
 
 interface State<T> {
@@ -378,6 +380,14 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
         } else {
             this.registerFloatHandlers(document.body);
         }
+    }
+
+    public getRowMinWidth = () => {
+        return this.props.rowMinWidth === undefined ? 0 : this.props.rowMinWidth;
+    }
+
+    public getColumnMinHeight = () => {
+        return this.props.columnMinHeight === undefined ? 0 : this.props.columnMinHeight;
     }
 
     public getLayout = () => {

@@ -21,7 +21,7 @@ export class ColumnRenderer<T> extends React.PureComponent<RenderersModel.Column
                     />
                 );
             }
-            gridTemplateRows.push(`minmax(0, ${this.props.column.items[i].fraction}fr)`);
+            gridTemplateRows.push(`minmax(${this.props.floatyManager.getColumnMinHeight()}px, ${this.props.column.items[i].fraction}fr)`);
             elements.push(
                 <this.props.floatyRenderers.layoutRenderer
                     key={i}

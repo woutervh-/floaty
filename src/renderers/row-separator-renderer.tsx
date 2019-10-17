@@ -39,6 +39,8 @@ export class RowSeparatorRenderer<T> extends React.PureComponent<RenderersModel.
     private handleDragEnd = (event: MouseEvent | TouchEvent | undefined, dragInformation: DragInformation) => {
         this.setState({ deltaX: null });
         const deltaX = this.props.clamp(this.props.index, dragInformation.current.x - dragInformation.start.x);
-        this.props.onMove(this.props.index, deltaX);
+        if (deltaX !== null) {
+            this.props.onMove(this.props.index, deltaX);
+        }
     }
 }

@@ -7,6 +7,7 @@ export class RowRenderer<T> extends React.PureComponent<RenderersModel.RowRender
     public render() {
         const gridTemplateColumns: string[] = [];
         const elements: React.ReactNode[] = [];
+        const minimumFraction = this.props.row.items.reduce((previous, item) => Math.min(previous, item.fraction), Number.POSITIVE_INFINITY);
 
         for (let i = 0; i < this.props.row.items.length; i++) {
             if (i > 0) {
@@ -21,7 +22,7 @@ export class RowRenderer<T> extends React.PureComponent<RenderersModel.RowRender
                     />
                 );
             }
-            gridTemplateColumns.push(`minmax(${this.props.floatyManager.getRowMinWidth()}px, ${this.props.row.items[i].fraction}fr)`);
+            gridTemplateColumns.push(`minmax(${this.props.floatyManager.getRowMinWidth()}px, ${this.props.row.items[i].fraction / minimumFraction}fr)`);
             elements.push(
                 <this.props.floatyRenderers.layoutRenderer
                     key={i}
@@ -46,9 +47,11 @@ export class RowRenderer<T> extends React.PureComponent<RenderersModel.RowRender
             const minWidth = this.props.floatyManager.getRowMinWidth();
             const widthA = this.container.children[index * 2].getBoundingClientRect().width;
             const widthB = this.container.children[index * 2 + 2].getBoundingClientRect().width;
-            return Math.min(widthB - minWidth, Math.max(minWidth - widthA, deltaX));
+            const minimum = minWidth - widthA;
+            const maximum = widthB - minWidth;
+            return Math.min(maximum, Math.max(minimum, deltaX));
         }
-        return Number.NaN;
+        return null;
     }
 
     private handleMove = (index: number, deltaX: number) => {

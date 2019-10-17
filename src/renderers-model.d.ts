@@ -18,14 +18,14 @@ export interface ColumnSeparatorRendererProps<T> {
     floatyRenderers: FloatyRenderers<T>;
     index: number;
     onMove: (index: number, deltaY: number) => void;
-    clamp: (index: number, deltaY: number) => number;
+    clamp: (index: number, deltaY: number) => number | null;
 }
 
 export interface RowSeparatorRendererProps<T> {
     floatyRenderers: FloatyRenderers<T>;
     index: number;
     onMove: (index: number, deltaX: number) => void;
-    clamp: (index: number, deltaX: number) => number;
+    clamp: (index: number, deltaX: number) => number | null;
 }
 
 export interface ColumnSeparatorHandleRendererProps {

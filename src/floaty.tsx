@@ -33,7 +33,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
     private raf: number | undefined = undefined;
 
     public componentDidMount() {
-        this.updateDropAreas();
+        this.updateRootDropArea();
         if (this.props.state.floating) {
             this.registerFloatHandlers(document.body);
         }
@@ -114,7 +114,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
                     return resolution;
                 }
             }
-            if (this.state.rootDropArea && DropModel.pointInDropArea(this.state.rootDropArea, position)) {
+            if (this.state.dropResolutions.length <= 0 && this.state.rootDropArea && DropModel.pointInDropArea(this.state.rootDropArea, position)) {
                 return { type: 'root', dropArea: this.state.rootDropArea };
             }
         }
@@ -143,7 +143,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
         this.eventTarget = null;
     }
 
-    private updateDropAreas = () => {
+    private updateRootDropArea = () => {
         const node = ReactDOM.findDOMNode(this);
         if (node instanceof Element) {
             const dropArea = DropModel.computeDropArea(node);
@@ -151,7 +151,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
                 this.setState({ rootDropArea: dropArea });
             }
         }
-        this.raf = window.requestAnimationFrame(this.updateDropAreas);
+        this.raf = window.requestAnimationFrame(this.updateRootDropArea);
     }
 
     private updateState(state: StateModel.State<T>) {

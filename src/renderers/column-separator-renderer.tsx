@@ -39,6 +39,8 @@ export class ColumnSeparatorRenderer<T> extends React.PureComponent<RenderersMod
     private handleDragEnd = (event: MouseEvent | TouchEvent | undefined, dragInformation: DragInformation) => {
         this.setState({ deltaY: null });
         const deltaY = this.props.clamp(this.props.index, dragInformation.current.y - dragInformation.start.y);
-        this.props.onMove(this.props.index, deltaY);
+        if (deltaY !== null) {
+            this.props.onMove(this.props.index, deltaY);
+        }
     }
 }

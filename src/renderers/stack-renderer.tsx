@@ -62,6 +62,7 @@ export class StackRenderer<T> extends React.PureComponent<RenderersModel.StackRe
 
             if (!this.tabDropAreas.has(stackItem.key) || !DropModel.dropAreasEqual(this.tabDropAreas.get(stackItem.key)!, newDropArea)) {
                 changed = true;
+                this.tabDropAreas.set(stackItem.key, newDropArea);
             }
         }
 
@@ -75,6 +76,7 @@ export class StackRenderer<T> extends React.PureComponent<RenderersModel.StackRe
             });
             if (this.tabFillerDropArea === null || !DropModel.dropAreasEqual(this.tabFillerDropArea, newDropArea)) {
                 changed = true;
+                this.tabFillerDropArea = newDropArea;
             }
         }
 
@@ -87,6 +89,7 @@ export class StackRenderer<T> extends React.PureComponent<RenderersModel.StackRe
             });
             if (this.containerDropArea === null || !DropModel.dropAreasEqual(this.containerDropArea, newDropArea)) {
                 changed = true;
+                this.containerDropArea = newDropArea;
             }
         }
 

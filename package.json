@@ -1,6 +1,6 @@
 {
   "name": "floaty",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "Floatable dockable panels in React",
   "main": "lib/es6/index.js",
   "module": "lib/es6/index.js",

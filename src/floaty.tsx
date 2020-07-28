@@ -370,7 +370,7 @@ export class Floaty<T> extends React.PureComponent<Props<T>, State<T>> implement
         if ('eventTarget' in options) {
             this.registerFloatHandlers(options.eventTarget);
         } else if ('event' in options) {
-            if (options.event instanceof TouchEvent && options.event.target && options.event.target instanceof HTMLElement) {
+            if (window.TouchEvent && options.event instanceof TouchEvent && options.event.target && options.event.target instanceof HTMLElement) {
                 // Touch events should be re-registered with their event target, otherwise the touchmove and touchup events will not fire.
                 this.registerFloatHandlers(options.event.target);
             } else {
